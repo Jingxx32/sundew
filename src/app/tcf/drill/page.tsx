@@ -6,7 +6,6 @@ import {
   type TcfDrillSessionKind,
   type TcfLevel,
 } from "@/lib/actions/tcf";
-import { getAllSavedLemmas } from "@/lib/actions/vocabulary";
 import { DrillRunner } from "../_components/drill-runner";
 
 const LEVEL_LABELS: Record<TcfLevel, string> = {
@@ -40,10 +39,7 @@ export default async function TcfDrillPage({
   }
 
   const round: TcfDrillSessionKind = roundParam === "20" || roundParam === "review" || roundParam === "all" ? roundParam : "10";
-  const [session, savedLemmas] = await Promise.all([
-    getTcfScheduledDrillQuestions(skill, level, q ? "all" : round),
-    getAllSavedLemmas(),
-  ]);
+  const session = await getTcfScheduledDrillQuestions(skill, level, q ? "all" : round);
   const questions = session.questions;
   const qIndex = q ? questions.findIndex((x) => x.id === q) : 0;
   const initialIndex = Math.max(0, qIndex);
@@ -92,7 +88,6 @@ export default async function TcfDrillPage({
           level={level}
           kind={round}
           initialIndex={initialIndex}
-          savedLemmas={savedLemmas}
         />
       )}
     </div>
