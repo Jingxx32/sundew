@@ -364,21 +364,13 @@ export async function getTcfScheduledDrillQuestions(
     const summary = summaryById.get(question.id);
     return kind !== "review" || Boolean(summary?.needsReview && summary.nextReviewAt && summary.nextReviewAt <= now);
   });
-  const dayKey = now.toISOString().slice(0, 10);
-  const stableShuffle = (value: string) => {
-    let hash = 2166136261;
-    for (let index = 0; index < value.length; index++) {
-      hash ^= value.charCodeAt(index);
-      hash = Math.imul(hash, 16777619);
-    }
-    return hash >>> 0;
-  };
   const ordered = eligible
-    .map((question) => ({
+    .map((question, position) => ({
       question,
       summary: summaryById.get(question.id)!,
-      // A daily deterministic shuffle keeps the session restorable after a refresh.
-      random: stableShuffle(`${skill}:${level}:${kind}:${dayKey}:${question.id}`),
+      // `getTcfDrillQuestions` already returns exam order (test number, then
+      // question number); keeping the position makes that the tie-breaker.
+      position,
     }))
     .sort((a, b) => {
       const rankDifference = schedulingRank(a.summary, now) - schedulingRank(b.summary, now);
@@ -386,7 +378,7 @@ export async function getTcfScheduledDrillQuestions(
       if (a.summary.needsReview && b.summary.needsReview) {
         return (a.summary.lastAnsweredAt?.getTime() ?? 0) - (b.summary.lastAnsweredAt?.getTime() ?? 0);
       }
-      return a.random - b.random;
+      return a.position - b.position;
     });
   const size = kind === "10" ? 10 : kind === "20" ? 20 : ordered.length;
   return { questions: ordered.slice(0, size).map(({ question }) => question), learning };
