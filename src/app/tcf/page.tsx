@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { Headphones, BookOpenText } from "lucide-react";
-import { getTcfLevelSummaries, getTcfReviewCount, listTcfSets, type TcfLevel } from "@/lib/actions/tcf";
+import {
+  getTcfLevelSummaries,
+  getTcfProgressOverview,
+  getTcfReviewCount,
+  listTcfSets,
+  type TcfLevel,
+} from "@/lib/actions/tcf";
 import { Card } from "@/components/ui/card";
 
 const LEVEL_COLORS: Record<TcfLevel, { bg: string; text: string; border: string }> = {
@@ -36,11 +42,13 @@ export default async function TcfPage({
   const meta = SKILLS[skill];
   const Icon = meta.icon;
 
-  const [summaries, sets, reviewCount] = await Promise.all([
+  const [summaries, sets, reviewCount, progress] = await Promise.all([
     getTcfLevelSummaries(skill),
     listTcfSets(skill),
     getTcfReviewCount(skill),
+    getTcfProgressOverview(skill),
   ]);
+  const progressByLevel = new Map(progress.byLevel.map((entry) => [entry.level, entry]));
 
   return (
     <>
@@ -70,6 +78,8 @@ export default async function TcfPage({
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {summaries.map((s) => {
             const colors = LEVEL_COLORS[s.level];
+            const stats = progressByLevel.get(s.level);
+            const done = stats?.answered ?? 0;
             return (
               <Link
                 key={s.level}
@@ -99,6 +109,31 @@ export default async function TcfPage({
                       ? "Pas encore disponible"
                       : `${s.sets} test${s.sets > 1 ? "s" : ""}`}
                   </p>
+                  {s.total > 0 && (
+                    <div className="mt-3">
+                      <div className="h-1 overflow-hidden rounded-full bg-surface-muted">
+                        <div
+                          className="h-full rounded-full bg-accent transition-[width]"
+                          style={{ width: `${Math.round((done / s.total) * 100)}%` }}
+                        />
+                      </div>
+                      <p className="mt-1.5 flex flex-wrap items-center gap-x-2 text-[11px] text-muted-foreground">
+                        {done === 0 ? (
+                          <span>Pas encore commencé</span>
+                        ) : (
+                          <>
+                            <span className="font-mono">
+                              {done}/{s.total}
+                            </span>
+                            <span>· {stats!.accuracy} % de réussite</span>
+                            {stats!.needsReview > 0 && (
+                              <span className="text-danger">{stats!.needsReview} à revoir</span>
+                            )}
+                          </>
+                        )}
+                      </p>
+                    </div>
+                  )}
                 </Card>
               </Link>
             );
@@ -115,18 +150,48 @@ export default async function TcfPage({
             Un test complet de 39 questions (A1 → C2), avec score à la fin.
           </p>
           <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
-            {sets.map((s) => (
-              <Link
-                key={s.id}
-                href={`/tcf/exam?skill=${skill}&test=${s.testNumber}`}
-                className="group flex flex-col items-center justify-center rounded-xl border border-border/70 bg-surface px-2 py-3 transition-all hover:border-accent/40 hover:shadow-sm"
-              >
-                <span className="font-serif text-lg font-semibold text-foreground group-hover:text-accent">
-                  {s.testNumber}
-                </span>
-                <span className="text-[10px] text-subtle-foreground">{s.totalCount} q.</span>
-              </Link>
-            ))}
+            {sets.map((s) => {
+              const stats = progress.bySet[s.testNumber];
+              const answered = stats?.answered ?? 0;
+              const exam = stats?.lastExam ?? null;
+              const started = answered > 0;
+              return (
+                <Link
+                  key={s.id}
+                  href={`/tcf/exam?skill=${skill}&test=${s.testNumber}`}
+                  className={`group flex flex-col items-center justify-center rounded-xl border bg-surface px-2 py-3 transition-all hover:border-accent/40 hover:shadow-sm ${
+                    started ? "border-accent/30" : "border-border/70"
+                  }`}
+                >
+                  <span className="font-serif text-lg font-semibold text-foreground group-hover:text-accent">
+                    {s.testNumber}
+                  </span>
+                  {/* Score of the last whole-exam run outranks the drill count:
+                      it is the number this grid exists to show. */}
+                  {exam ? (
+                    <span className="font-mono text-[10px] font-medium text-accent">
+                      {exam.score}/{exam.total}
+                    </span>
+                  ) : started ? (
+                    <span className="font-mono text-[10px] text-muted-foreground">
+                      {answered}/{s.totalCount}
+                    </span>
+                  ) : (
+                    <span className="text-[10px] text-subtle-foreground">{s.totalCount} q.</span>
+                  )}
+                  {/* Only started tests get a bar — an empty one under all 39
+                      tiles reads as clutter, not as information. */}
+                  {started && (
+                    <div className="mt-1.5 h-0.5 w-8 overflow-hidden rounded-full bg-surface-muted">
+                      <div
+                        className="h-full rounded-full bg-accent"
+                        style={{ width: `${Math.round((answered / Math.max(s.totalCount, 1)) * 100)}%` }}
+                      />
+                    </div>
+                  )}
+                </Link>
+              );
+            })}
           </div>
         </>
       )}

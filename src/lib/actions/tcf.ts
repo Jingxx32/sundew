@@ -9,10 +9,11 @@ import {
   tcfQuestionAttempts,
   tcfLevelEnum,
 } from "@/lib/db/schema";
-import type { TcfPerLevel, TcfAttempt } from "@/lib/db/schema";
+import type { TcfPerLevel, TcfAttempt, TcfExplanationMeta } from "@/lib/db/schema";
 import { eq, and, asc, desc, inArray } from "drizzle-orm";
 import {
   deriveTcfLearningSummary,
+  type TcfLearningAttempt,
   type TcfQuestionLearningSummary,
 } from "@/lib/tcf/learning";
 
@@ -91,6 +92,132 @@ export async function getTcfLevelSummaries(skill: "listening" | "reading" = "lis
   return LEVELS.map((level) => ({ level, total: counts[level], sets: sets.length }));
 }
 
+export interface TcfLevelProgress {
+  level: TcfLevel;
+  /** Questions in this level, across every set. */
+  total: number;
+  /** Distinct questions answered at least once. */
+  answered: number;
+  /** 0–100 over the latest answer of each answered question, or null if none. */
+  accuracy: number | null;
+  needsReview: number;
+}
+
+export interface TcfSetProgress {
+  total: number;
+  answered: number;
+  /** Most recent whole-exam run of this set, if any. */
+  lastExam: { score: number; total: number } | null;
+}
+
+export interface TcfProgressOverview {
+  byLevel: TcfLevelProgress[];
+  /** Keyed by test number. */
+  bySet: Record<number, TcfSetProgress>;
+}
+
+/**
+ * One pass over a skill's questions and answer history, for the TCF overview.
+ *
+ * Accuracy deliberately uses each question's *latest* answer rather than all
+ * attempts: a question drilled wrong three times and then learnt should read as
+ * known, which is also the stance `deriveTcfLearningSummary` takes.
+ */
+export async function getTcfProgressOverview(
+  skill: "listening" | "reading" = "listening",
+): Promise<TcfProgressOverview> {
+  const LEVELS: TcfLevel[] = ["A1", "A2", "B1", "B2", "C1", "C2"];
+  const empty = (): TcfProgressOverview => ({
+    byLevel: LEVELS.map((level) => ({ level, total: 0, answered: 0, accuracy: null, needsReview: 0 })),
+    bySet: {},
+  });
+
+  const questions = await db
+    .select({
+      id: tcfQuestions.id,
+      level: tcfQuestions.level,
+      testNumber: tcfSets.testNumber,
+    })
+    .from(tcfQuestions)
+    .innerJoin(tcfSets, eq(tcfQuestions.setId, tcfSets.id))
+    .where(eq(tcfSets.skill, skill));
+
+  if (questions.length === 0) return empty();
+
+  const [attempts, exams] = await Promise.all([
+    db
+      .select({
+        id: tcfQuestionAttempts.id,
+        questionId: tcfQuestionAttempts.questionId,
+        correct: tcfQuestionAttempts.correct,
+        uncertain: tcfQuestionAttempts.uncertain,
+        answeredAt: tcfQuestionAttempts.answeredAt,
+      })
+      .from(tcfQuestionAttempts)
+      .innerJoin(tcfQuestions, eq(tcfQuestionAttempts.questionId, tcfQuestions.id))
+      .innerJoin(tcfSets, eq(tcfQuestions.setId, tcfSets.id))
+      .where(eq(tcfSets.skill, skill)),
+    db
+      .select({
+        testNumber: tcfAttempts.testNumber,
+        score: tcfAttempts.score,
+        total: tcfAttempts.total,
+        answeredAt: tcfAttempts.answeredAt,
+      })
+      .from(tcfAttempts)
+      .where(eq(tcfAttempts.skill, skill))
+      .orderBy(asc(tcfAttempts.answeredAt)),
+  ]);
+
+  const attemptsByQuestion = new Map<string, TcfLearningAttempt[]>();
+  for (const attempt of attempts) {
+    const bucket = attemptsByQuestion.get(attempt.questionId);
+    if (bucket) bucket.push(attempt);
+    else attemptsByQuestion.set(attempt.questionId, [attempt]);
+  }
+
+  const levelStats = new Map<TcfLevel, { total: number; answered: number; correct: number; needsReview: number }>(
+    LEVELS.map((level) => [level, { total: 0, answered: 0, correct: 0, needsReview: 0 }]),
+  );
+  const bySet: Record<number, TcfSetProgress> = {};
+
+  for (const question of questions) {
+    const level = levelStats.get(question.level as TcfLevel)!;
+    level.total += 1;
+
+    const set = (bySet[question.testNumber] ??= { total: 0, answered: 0, lastExam: null });
+    set.total += 1;
+
+    const history = attemptsByQuestion.get(question.id);
+    if (!history) continue;
+
+    const summary = deriveTcfLearningSummary(history);
+    level.answered += 1;
+    set.answered += 1;
+    if (summary.latestCorrect) level.correct += 1;
+    if (summary.needsReview) level.needsReview += 1;
+  }
+
+  // Ordered ascending, so the last row for a test number is its latest run.
+  for (const exam of exams) {
+    const set = bySet[exam.testNumber];
+    if (set) set.lastExam = { score: exam.score, total: exam.total };
+  }
+
+  return {
+    byLevel: LEVELS.map((level) => {
+      const stats = levelStats.get(level)!;
+      return {
+        level,
+        total: stats.total,
+        answered: stats.answered,
+        accuracy: stats.answered === 0 ? null : Math.round((stats.correct / stats.answered) * 100),
+        needsReview: stats.needsReview,
+      };
+    }),
+    bySet,
+  };
+}
 
 export interface TcfQuestionForDrill {
   id: string;
@@ -105,6 +232,7 @@ export interface TcfQuestionForDrill {
   transcript: string | null;
   passage: string | null;
   explanation: string | null;
+  explanationMeta: TcfExplanationMeta | null;
   imagePath: string | null;
   audioPath: string | null;
   skillTags: string[] | null;
@@ -144,6 +272,7 @@ export async function getTcfSetQuestions(
       transcript: tcfQuestions.transcript,
       passage: tcfQuestions.passage,
       explanation: tcfQuestions.explanation,
+      explanationMeta: tcfQuestions.explanationMeta,
       imagePath: tcfQuestions.imagePath,
       audioPath: tcfQuestions.audioPath,
       skillTags: tcfQuestions.skillTags,
@@ -454,6 +583,7 @@ export async function getTcfDrillQuestions(
       transcript: tcfQuestions.transcript,
       passage: tcfQuestions.passage,
       explanation: tcfQuestions.explanation,
+      explanationMeta: tcfQuestions.explanationMeta,
       imagePath: tcfQuestions.imagePath,
       audioPath: tcfQuestions.audioPath,
       skillTags: tcfQuestions.skillTags,

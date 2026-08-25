@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, Check, X, Flag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ExplanationPanel } from "./explanation-panel";
+import { VerdictBar } from "./verdict-bar";
 import { ReadingPassage } from "./reading-passage";
 import { recordTcfExamAttempt } from "@/lib/actions/tcf";
 import type { TcfQuestionForDrill, TcfLevel, TcfExamAnswer } from "@/lib/actions/tcf";
@@ -342,20 +343,9 @@ export function ExamRunner({ questions, skill, testNumber }: ExamRunnerProps) {
             })}
           </div>
 
-          {/* Transcript (review mode) */}
-          {finished && q.transcript && (
-            <div className="rounded-lg border border-border/50 bg-surface-muted/60 px-4 py-3">
-              <p className="text-[11px] uppercase tracking-widest text-subtle-foreground font-medium mb-1.5">
-                Transcription
-              </p>
-              <p className="text-sm font-serif leading-relaxed text-foreground whitespace-pre-wrap">
-                {q.transcript}
-              </p>
-            </div>
+          {finished && q.explanationMeta && (
+            <VerdictBar meta={q.explanationMeta} chosen={chosen} answer={q.answer} />
           )}
-
-          {/* Explanation (review mode) */}
-          {finished && q.explanation && <ExplanationPanel markdown={q.explanation} />}
         </div>
 
         {/* Prev / Next */}
@@ -382,6 +372,25 @@ export function ExamRunner({ questions, skill, testNumber }: ExamRunnerProps) {
             <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
         </div>
+
+        {/* Transcript + explanation sit below the nav: a long explanation must not
+            push Suivant off-screen. */}
+        {finished && q.transcript && (
+          <div className="mt-4 rounded-lg border border-border/50 bg-surface-muted/60 px-4 py-3">
+            <p className="text-[11px] uppercase tracking-widest text-subtle-foreground font-medium mb-1.5">
+              Transcription
+            </p>
+            <p className="text-sm font-serif leading-relaxed text-foreground whitespace-pre-wrap">
+              {q.transcript}
+            </p>
+          </div>
+        )}
+
+        {finished && q.explanation && (
+          <div className="mt-4">
+            <ExplanationPanel markdown={q.explanation} />
+          </div>
+        )}
       </div>
     </div>
   );

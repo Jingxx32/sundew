@@ -104,7 +104,7 @@ export async function POST(request: Request) {
 
   await db
     .update(tcfQuestions)
-    .set({ explanation: parsed.body, translationEn: parsed.translationEn })
+    .set({ explanation: parsed.body, translationEn: parsed.translationEn, explanationMeta: parsed.meta })
     .where(eq(tcfQuestions.id, rows[0].id));
 
   return Response.json({
@@ -112,5 +112,6 @@ export async function POST(request: Request) {
     locator: label,
     questionId: rows[0].id,
     hasTranslation: parsed.translationEn !== null,
+    hasVerdict: parsed.meta !== null,
   });
 }

@@ -442,6 +442,14 @@ export const tcfSets = pgTable(
 
 export type TcfSet = typeof tcfSets.$inferSelect;
 
+/** The "速判" head of a hand-written explanation — see CLAUDE.md 「写入单题 TCF 讲解」. */
+export type TcfExplanationMeta = {
+  /** One line naming what in the text decides the answer. */
+  keyPoint: string | null;
+  /** One line per option, positionally aligned with `options`; null where unwritten. */
+  options: (string | null)[];
+};
+
 export const tcfQuestions = pgTable(
   "tcf_questions",
   {
@@ -467,6 +475,10 @@ export const tcfQuestions = pgTable(
   passage: text("passage"),
   translationEn: text("translation_en"),
   explanation: text("explanation"),
+  /** Structured head of the explanation — the "速判" section. Drives the verdict
+   *  bar and the per-option one-liners, which the full markdown cannot: it is
+   *  one opaque blob to the renderer. null = the explanation has no 速判 section. */
+  explanationMeta: jsonb("explanation_meta").$type<TcfExplanationMeta>(),
   /** Relative path, e.g. /media/tcf/test1/q01.png */
   imagePath: text("image_path"),
   /** Relative path, e.g. /media/tcf/test1/q01.mp3 — filled after TTS */

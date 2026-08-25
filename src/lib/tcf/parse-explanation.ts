@@ -17,6 +17,7 @@
  *
  * Pure: no IO, no DB. `written` is informational and deliberately not returned.
  */
+import type { TcfExplanationMeta } from "@/lib/db/schema";
 
 /** 唯一确定一道题的三元组。 */
 export interface ExplanationLocator {
@@ -30,6 +31,8 @@ export interface ParsedExplanation extends ExplanationLocator {
   body: string;
   /** Body of the "## 全文翻译" section, or null when the file has none. */
   translationEn: string | null;
+  /** Structured "## 速判" head, or null when the file has none. */
+  meta: TcfExplanationMeta | null;
 }
 
 /** 与 ParsedExplanation 的区别：没有 frontmatter 时 locator 为 null 而不是抛错。 */
@@ -37,10 +40,16 @@ export interface ParsedExplanationBody {
   locator: ExplanationLocator | null;
   body: string;
   translationEn: string | null;
+  meta: TcfExplanationMeta | null;
 }
 
 const FRONTMATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
 const TRANSLATION_HEADING = "全文翻译";
+const VERDICT_HEADING = "速判";
+/** `- 眼: …` — the one line naming what decides the answer. */
+const KEY_POINT_LINE = /^[-*]\s*眼\s*[:：]\s*(.+)$/;
+/** `- B ❌ …` — one option's verdict. The ✅/❌ mark is decorative; position is what binds. */
+const OPTION_LINE = /^[-*]\s*([A-D])\s*(?:[✅❌]\s*)?(.+)$/;
 
 function readField(fm: Record<string, string>, key: string): string {
   const value = fm[key];
@@ -80,6 +89,61 @@ function sectionBody(body: string, heading: string): string | null {
   });
   const picked = (end === -1 ? rest : rest.slice(0, end)).join("\n").trim();
   return picked === "" ? null : picked;
+}
+
+/**
+ * The markdown with its "## 速判" section removed — heading included.
+ *
+ * That section is rendered as structured UI (verdict bar + per-option lines),
+ * so leaving it in the prose would print everything twice. Stored bodies keep
+ * it, which is what makes an exported file round-trip.
+ */
+export function stripVerdictSection(body: string): string {
+  const lines = body.split(/\r?\n/);
+  const headingLine = /^(#{1,6})\s+(.*)$/;
+  const start = lines.findIndex((l) => {
+    const m = headingLine.exec(l);
+    return m !== null && m[2].trim() === VERDICT_HEADING;
+  });
+  if (start === -1) return body;
+  const level = headingLine.exec(lines[start])![1].length;
+  const rest = lines.slice(start + 1);
+  const end = rest.findIndex((l) => {
+    const m = headingLine.exec(l);
+    return m !== null && m[1].length <= level;
+  });
+  const after = end === -1 ? [] : rest.slice(end);
+  return [...lines.slice(0, start), ...after].join("\n").trim();
+}
+
+/**
+ * Parse the "## 速判" section into the structured head the UI renders above the
+ * prose: one key point, plus a one-liner per option.
+ *
+ * Options bind by letter (A–D) to their index, not by order of appearance, so a
+ * file may list them in any order and may omit some. Returns null when the
+ * section is absent — every explanation written before this format existed.
+ */
+function parseVerdict(body: string): TcfExplanationMeta | null {
+  const section = sectionBody(body, VERDICT_HEADING);
+  if (section === null) return null;
+
+  let keyPoint: string | null = null;
+  const options: (string | null)[] = [null, null, null, null];
+
+  for (const line of section.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    const key = KEY_POINT_LINE.exec(trimmed);
+    if (key) {
+      keyPoint = key[1].trim();
+      continue;
+    }
+    const option = OPTION_LINE.exec(trimmed);
+    if (option) options[option[1].charCodeAt(0) - 65] = option[2].trim();
+  }
+
+  if (keyPoint === null && options.every((entry) => entry === null)) return null;
+  return { keyPoint, options };
 }
 
 function unquote(value: string): string {
@@ -137,7 +201,12 @@ export function parseExplanationBody(raw: string): ParsedExplanationBody {
     throw new Error("explanation file has an empty body");
   }
 
-  return { locator, body, translationEn: sectionBody(body, TRANSLATION_HEADING) };
+  return {
+    locator,
+    body,
+    translationEn: sectionBody(body, TRANSLATION_HEADING),
+    meta: parseVerdict(body),
+  };
 }
 
 export function parseExplanationFile(raw: string): ParsedExplanation {
@@ -149,6 +218,7 @@ export function parseExplanationFile(raw: string): ParsedExplanation {
     ...parsed.locator,
     body: parsed.body,
     translationEn: parsed.translationEn,
+    meta: parsed.meta,
   };
 }
 

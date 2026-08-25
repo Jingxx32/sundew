@@ -4,6 +4,8 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { Components } from "react-markdown";
 
+import { stripVerdictSection } from "@/lib/tcf/parse-explanation";
+
 /**
  * Renders one question's hand-written explanation (see
  * docs/superpowers/specs/2026-08-13-tcf-explanations-design.md).
@@ -59,7 +61,10 @@ const MARKDOWN_COMPONENTS = {
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 export function ExplanationPanel({ markdown }: { markdown: string }) {
-  if (!markdown.trim()) return null;
+  // The 速判 section is rendered as a verdict bar and per-option lines by the
+  // runners; printing it again here would duplicate every line.
+  const prose = stripVerdictSection(markdown);
+  if (!prose.trim()) return null;
 
   return (
     <div className="rounded-lg border border-border/50 bg-surface-muted/60 px-4 py-3">
@@ -71,7 +76,7 @@ export function ExplanationPanel({ markdown }: { markdown: string }) {
           remarkPlugins={[remarkGfm]}
           components={MARKDOWN_COMPONENTS}
         >
-          {markdown}
+          {prose}
         </ReactMarkdown>
       </div>
     </div>

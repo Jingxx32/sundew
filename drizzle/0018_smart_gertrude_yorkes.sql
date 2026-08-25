@@ -1,0 +1,1 @@
+ALTER TABLE "tcf_questions" ADD COLUMN "explanation_meta" jsonb;
