@@ -91,6 +91,7 @@ export async function getTcfLevelSummaries(skill: "listening" | "reading" = "lis
   return LEVELS.map((level) => ({ level, total: counts[level], sets: sets.length }));
 }
 
+
 export interface TcfQuestionForDrill {
   id: string;
   setId: string;
@@ -373,7 +374,10 @@ export async function getTcfScheduledDrillQuestions(
       position,
     }))
     .sort((a, b) => {
-      const rankDifference = schedulingRank(a.summary, now) - schedulingRank(b.summary, now);
+      // "Toutes" browses the whole group and drops nothing, so ranking there
+      // would only scatter answered questions to the end of an otherwise
+      // sequential walk — and strand a `?q=` deep link on the last position.
+      const rankDifference = kind === "all" ? 0 : schedulingRank(a.summary, now) - schedulingRank(b.summary, now);
       if (rankDifference !== 0) return rankDifference;
       if (a.summary.needsReview && b.summary.needsReview) {
         return (a.summary.lastAnsweredAt?.getTime() ?? 0) - (b.summary.lastAnsweredAt?.getTime() ?? 0);

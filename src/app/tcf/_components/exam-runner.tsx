@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, Check, X, Flag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ExplanationPanel } from "./explanation-panel";
+import { ReadingPassage } from "./reading-passage";
 import { recordTcfExamAttempt } from "@/lib/actions/tcf";
 import type { TcfQuestionForDrill, TcfLevel, TcfExamAnswer } from "@/lib/actions/tcf";
 import type { TcfPerLevel } from "@/lib/db/schema";
@@ -263,9 +264,7 @@ export function ExamRunner({ questions, skill, testNumber }: ExamRunnerProps) {
 
           {/* Reading — text passage or document image */}
           {q.type === "reading_mcq" && q.passage && (
-            <article className="reading-prose rounded-lg border border-border/50 bg-surface-muted/40 px-5 py-4 whitespace-pre-wrap">
-              {q.passage}
-            </article>
+            <ReadingPassage passage={q.passage} />
           )}
           {q.type === "reading_mcq" && !q.passage && q.imagePath && (
             <div className="rounded-lg overflow-hidden border border-border/50 bg-surface-muted">
