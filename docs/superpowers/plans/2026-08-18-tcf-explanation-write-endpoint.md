@@ -10,6 +10,14 @@
 
 设计文档：`docs/superpowers/specs/2026-08-18-tcf-explanation-write-endpoint-design.md`
 
+> **2026-08-25 修订（解耦 french-wiki / sundew）：** 本文档描述的"文件是真源、
+> 数据库是投影"已被推翻。讲解现在**只存在数据库里**，`POST /api/tcf/explanations`
+> 是唯一写入通路；`scripts/sync-tcf-explanations.ts`、`npm run tcf:explain-sync`
+> 与环境变量 `TCF_EXPLANATIONS_DIR` 均已删除，lumiere 不再读写 french-wiki 仓库
+> 里的任何目录。反向的 `npm run tcf:explain-export` 把库里讲解导成 markdown 存进
+> gitignore 的 `data/tcf-explanations/`，那是**备份**，恢复靠重新 POST。
+> 下文凡涉及文件真源、双写、sundew 的段落均按此理解。
+
 ## Global Constraints
 
 - **git commit 不得带 `Co-Authored-By: Claude` 或 `Generated with Claude Code` 尾注**（CLAUDE.md 明确要求）。用普通 conventional commit。

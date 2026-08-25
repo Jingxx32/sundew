@@ -3,6 +3,14 @@
 日期：2026-08-13
 状态：设计已与用户确认，待审阅
 
+> **2026-08-25 修订（解耦 french-wiki / sundew）：** 本文档描述的"文件是真源、
+> 数据库是投影"已被推翻。讲解现在**只存在数据库里**，`POST /api/tcf/explanations`
+> 是唯一写入通路；`scripts/sync-tcf-explanations.ts`、`npm run tcf:explain-sync`
+> 与环境变量 `TCF_EXPLANATIONS_DIR` 均已删除，lumiere 不再读写 french-wiki 仓库
+> 里的任何目录。反向的 `npm run tcf:explain-export` 把库里讲解导成 markdown 存进
+> gitignore 的 `data/tcf-explanations/`，那是**备份**，恢复靠重新 POST。
+> 下文凡涉及文件真源、双写、sundew 的段落均按此理解。
+
 ## 1. 概述
 
 刷 TCF 题时点「Afficher réponse」，除了高亮正确选项，还要看到一篇**中文讲解 + 全题英文翻译**。讲解由用户与 Claude 在对话里逐题产出，写成 markdown 文件存在**仓库外的私有仓库**（见 §4.1），再由脚本同步进 `tcf_questions.explanation`，前端渲染。

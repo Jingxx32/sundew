@@ -1,5 +1,9 @@
 # 语法笔记生成 Prompt(外部 AI 工具用)
 
+> **状态：未实施（2026-08-25 核对）。** `scripts/import-grammar-points.ts` 与
+> `npm run grammar:import` 都不存在，下面提到的入库步骤目前没有任何代码支撑。
+> 这份 prompt 仍可用来生成笔记，但"存好后由脚本入库"那一步要先把导入器写出来。
+
 > 用法:共 8 个批次。每次把下面的 **MASTER PROMPT** 完整复制到任意 AI 工具(ChatGPT / Gemini / DeepSeek / Claude 网页版等),再把对应批次的知识点清单贴在 prompt 末尾,一起发送。
 >
 > - 把 AI 的输出**原样**保存:Obsidian 里一批一个 `.md` 文件,或 Notion 里一批一个页面。**不要改动格式**(`## slug` 标题、`**Summary:**` 等标记会被导入脚本解析)。

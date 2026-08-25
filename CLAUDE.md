@@ -55,6 +55,8 @@ npm run db:studio    # Open Drizzle Studio at https://local.drizzle.studio
 npm run db:seed      # Insert sample French documents
 npm run db:seed-rules # Seed the grammar-rules knowledge base
 npm run db:reenrich  # Re-run vocab enrichment for already-enriched entries
+
+npm run tcf:explain-export  # Back up every TCF explanation to data/tcf-explanations/
 ```
 
 ### 写入单题 TCF 讲解
@@ -77,11 +79,14 @@ curl -X POST "localhost:3000/api/tcf/explanations?test=1&skill=listening&q=3" --
 - 不要输出对话式口头禅（如「说 next。」），会原样渲染到页面上
 - 不要把整篇内容包在代码围栏里，首行必须是 `---` 或正文本身
 - 正文上限 256KB
-- **同时把这篇 .md 存进 `TCF_EXPLANATIONS_DIR`，文件名用 `CE-T<试卷号>-Q<题号>.md`
-  （listening 用 `CO-` 前缀）。** 数据库只是投影：重新导入某套试卷会 delete+insert
-  题目并擦掉 explanation 列，届时只能靠 `npm run tcf:explain-sync` 从文件恢复。
-  写错 locator 覆盖了旧讲解时，同样只能靠文件找回。
-- 只走端点、不落文件的讲解，会被 sync 脚本的对账逻辑报成 orphan 警告
+
+讲解**只存在数据库里**，端点是唯一入口，不再往仓库外的目录双写一份。代价要记住：
+重新导入某套试卷会 delete+insert 题目并擦掉 explanation 列，写错 locator 也会覆盖
+旧讲解，两种情况都不可撤销。所以——
+
+- **重导试卷前先 `npm run tcf:explain-export`**，把库里所有讲解导成 markdown
+  存到 `data/tcf-explanations/`（已 gitignore）。那是备份，不是真源；
+  恢复靠把导出的文件重新 POST 回端点。
 
 TCF import/TTS pipeline scripts also live in `scripts/` (tracked; their input
 data and `scripts/.tcf-cache/` stay local — copyrighted exam content).

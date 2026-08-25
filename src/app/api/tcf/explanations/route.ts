@@ -12,9 +12,10 @@
  * only overwrite two columns of an already-existing question; it cannot insert
  * rows or touch any other table.
  *
- * Files under TCF_EXPLANATIONS_DIR remain the source of truth; this endpoint is
- * the day-to-day single-question path, and scripts/sync-tcf-explanations.ts
- * stays the bulk restore path after a test re-import wipes the column.
+ * The database is the source of truth for explanations, and this endpoint is
+ * the only way in. scripts/export-tcf-explanations.ts dumps them back out to
+ * markdown — take an export before re-importing a test, which deletes and
+ * re-inserts its questions and drops the column with them.
  */
 import { and, eq } from "drizzle-orm";
 

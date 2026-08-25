@@ -4,7 +4,7 @@
  *
  * Frontmatter wins when only it is present; the query fills in when the body
  * carries none. When both are present and disagree, this refuses to guess —
- * the same stance scripts/sync-tcf-explanations.ts takes on an ambiguous match.
+ * picking one would silently overwrite a different question's explanation.
  *
  * Pure: no IO, no DB.
  */
