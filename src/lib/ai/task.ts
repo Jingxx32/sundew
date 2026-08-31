@@ -19,7 +19,13 @@ export type TaskResult = z.infer<typeof TaskSchema>;
 export type GenerateTaskOptions = {
   /** When provided and `profile.hasEnoughSignal` is true, biases `target_grammar` toward weak subcategories. */
   profile?: LearnerProfile;
+  /** Production-gap words to elicit. Independent of `profile`'s `hasEnoughSignal` gate — injected whenever present. */
+  targetLemmas?: string[];
 };
+
+function buildTargetLemmasBlock(lemmas: string[]): string {
+  return `\n\nDesign the task so it naturally elicits these French words the student cannot yet produce: ${lemmas.join(", ")}. Weave the topic and instructions so using them feels organic — do not just list them as a requirement.`;
+}
 
 function buildProfileSystemBlock(profile: LearnerProfile): string {
   const topWeak = profile.weakGrammar
@@ -62,6 +68,8 @@ The student has just read a French text. Generate a focused writing task that:
 
 Valid grammar subcategory IDs: ${VALID_SUBCATEGORY_IDS}${
     useProfile && profile ? buildProfileSystemBlock(profile) : ""
+  }${
+    opts?.targetLemmas && opts.targetLemmas.length > 0 ? buildTargetLemmasBlock(opts.targetLemmas) : ""
   }`;
 
   const userContent = `Document title: ${docTitle}

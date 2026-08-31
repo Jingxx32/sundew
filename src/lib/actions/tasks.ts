@@ -1,20 +1,21 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { after } from "next/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { writingTasks, submissions, documents, errors, tcfQuestions, tcfSets } from "@/lib/db/schema";
+import { writingTasks, submissions, documents, errors, tcfQuestions, tcfSets, vocabularyAliases, vocabularyGaps } from "@/lib/db/schema";
 import { generateTask } from "@/lib/ai/task";
 import { generateFeedback, type FeedbackResult } from "@/lib/ai/feedback";
 import { countWords } from "@/lib/cefr";
 import { buildLearnerProfile } from "@/lib/actions/learner-profile";
 import { ERROR_TAXONOMY } from "@/lib/taxonomy";
 import type { ErrorCategory } from "@/lib/taxonomy";
-import { ensureEntryForWord } from "@/lib/vocabulary/helpers";
-import { upsertGap } from "@/lib/vocabulary/gaps";
+import { ensureEntryForWord, norm } from "@/lib/vocabulary/helpers";
+import { upsertGap, gradeGap } from "@/lib/vocabulary/gaps";
+import { getProductionGapLemmas } from "@/lib/actions/vocab-gaps";
 
 const ARCHIVE_PLACEHOLDER_TITLE = "(Targeted practice from your error archive)";
 const ARCHIVE_PLACEHOLDER_TYPE = "personal";
@@ -47,13 +48,14 @@ export async function generateWritingTask(
 
   if (documentId && !doc) throw new Error("Document not found");
 
+  const targetLemmas = await getProductionGapLemmas();
   const result = await generateTask(
     doc?.title ?? ARCHIVE_PLACEHOLDER_TITLE,
     doc?.type ?? ARCHIVE_PLACEHOLDER_TYPE,
     doc?.content ?? ARCHIVE_PLACEHOLDER_CONTENT,
     doc?.estimatedLevel ?? profile.cefrLevel,
     vocabWords,
-    { profile },
+    { profile, targetLemmas },
   );
 
   // Enforce target_words constraint (PRD §7.3.3):
@@ -84,6 +86,7 @@ export async function generateWritingTask(
     promptEn: result.prompt_en,
     targetWords,
     targetGrammar,
+    targetLemmas: targetLemmas.length ? targetLemmas : null,
     difficulty: result.difficulty,
     minWordCount: result.min_word_count,
     maxWordCount: result.max_word_count,
@@ -148,13 +151,14 @@ export async function writeFromTcfPassage(questionId: string): Promise<string> {
   if (!row?.passage) throw new Error("Question has no text passage");
 
   const profile = await buildLearnerProfile();
+  const targetLemmas = await getProductionGapLemmas();
   const result = await generateTask(
     `TCF lecture · test ${row.testNumber}`,
     "news",
     row.passage,
     row.level,
     [],
-    { profile },
+    { profile, targetLemmas },
   );
 
   const id = randomUUID();
@@ -164,6 +168,7 @@ export async function writeFromTcfPassage(questionId: string): Promise<string> {
     promptEn: result.prompt_en,
     targetWords: result.target_words,
     targetGrammar: result.target_grammar,
+    targetLemmas: targetLemmas.length ? targetLemmas : null,
     difficulty: result.difficulty,
     minWordCount: result.min_word_count,
     maxWordCount: result.max_word_count,
@@ -255,6 +260,46 @@ async function persistFeedback(
     }
   } catch (err) {
     console.error("[feedback] vocab gap ingest failed:", err);
+  }
+
+  // The task's target lemmas are production gaps it was asked to elicit —
+  // if the learner actually used one and it wasn't flagged as a vocab error,
+  // that's a successful review: advance its Leitner box.
+  try {
+    const task = await db
+      .select({ targetLemmas: writingTasks.targetLemmas })
+      .from(submissions)
+      .innerJoin(writingTasks, eq(submissions.taskId, writingTasks.id))
+      .where(eq(submissions.id, submissionId))
+      .limit(1)
+      .then((r) => r[0] ?? null);
+    const targetLemmas = (task?.targetLemmas as string[] | null) ?? [];
+    if (targetLemmas.length > 0) {
+      const flaggedOriginals = feedback.errors
+        .filter((err) => err.category === "Vocabulary")
+        .map((err) => norm(err.original));
+      const normalizedContent = norm(content);
+      for (const lemma of targetLemmas) {
+        const aliasRows = await db
+          .select({ surface: vocabularyAliases.surface })
+          .from(vocabularyAliases)
+          .where(eq(vocabularyAliases.lemma, lemma));
+        const candidates = [lemma, ...aliasRows.map((r) => r.surface)].map(norm);
+        const used = candidates.some((c) => normalizedContent.includes(c));
+        const flagged = candidates.some((c) => flaggedOriginals.some((o) => o.includes(c) || c.includes(o)));
+        if (!used || flagged) continue;
+        const gapRow = (
+          await db
+            .select({ id: vocabularyGaps.id })
+            .from(vocabularyGaps)
+            .where(and(eq(vocabularyGaps.lemma, lemma), eq(vocabularyGaps.gapType, "production")))
+            .limit(1)
+        )[0];
+        if (gapRow) await gradeGap(gapRow.id, true);
+      }
+    }
+  } catch (err) {
+    console.error("[feedback] target-lemma grade-back failed:", err);
   }
 }
 

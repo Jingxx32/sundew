@@ -172,3 +172,14 @@ export async function listGaps(): Promise<GapListRow[]> {
     .orderBy(sql`case when ${vocabularyGaps.status} != 'dismissed' then 0 else 1 end`, asc(vocabularyGaps.dueAt));
   return rows;
 }
+
+/** Top production gaps for task injection: lowest box first, then oldest. */
+export async function getProductionGapLemmas(limit = 5): Promise<string[]> {
+  const rows = await db
+    .select({ lemma: vocabularyGaps.lemma })
+    .from(vocabularyGaps)
+    .where(and(eq(vocabularyGaps.status, "active"), eq(vocabularyGaps.gapType, "production")))
+    .orderBy(asc(vocabularyGaps.box), asc(vocabularyGaps.createdAt))
+    .limit(limit);
+  return rows.map((r) => r.lemma);
+}

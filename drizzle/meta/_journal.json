@@ -141,6 +141,13 @@
       "when": 1788212205636,
       "tag": "0019_closed_paper_doll",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1788218128724,
+      "tag": "0020_vengeful_khan",
+      "breakpoints": true
     }
   ]
 }

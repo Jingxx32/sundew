@@ -12,6 +12,7 @@ type Props = {
 export function TaskCard({ task, doc }: Props) {
   const targetWords = (task.targetWords as string[]) ?? [];
   const targetGrammar = (task.targetGrammar as string[]) ?? [];
+  const targetLemmas = (task.targetLemmas as string[] | null) ?? [];
   const level = (task.difficulty ?? "B1") as CefrLevel;
 
   return (
@@ -56,6 +57,20 @@ export function TaskCard({ task, doc }: Props) {
           {targetGrammar.map((g) => (
             <Chip key={g} variant="accent">
               {g.replace(/_/g, " ")}
+            </Chip>
+          ))}
+        </div>
+      )}
+
+      {/* Target lemmas: production gaps this task was asked to elicit */}
+      {targetLemmas.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium shrink-0">
+            Mots à employer
+          </span>
+          {targetLemmas.map((l) => (
+            <Chip key={l} variant="accent" className="font-serif">
+              {l}
             </Chip>
           ))}
         </div>

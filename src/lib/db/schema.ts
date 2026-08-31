@@ -72,6 +72,8 @@ export const writingTasks = pgTable("writing_tasks", {
   targetWords: jsonb("target_words").notNull().$type<string[]>(),
   /** JSON string[] — taxonomy subcategory ids the task targets */
   targetGrammar: jsonb("target_grammar").notNull().$type<string[]>(),
+  /** JSON string[] — production-gap lemmas the prompt was asked to elicit; null when none were active */
+  targetLemmas: jsonb("target_lemmas").$type<string[]>(),
   difficulty: text("difficulty"),
   minWordCount: integer("min_word_count").notNull().default(50),
   maxWordCount: integer("max_word_count").notNull().default(200),
