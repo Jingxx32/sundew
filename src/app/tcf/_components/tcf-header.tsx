@@ -2,29 +2,31 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Sparkles } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { flushPendingSync, usePendingSyncCount } from "@/lib/tcf/pending-sync";
 
 export function TcfHeader() {
   const searchParams = useSearchParams();
   const skill = searchParams.get("skill") === "reading" ? "reading" : "listening";
+  const pendingCount = usePendingSyncCount();
 
   return (
-    <header className="flex items-center justify-between border-b border-border/60 bg-background px-6 py-3">
-      <div className="flex items-center gap-2">
-        <Sparkles className="h-4 w-4 text-accent" strokeWidth={1.8} />
-        <span className="font-serif text-lg font-semibold tracking-tight">
-          TCF Canada
+    <header className="flex items-center justify-between gap-2 border-b border-border/60 bg-background px-4 py-3 sm:px-6">
+      <div className="flex shrink-0 items-center gap-2.5">
+        <span className="rounded border border-accent/30 bg-accent-soft px-1.5 py-0.5 font-mono text-[11px] font-semibold tracking-wider text-accent">
+          TCF
         </span>
+        <span className="hidden font-serif text-lg font-semibold tracking-tight sm:inline">Canada</span>
       </div>
 
-      <div className="inline-flex rounded-lg border border-border/70 bg-surface p-0.5">
+      <div className="inline-flex shrink-0 rounded-lg border border-border/70 bg-surface p-0.5">
         {(["listening", "reading"] as const).map((s) => (
           <Link
             key={s}
             href={`/tcf?skill=${s}`}
             className={cn(
-              "rounded-md px-4 py-1.5 text-sm font-medium transition-colors",
+              "rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors sm:px-4",
               s === skill
                 ? "bg-accent text-accent-foreground"
                 : "text-muted-foreground hover:text-foreground",
@@ -35,12 +37,26 @@ export function TcfHeader() {
         ))}
       </div>
 
-      <Link
-        href="/library"
-        className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-      >
-        ← Lumière
-      </Link>
+      <div className="flex shrink-0 items-center gap-3">
+        {pendingCount > 0 && (
+          <button
+            type="button"
+            onClick={() => void flushPendingSync()}
+            title="Ces réponses n'ont pas pu être enregistrées sur le serveur — cliquez pour réessayer maintenant."
+            className="flex items-center gap-1.5 rounded-lg border border-warning/40 bg-warning-soft px-2 py-1 text-xs font-medium text-warning"
+          >
+            <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
+            {pendingCount} non enregistrée{pendingCount > 1 ? "s" : ""}
+          </button>
+        )}
+        <Link
+          href="/library"
+          className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <span aria-hidden>←</span>
+          <span className="hidden sm:inline">Lumière</span>
+        </Link>
+      </div>
     </header>
   );
 }

@@ -18,7 +18,12 @@ export function VerdictBar({ meta, chosen, answer }: { meta: TcfExplanationMeta;
             ? `Correct · ${letter(answer)}`
             : `Votre réponse : ${letter(chosen)} · Bonne réponse : ${letter(answer)}`}
       </p>
-      {meta.keyPoint && <p className="mt-1.5 text-sm leading-relaxed text-foreground">💡 {meta.keyPoint}</p>}
+      {meta.keyPoint && (
+        <p className="mt-1.5 flex gap-2 text-sm leading-relaxed text-foreground">
+          <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" aria-hidden />
+          {meta.keyPoint}
+        </p>
+      )}
     </div>
   );
 }

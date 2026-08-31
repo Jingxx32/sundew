@@ -6,7 +6,7 @@ import { reflowPassage } from "@/lib/tcf/reflow-passage";
  */
 export function ReadingPassage({ passage }: { passage: string }) {
   return (
-    <article className="reading-prose rounded-lg border border-border/50 bg-surface-muted/40 px-5 py-4">
+    <article className="reading-prose rounded-lg border border-border/50 bg-surface-muted/40 px-3.5 py-3 md:px-5 md:py-4">
       {reflowPassage(passage).map((paragraph, index) => (
         <p key={index}>{paragraph}</p>
       ))}

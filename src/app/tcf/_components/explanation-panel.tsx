@@ -17,9 +17,11 @@ import { stripVerdictSection } from "@/lib/tcf/parse-explanation";
  */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// The drill/exam pages carry an <h1> with no <h2> in between, so this panel's
+// own headings start at h2 to avoid skipping a level.
 const MARKDOWN_COMPONENTS = {
   h1: ({ children }: any) => (
-    <h3 className="text-sm font-semibold text-foreground mt-4 first:mt-0">{children}</h3>
+    <h2 className="text-sm font-semibold text-foreground mt-4 first:mt-0">{children}</h2>
   ),
   h2: ({ children }: any) => (
     <h3 className="text-sm font-semibold text-foreground mt-4 first:mt-0">{children}</h3>

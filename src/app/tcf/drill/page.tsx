@@ -7,17 +7,8 @@ import {
   type TcfLevel,
 } from "@/lib/actions/tcf";
 import { DrillRunner } from "../_components/drill-runner";
-
-const LEVEL_LABELS: Record<TcfLevel, string> = {
-  A1: "Débutant",
-  A2: "Élémentaire",
-  B1: "Intermédiaire",
-  B2: "Avancé",
-  C1: "Supérieur",
-  C2: "Maîtrise",
-};
-
-const VALID_LEVELS: TcfLevel[] = ["A1", "A2", "B1", "B2", "C1", "C2"];
+import { LevelBadge } from "../_components/level-badge";
+import { LEVEL_LABELS, LEVEL_ORDER } from "@/lib/tcf/display";
 
 export default async function TcfDrillPage({
   searchParams,
@@ -26,7 +17,7 @@ export default async function TcfDrillPage({
 }) {
   const { skill: skillParam, level: levelParam, q, round: roundParam } = await searchParams;
   let skill = (skillParam === "reading" ? "reading" : "listening") as "listening" | "reading";
-  let level = (VALID_LEVELS.includes(levelParam as TcfLevel) ? levelParam : "A2") as TcfLevel;
+  let level = (LEVEL_ORDER.includes(levelParam as TcfLevel) ? levelParam : "A2") as TcfLevel;
 
   // A `?q=<id>` deep link (e.g. from a vocabulary occurrence) may omit skill/level —
   // derive them from the question itself so we open its actual drill group.
@@ -46,27 +37,39 @@ export default async function TcfDrillPage({
   const title = skill === "reading" ? "Compréhension écrite" : "Compréhension orale";
 
   return (
-    <div className="px-8 py-8 max-w-5xl mx-auto">
+    <div className="mx-auto max-w-5xl">
       {/* Back link + header */}
-      <div className="mb-6">
+      <div className="mb-4 md:mb-6">
         <Link
           href={`/tcf?skill=${skill}`}
-          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground mb-3 w-fit"
+          className="mb-3 hidden w-fit items-center gap-1 text-xs text-muted-foreground hover:text-foreground md:flex"
         >
-          <ChevronLeft className="h-3.5 w-3.5" />
+          <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" />
           TCF
         </Link>
-        <h1 className="font-serif text-3xl font-semibold tracking-tight">
-          {title} · {level}
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">{LEVEL_LABELS[level]} · entraînement par cycles</p>
+        <div className="flex items-center gap-2">
+          {/* On a phone the back arrow rides on the title line instead of
+              claiming a row of its own. */}
+          <Link
+            href={`/tcf?skill=${skill}`}
+            aria-label="Retour au TCF"
+            className="-ml-1 text-muted-foreground hover:text-foreground md:hidden"
+          >
+            <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+          </Link>
+          <h1 className="font-serif text-xl font-semibold tracking-tight md:text-3xl">{title}</h1>
+          <LevelBadge level={level} className="px-2 py-0.5 text-sm" />
+        </div>
+        <p className="mt-1 hidden text-sm text-muted-foreground md:block">
+          {LEVEL_LABELS[level]} · entraînement par cycles
+        </p>
       </div>
 
       {!q && (
-        <div className="mb-6 flex flex-wrap gap-2" aria-label="Choisir une session">
+        <div className="mb-4 flex flex-wrap gap-1.5 md:mb-6 md:gap-2" aria-label="Choisir une session">
           {(["10", "20", "review", "all"] as const).map((option) => {
             const label = option === "review" ? "À revoir" : option === "all" ? "Toutes" : `${option} questions`;
-            return <Link key={option} href={`/tcf/drill?skill=${skill}&level=${level}&round=${option}`} className={`rounded-lg border px-3 py-2 text-sm ${round === option ? "border-accent bg-accent-soft text-accent" : "border-border text-muted-foreground hover:text-foreground"}`}>{label}</Link>;
+            return <Link key={option} href={`/tcf/drill?skill=${skill}&level=${level}&round=${option}`} className={`rounded-lg border px-2.5 py-1.5 text-xs touch-manipulation md:px-3 md:py-2 md:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 ${round === option ? "border-accent bg-accent-soft text-accent" : "border-border text-muted-foreground hover:text-foreground"}`}>{label}</Link>;
           })}
         </div>
       )}
@@ -82,6 +85,9 @@ export default async function TcfDrillPage({
         </div>
       ) : (
         <DrillRunner
+          // DrillRunner snapshots its question list on mount, so changing the
+          // session (level or round) has to remount it rather than re-render.
+          key={`${skill}:${level}:${round}`}
           questions={questions}
           learning={session.learning}
           skill={skill}

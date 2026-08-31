@@ -1,31 +1,14 @@
 import Link from "next/link";
-import { Headphones, BookOpenText } from "lucide-react";
+import { Headphones, BookOpenText, RotateCcw } from "lucide-react";
 import {
   getTcfLevelSummaries,
   getTcfProgressOverview,
   getTcfReviewCount,
   listTcfSets,
-  type TcfLevel,
 } from "@/lib/actions/tcf";
 import { Card } from "@/components/ui/card";
-
-const LEVEL_COLORS: Record<TcfLevel, { bg: string; text: string; border: string }> = {
-  A1: { bg: "bg-success-soft", text: "text-success", border: "border-success/30" },
-  A2: { bg: "bg-success-soft", text: "text-success", border: "border-success/30" },
-  B1: { bg: "bg-warning-soft", text: "text-warning", border: "border-warning/30" },
-  B2: { bg: "bg-warning-soft", text: "text-warning", border: "border-warning/30" },
-  C1: { bg: "bg-accent-soft", text: "text-accent", border: "border-accent/30" },
-  C2: { bg: "bg-accent-soft", text: "text-accent", border: "border-accent/30" },
-};
-
-const LEVEL_LABELS: Record<TcfLevel, string> = {
-  A1: "Débutant",
-  A2: "Élémentaire",
-  B1: "Intermédiaire",
-  B2: "Avancé",
-  C1: "Supérieur",
-  C2: "Maîtrise",
-};
+import { LevelBadge } from "./_components/level-badge";
+import { LEVEL_LABELS } from "@/lib/tcf/display";
 
 const SKILLS = {
   listening: { label: "Écoute", title: "Compréhension orale", icon: Headphones, levelVerb: "Écoute" },
@@ -51,16 +34,35 @@ export default async function TcfPage({
   const progressByLevel = new Map(progress.byLevel.map((entry) => [entry.level, entry]));
 
   return (
-    <>
+    <div className="mx-auto max-w-5xl">
       <div className="flex items-end gap-3 mb-2">
-        <Icon className="h-8 w-8 text-accent mb-0.5" strokeWidth={1.6} />
+        <Icon className="h-8 w-8 text-accent mb-0.5" strokeWidth={1.6} aria-hidden="true" />
         <h1 className="font-serif text-4xl font-semibold tracking-tight">TCF Canada</h1>
       </div>
       <p className="text-sm text-muted-foreground mb-6">{meta.title} — par niveau CECR</p>
 
-      <Link href={`/tcf/review?skill=${skill}`} className="mb-6 flex w-fit items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 text-sm hover:border-accent/40">
-        <span>Centre de révision</span>
-        <span className={reviewCount > 0 ? "text-danger font-medium" : "text-muted-foreground"}>{reviewCount} à revoir</span>
+      <Link
+        href={`/tcf/review?skill=${skill}`}
+        className="mb-8 flex items-center justify-between gap-4 rounded-xl border border-border/70 bg-surface px-5 py-4 transition-colors touch-manipulation hover:border-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+      >
+        <div className="flex items-center gap-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent">
+            <RotateCcw className="h-4 w-4" strokeWidth={1.8} aria-hidden="true" />
+          </span>
+          <div>
+            <p className="text-sm font-medium text-foreground">Centre de révision</p>
+            <p className="text-xs text-muted-foreground">Questions marquées incertaines ou ratées, toutes compétences</p>
+          </div>
+        </div>
+        <span
+          className={
+            reviewCount > 0
+              ? "shrink-0 rounded-full bg-danger-soft px-3 py-1 font-mono text-sm font-medium text-danger"
+              : "shrink-0 rounded-full bg-surface-muted px-3 py-1 font-mono text-sm text-muted-foreground"
+          }
+        >
+          {reviewCount}
+        </span>
       </Link>
 
       <h2 className="text-xs uppercase tracking-widest text-subtle-foreground font-medium mb-4">
@@ -77,14 +79,13 @@ export default async function TcfPage({
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {summaries.map((s) => {
-            const colors = LEVEL_COLORS[s.level];
             const stats = progressByLevel.get(s.level);
             const done = stats?.answered ?? 0;
             return (
               <Link
                 key={s.level}
                 href={`/tcf/drill?skill=${skill}&level=${s.level}`}
-                className="group block"
+                className="group block touch-manipulation rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
               >
                 <Card
                   className={`px-6 py-5 transition-all group-hover:shadow-sm group-hover:border-accent/40 ${
@@ -92,11 +93,7 @@ export default async function TcfPage({
                   }`}
                 >
                   <div className="flex items-start justify-between mb-3">
-                    <span
-                      className={`inline-block rounded-md px-2 py-0.5 text-sm font-bold font-mono ${colors.bg} ${colors.text}`}
-                    >
-                      {s.level}
-                    </span>
+                    <LevelBadge level={s.level} className="px-2 py-0.5 text-sm" />
                     {s.total > 0 && (
                       <span className="text-[11px] text-subtle-foreground">{s.total} q.</span>
                     )}
@@ -149,7 +146,7 @@ export default async function TcfPage({
           <p className="text-sm text-muted-foreground mb-4 -mt-2">
             Un test complet de 39 questions (A1 → C2), avec score à la fin.
           </p>
-          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+          <div className="grid grid-cols-5 sm:grid-cols-7 md:grid-cols-10 gap-2">
             {sets.map((s) => {
               const stats = progress.bySet[s.testNumber];
               const answered = stats?.answered ?? 0;
@@ -159,8 +156,8 @@ export default async function TcfPage({
                 <Link
                   key={s.id}
                   href={`/tcf/exam?skill=${skill}&test=${s.testNumber}`}
-                  className={`group flex flex-col items-center justify-center rounded-xl border bg-surface px-2 py-3 transition-all hover:border-accent/40 hover:shadow-sm ${
-                    started ? "border-accent/30" : "border-border/70"
+                  className={`group flex flex-col items-center justify-center gap-1 rounded-xl border bg-surface px-2 py-3 transition-all touch-manipulation hover:border-accent/40 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 ${
+                    exam ? "border-accent/30" : started ? "border-warning/30" : "border-border/70"
                   }`}
                 >
                   <span className="font-serif text-lg font-semibold text-foreground group-hover:text-accent">
@@ -173,21 +170,11 @@ export default async function TcfPage({
                       {exam.score}/{exam.total}
                     </span>
                   ) : started ? (
-                    <span className="font-mono text-[10px] text-muted-foreground">
+                    <span className="font-mono text-[10px] text-warning">
                       {answered}/{s.totalCount}
                     </span>
                   ) : (
-                    <span className="text-[10px] text-subtle-foreground">{s.totalCount} q.</span>
-                  )}
-                  {/* Only started tests get a bar — an empty one under all 39
-                      tiles reads as clutter, not as information. */}
-                  {started && (
-                    <div className="mt-1.5 h-0.5 w-8 overflow-hidden rounded-full bg-surface-muted">
-                      <div
-                        className="h-full rounded-full bg-accent"
-                        style={{ width: `${Math.round((answered / Math.max(s.totalCount, 1)) * 100)}%` }}
-                      />
-                    </div>
+                    <span className="font-mono text-[10px] text-subtle-foreground">{s.totalCount} q.</span>
                   )}
                 </Link>
               );
@@ -195,6 +182,6 @@ export default async function TcfPage({
           </div>
         </>
       )}
-    </>
+    </div>
   );
 }

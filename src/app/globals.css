@@ -37,6 +37,24 @@
   --hl-prepositions: #fecaca;
   --hl-pronouns: #bbf7d0;
   --hl-vocab: #bfdbfe;
+
+  /* TCF level ink scale — A1→C2 read as one hue deepening, so CECR level
+     never competes with the green/orange/red vocabulary reserved for
+     learning status (unseen/in-progress/needs-review/stable). */
+  --level-a1: #d7deee;
+  --level-a2: #b0bfdf;
+  --level-b1: #7d94c8;
+  --level-b2: #3b5ba9; /* = --accent: B2 is where TCF ink meets the app's blue */
+  --level-c1: #2c4680;
+  --level-c2: #1d2d54;
+  /* Ink deepens past B1 to the point dark-on-light text stops reading;
+     these flip the badge label to white from B2 up. */
+  --level-a1-ink: #1c1917;
+  --level-a2-ink: #1c1917;
+  --level-b1-ink: #1c1917;
+  --level-b2-ink: #ffffff;
+  --level-c1-ink: #ffffff;
+  --level-c2-ink: #ffffff;
 }
 
 @theme inline {
@@ -61,8 +79,22 @@
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
 
+  --color-level-a1: var(--level-a1);
+  --color-level-a2: var(--level-a2);
+  --color-level-b1: var(--level-b1);
+  --color-level-b2: var(--level-b2);
+  --color-level-c1: var(--level-c1);
+  --color-level-c2: var(--level-c2);
+  --color-level-a1-ink: var(--level-a1-ink);
+  --color-level-a2-ink: var(--level-a2-ink);
+  --color-level-b1-ink: var(--level-b1-ink);
+  --color-level-b2-ink: var(--level-b2-ink);
+  --color-level-c1-ink: var(--level-c1-ink);
+  --color-level-c2-ink: var(--level-c2-ink);
+
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-source-serif), Georgia, "Times New Roman", serif;
+  --font-mono: var(--font-source-code), ui-monospace, "SFMono-Regular", monospace;
 }
 
 html {

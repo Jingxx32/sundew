@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Source_Serif_4 } from "next/font/google";
+import { Inter, Source_Serif_4, Source_Code_Pro } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -11,6 +11,12 @@ const sourceSerif = Source_Serif_4({
   variable: "--font-source-serif",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+});
+
+const sourceCodePro = Source_Code_Pro({
+  variable: "--font-source-code",
+  subsets: ["latin"],
+  weight: ["500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -27,7 +33,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${sourceSerif.variable} h-full antialiased`}
+      className={`${inter.variable} ${sourceSerif.variable} ${sourceCodePro.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-background text-foreground">
         {children}
