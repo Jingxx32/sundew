@@ -14,6 +14,7 @@ import type { LookupResult } from "@/lib/ai/lookup";
 import { lookupWord } from "@/lib/ai/lookup";
 import { enrichVocab, type FrenchVocabEntry } from "@/lib/ai/enrich";
 import { norm, upsertEntry, upsertAlias, recordOccurrence, resolveLemma } from "@/lib/vocabulary/helpers";
+import { upsertGap } from "@/lib/vocabulary/gaps";
 import type { LookupSource, VocabEntrySummary, VocabEntryDetail } from "@/lib/vocabulary/types";
 
 /* ------------------------------------------------------------------ */
@@ -47,6 +48,7 @@ export async function resolveLookup(
         documentId: source.type === "reading" ? source.documentId : null,
         tcfQuestionId: source.type === "tcf" ? source.tcfQuestionId : null,
       });
+      await upsertGap({ lemma, gapType: "recognition", source: "lookup" });
       const result: LookupResult = {
         lemma: row.lemma,
         pos: row.pos ?? "",
@@ -74,6 +76,7 @@ export async function resolveLookup(
       documentId: source.type === "reading" ? source.documentId : null,
       tcfQuestionId: source.type === "tcf" ? source.tcfQuestionId : null,
     }, tx);
+    await upsertGap({ lemma: resolved, gapType: "recognition", source: "lookup", dbx: tx });
   });
   return { lemma: resolved, surface, result, cached: false };
 }

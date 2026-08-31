@@ -97,3 +97,19 @@ export async function resolveLemma(surface: string): Promise<string | null> {
     .limit(1);
   return alias[0]?.lemma ?? null;
 }
+
+/** Ensure a lookup entry exists for a word; returns its lemma (null when the AI lookup fails). */
+export async function ensureEntryForWord(word: string): Promise<string | null> {
+  const known = await resolveLemma(word);
+  if (known) return known;
+  const { lookupWord } = await import("@/lib/ai/lookup");
+  try {
+    const result = await lookupWord(word, "");
+    const lemma = norm(result.lemma || word);
+    await upsertEntry(lemma, word, result);
+    await upsertAlias(norm(word), lemma);
+    return lemma;
+  } catch {
+    return null;
+  }
+}

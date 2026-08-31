@@ -13,6 +13,8 @@ import { countWords } from "@/lib/cefr";
 import { buildLearnerProfile } from "@/lib/actions/learner-profile";
 import { ERROR_TAXONOMY } from "@/lib/taxonomy";
 import type { ErrorCategory } from "@/lib/taxonomy";
+import { ensureEntryForWord } from "@/lib/vocabulary/helpers";
+import { upsertGap } from "@/lib/vocabulary/gaps";
 
 const ARCHIVE_PLACEHOLDER_TITLE = "(Targeted practice from your error archive)";
 const ARCHIVE_PLACEHOLDER_TYPE = "personal";
@@ -237,6 +239,22 @@ async function persistFeedback(
         };
       }),
     );
+  }
+
+  // Vocabulary-category corrections are words the learner failed to produce —
+  // feed them into the gap profile (fire-and-forget; feedback must never fail on this).
+  try {
+    const vocabCorrections = feedback.errors
+      .filter((err) => err.category === "Vocabulary")
+      .map((err) => err.correction.trim())
+      // Multi-word corrections are usually rephrasings, not a single learnable item.
+      .filter((c) => c.length > 1 && c.split(/\s+/).length <= 3);
+    for (const correction of vocabCorrections) {
+      const lemma = await ensureEntryForWord(correction);
+      if (lemma) await upsertGap({ lemma, gapType: "production", source: "feedback" });
+    }
+  } catch (err) {
+    console.error("[feedback] vocab gap ingest failed:", err);
   }
 }
 
