@@ -8,9 +8,11 @@ import {
   tcfAttempts,
   tcfQuestionAttempts,
   tcfLevelEnum,
+  vocabularyGaps,
+  vocabularyOccurrences,
 } from "@/lib/db/schema";
 import type { TcfPerLevel, TcfAttempt, TcfExplanationMeta } from "@/lib/db/schema";
-import { eq, and, asc, desc, inArray } from "drizzle-orm";
+import { eq, and, asc, desc, inArray, isNotNull } from "drizzle-orm";
 import {
   deriveTcfLearningSummary,
   type TcfLearningAttempt,
@@ -484,10 +486,16 @@ export async function getTcfScheduledDrillQuestions(
   level: TcfLevel,
   kind: TcfDrillSessionKind,
 ): Promise<{ questions: TcfQuestionForDrill[]; learning: TcfQuestionLearning[] }> {
-  const [questions, learning] = await Promise.all([
+  const [questions, learning, gapQuestionRows] = await Promise.all([
     getTcfDrillQuestions(skill, level),
     getTcfQuestionLearning(skill, level),
+    db
+      .selectDistinct({ questionId: vocabularyOccurrences.tcfQuestionId })
+      .from(vocabularyOccurrences)
+      .innerJoin(vocabularyGaps, eq(vocabularyOccurrences.lemma, vocabularyGaps.lemma))
+      .where(and(eq(vocabularyGaps.status, "active"), isNotNull(vocabularyOccurrences.tcfQuestionId))),
   ]);
+  const gapQuestionIds = new Set(gapQuestionRows.map((r) => r.questionId));
   const summaryById = new Map(learning.map((summary) => [summary.questionId, summary]));
   const now = new Date();
   const eligible = questions.filter((question) => {
@@ -508,6 +516,8 @@ export async function getTcfScheduledDrillQuestions(
       // sequential walk — and strand a `?q=` deep link on the last position.
       const rankDifference = kind === "all" ? 0 : schedulingRank(a.summary, now) - schedulingRank(b.summary, now);
       if (rankDifference !== 0) return rankDifference;
+      const gapBoost = Number(gapQuestionIds.has(b.question.id)) - Number(gapQuestionIds.has(a.question.id));
+      if (kind !== "all" && gapBoost !== 0) return gapBoost;
       if (a.summary.needsReview && b.summary.needsReview) {
         return (a.summary.lastAnsweredAt?.getTime() ?? 0) - (b.summary.lastAnsweredAt?.getTime() ?? 0);
       }
