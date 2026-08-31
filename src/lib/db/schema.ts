@@ -249,6 +249,46 @@ export const vocabularyOccurrences = pgTable(
 
 export type VocabularyOccurrence = typeof vocabularyOccurrences.$inferSelect;
 
+/* ------------------------------------------------------------------ */
+/*  vocabulary_gaps — per-(lemma, skill-dimension) knowledge gaps      */
+/*  Spec: docs/superpowers/specs/2026-08-31-vocab-gap-profile-design.md */
+/* ------------------------------------------------------------------ */
+
+export const vocabGapTypeEnum = pgEnum("vocab_gap_type", [
+  "listening",     // 听不懂 — recognises in text but not by ear
+  "recognition",   // 不认识 — unknown on sight
+  "production",    // 不会用 — understood but can't produce
+]);
+
+export const vocabGapSourceEnum = pgEnum("vocab_gap_source", ["lookup", "feedback", "manual"]);
+
+export const vocabGapStatusEnum = pgEnum("vocab_gap_status", ["active", "mastered", "dismissed"]);
+
+export const vocabularyGaps = pgTable(
+  "vocabulary_gaps",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    lemma: text("lemma")
+      .notNull()
+      .references(() => vocabularyLookups.lemma, { onDelete: "cascade" }),
+    gapType: vocabGapTypeEnum("gap_type").notNull(),
+    source: vocabGapSourceEnum("source").notNull(),
+    status: vocabGapStatusEnum("status").notNull().default("active"),
+    /** Leitner box 1–5 */
+    box: integer("box").notNull().default(1),
+    dueAt: timestamp("due_at", { withTimezone: true }).notNull().defaultNow(),
+    lastReviewedAt: timestamp("last_reviewed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    unique("vocab_gaps_lemma_type_key").on(t.lemma, t.gapType),
+    index("vocab_gaps_status_due_idx").on(t.status, t.dueAt),
+  ],
+);
+
+export type VocabularyGap = typeof vocabularyGaps.$inferSelect;
+export type VocabGapType = (typeof vocabGapTypeEnum.enumValues)[number];
+export type VocabGapStatus = (typeof vocabGapStatusEnum.enumValues)[number];
 
 /* ------------------------------------------------------------------ */
 /*  Quiz engine — shared substrate for TCF / dictation / conjugation   */
