@@ -12,6 +12,7 @@ import { LevelNav } from "./level-nav";
 import { LevelBadge } from "./level-badge";
 import { QuestionMedia } from "./question-media";
 import { OptionList } from "./option-list";
+import { MarkGapFloater } from "./mark-gap-floater";
 import type { AudioPlayerHandle } from "./audio-player";
 import { useQuestionKeyboardNav } from "@/hooks/use-question-keyboard-nav";
 import { submitDrillAttempt } from "@/lib/tcf/pending-sync";
@@ -288,7 +289,9 @@ export function DrillRunner({
         <div className="space-y-3 rounded-xl border border-border/70 bg-surface px-4 py-4 md:space-y-4 md:px-6 md:py-5">
           <p className="font-serif text-lg leading-snug text-foreground">{q.questionText}</p>
 
-          <QuestionMedia question={q} ref={audioRef} />
+          <MarkGapFloater skill={skill} questionId={q.id}>
+            <QuestionMedia question={q} ref={audioRef} />
+          </MarkGapFloater>
 
           {!showAnswer && (
             <label className="flex items-center gap-2 rounded-lg bg-warning-soft/50 px-3 py-2 text-sm">
@@ -332,10 +335,12 @@ export function DrillRunner({
         </p>
 
         {showAnswer && q.transcript && (
-          <div className="mt-4 rounded-lg border border-border/50 bg-surface-muted/60 px-4 py-3">
-            <p className="font-mono text-[11px] uppercase tracking-widest text-subtle-foreground">Transcription</p>
-            <p className="mt-1 font-serif text-sm whitespace-pre-wrap">{q.transcript}</p>
-          </div>
+          <MarkGapFloater skill={skill} questionId={q.id}>
+            <div className="mt-4 rounded-lg border border-border/50 bg-surface-muted/60 px-4 py-3">
+              <p className="font-mono text-[11px] uppercase tracking-widest text-subtle-foreground">Transcription</p>
+              <p className="mt-1 font-serif text-sm whitespace-pre-wrap">{q.transcript}</p>
+            </div>
+          </MarkGapFloater>
         )}
         {showAnswer && q.explanation && (
           <div className="mt-4">
