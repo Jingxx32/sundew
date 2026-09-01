@@ -1,7 +1,7 @@
 # 词汇缺口画像(user profile:听说读写词汇缺口 + 复习闭环)— 设计文档
 
 日期:2026-08-31
-状态:核心决策已与用户确认,待审阅
+状态:已实现(2026-08-31)。9 个任务全部完成并 push 到 origin/main,详见 `docs/superpowers/plans/2026-08-31-vocab-gap-profile.md` 顶部的完成状态与 commit 列表。
 
 ## 1. 概述
 

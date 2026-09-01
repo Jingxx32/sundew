@@ -1,5 +1,18 @@
 # 词汇缺口画像 Implementation Plan
 
+> **状态:已完成(2026-08-31)。** 全部 9 个任务(P1 数据层+捕获 / P2 复习队列 / P3 反向驱动)已实现、逐任务用真实数据验证、直接提交在 `main`,已 push 到 `origin/main`。commit 范围 `2b7c85e..efa7038`:
+> - `2b7c85e` feat(vocab): add the vocabulary_gaps table for the gap profile
+> - `7f1a03f` feat(vocab): gap engine with idempotent upsert and Leitner grading
+> - `72b39b6` feat(vocab): auto-ingest gaps from lookups and writing feedback
+> - `73d2620` feat(tcf): mark unknown words into the vocab gap profile
+> - `28614f3` feat(vocab): review queue queries and gap management actions
+> - `785b345` feat(vocab): Leitner review queue with per-gap-type cards
+> - `b30e4ec` feat(vocab): self-serve gap list with type/status controls
+> - `dfb2fd9` feat(tcf): boost drill questions that carry active vocab gaps
+> - `efa7038` feat(practice): inject production-gap words into writing tasks
+>
+> 唯一已知偏差:production 卡的挖空例句(§Task 6 Step 2)几乎总会退化成只显示中文释义,因为 `vocabulary_lookups.sentence_context` 列在现有查词管线里一直被写成空字符串——这是先于本计划就存在的既有行为,不是本次改出的 bug,未来想接真实例句需要另开工作。
+>
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 建立以词汇为核的四技能缺口画像(`vocabulary_gaps`),自动+手动捕获,驱动 Leitner 复习队列、TCF 重刷加权和写作任务注入。
@@ -31,7 +44,7 @@
 **Interfaces:**
 - Produces: `vocabularyGaps` 表对象、`VocabularyGap` 类型、`vocabGapTypeEnum` / `vocabGapSourceEnum` / `vocabGapStatusEnum`,后续所有任务 import 自 `@/lib/db/schema`
 
-- [ ] **Step 1: 在 schema.ts 追加 enum 与表定义**
+- [x] **Step 1: 在 schema.ts 追加 enum 与表定义**
 
 ```ts
 /* ------------------------------------------------------------------ */
@@ -78,21 +91,21 @@ export type VocabGapStatus = (typeof vocabGapStatusEnum.enumValues)[number];
 
 注意:`pgEnum`、`uuid`、`unique`、`index` 均已在文件顶部 import(核对,缺则补)。
 
-- [ ] **Step 2: 生成并检查迁移**
+- [x] **Step 2: 生成并检查迁移**
 
 Run: `npm run db:generate`
 Expected: 新增一个迁移 SQL,内容仅有 3 个 `CREATE TYPE` + 1 个 `CREATE TABLE` + 约束/索引。打开文件肉眼核对(不得有对既有表的 ALTER/DROP)。
 
-- [ ] **Step 3: 应用迁移 + 类型检查**
+- [x] **Step 3: 应用迁移 + 类型检查**
 
 Run: `npm run db:init && npx tsc --noEmit && npm run lint`
 Expected: 迁移成功;tsc/lint 干净。
 
-- [ ] **Step 4: 真实验证**
+- [x] **Step 4: 真实验证**
 
 Run: `npm run db:studio`(或 psql)确认 `vocabulary_gaps` 表存在、列与约束正确。手插一行再删掉,验证 (lemma,gap_type) 唯一约束(重复插入报错)。
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/lib/db/schema.ts drizzle/
@@ -113,7 +126,7 @@ git commit -m "feat(vocab): add the vocabulary_gaps table for the gap profile"
   - `gradeGap(gapId: string, correct: boolean): Promise<{ box: number; status: VocabGapStatus }>`
   - `LEITNER_INTERVAL_DAYS: readonly number[]`
 
-- [ ] **Step 1: 实现**
+- [x] **Step 1: 实现**
 
 ```ts
 /**
@@ -208,16 +221,16 @@ export async function gradeGap(gapId: string, correct: boolean): Promise<{ box: 
 }
 ```
 
-- [ ] **Step 2: 类型检查**
+- [x] **Step 2: 类型检查**
 
 Run: `npx tsc --noEmit && npm run lint`
 Expected: 干净。
 
-- [ ] **Step 3: 真实验证(node 脚本一次性跑)**
+- [x] **Step 3: 真实验证(node 脚本一次性跑)**
 
 在 scratchpad 写临时脚本(用 `npx tsx`,加载 `.env.local` 的 DATABASE_URL):先手插一个 lookup 词条,然后依次调 `upsertGap`(重复调确认幂等)、`gradeGap` 对/错各一次,console.log 每步后的行状态,最后清理测试行。把输出贴给用户。
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/lib/vocabulary/gaps.ts
@@ -236,7 +249,7 @@ git commit -m "feat(vocab): gap engine with idempotent upsert and Leitner gradin
 - Consumes: Task 2 `upsertGap`;`helpers.ts` 的 `norm`、`resolveLemma`、`upsertEntry`、`upsertAlias`
 - Produces: 无新导出(纯钩子)
 
-- [ ] **Step 1: 查词钩子**
+- [x] **Step 1: 查词钩子**
 
 `resolveLookup` 的两个返回路径都补 upsertGap:
 
@@ -245,7 +258,7 @@ git commit -m "feat(vocab): gap engine with idempotent upsert and Leitner gradin
 - 缓存未命中分支:事务内(`recordOccurrence` 之后)加
   `await upsertGap({ lemma: resolved, gapType: "recognition", source: "lookup", dbx: tx });`
 
-- [ ] **Step 2: 批改钩子**
+- [x] **Step 2: 批改钩子**
 
 `persistFeedback` 末尾(errors insert 之后)追加——词汇类错误的 `correction` 是学习者"不会用"的正确表达:
 
@@ -287,15 +300,15 @@ export async function ensureEntryForWord(word: string): Promise<string | null> {
 }
 ```
 
-- [ ] **Step 3: 类型检查**
+- [x] **Step 3: 类型检查**
 
 Run: `npx tsc --noEmit && npm run lint`
 
-- [ ] **Step 4: 真实验证**
+- [x] **Step 4: 真实验证**
 
 dev server 下:(a) 在阅读页查一个新词 → 查库确认 `vocabulary_gaps` 出现 recognition 行;再查同一个词 → 仍只有一行。(b) 提交一篇故意含词汇错误的写作(或复用现有 submission 重新生成批改)→ 确认 production 行出现。把两个 SQL 查询结果贴给用户。
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/lib/actions/vocabulary.ts src/lib/actions/tasks.ts src/lib/vocabulary/helpers.ts
@@ -315,7 +328,7 @@ git commit -m "feat(vocab): auto-ingest gaps from lookups and writing feedback"
 - Consumes: `resolveLookup`(actions/vocabulary.ts)、`upsertGap`(Task 2)
 - Produces: `markTcfVocabGap(input: { surface: string; sentenceContext: string; tcfQuestionId: string; gapType: VocabGapType }): Promise<void>`
 
-- [ ] **Step 1: server action**
+- [x] **Step 1: server action**
 
 `src/lib/actions/vocab-gaps.ts`:
 
@@ -344,7 +357,7 @@ export async function markTcfVocabGap(input: {
 
 注:resolveLookup 已含 recognition 自动汇入(Task 3),手动标记会先落 recognition 再 upsert 目标类型——标 recognition 时二者相同(幂等),标 listening/production 时会同时留下 recognition 行。这符合语义:你查了这个词,说明看见也不确定。若用户反馈太吵,后续可给 resolveLookup 加 `skipGap` 参数,本期不做。
 
-- [ ] **Step 2: 浮标组件**
+- [x] **Step 2: 浮标组件**
 
 `mark-gap-floater.tsx` — 包裹容器,监听选区,浮出按钮组:
 
@@ -454,7 +467,7 @@ export function MarkGapFloater({
 
 实现前先读同目录组件核对 token/间距习惯(如 `bg-surface`、`border-border` 是否为现用 token),按现状调整。
 
-- [ ] **Step 3: 接入 drill-runner**
+- [x] **Step 3: 接入 drill-runner**
 
 在 `drill-runner.tsx` 里把「题目媒体 + transcript」用浮标包住:找到渲染 `<QuestionMedia …/>` 的位置和 `showAnswer && q.transcript` 块(约 :334),将两处共同的父级区域(或分别)包为:
 
@@ -466,12 +479,12 @@ export function MarkGapFloater({
 
 只动 drill-runner;exam-runner 本期不加(考试中不该分心标词)。
 
-- [ ] **Step 4: 类型检查 + 浏览器验证**
+- [x] **Step 4: 类型检查 + 浏览器验证**
 
 Run: `npx tsc --noEmit && npm run lint`
 浏览器(用户 dev server 常开在 :3000):听力题选中 transcript 里一个词 → 三键浮标,默认高亮 Mal entendu;阅读题 → 两键。点一下出 ✓,查库确认 gap 行 + occurrence 行(带 tcf_question_id)。移动端宽度(responsive 模式)确认浮标不溢出。结果截图/查询贴给用户。
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/lib/actions/vocab-gaps.ts src/app/tcf/_components/mark-gap-floater.tsx src/app/tcf/_components/drill-runner.tsx
@@ -496,7 +509,7 @@ git commit -m "feat(tcf): mark unknown words into the vocab gap profile"
   - `type GapListRow = { gapId: string; lemma: string; translation: string | null; gapType: VocabGapType; status: VocabGapStatus; box: number; dueAt: Date }`
   - `listGaps(): Promise<GapListRow[]>`
 
-- [ ] **Step 1: 实现**
+- [x] **Step 1: 实现**
 
 要点(完整写出,不省略):
 
@@ -563,11 +576,11 @@ export async function getDueGapCards(limit = 20): Promise<GapReviewCard[]> {
 
 其余 action 直白:`gradeGapReview` 转发 `gradeGap`;`setGapStatus` / `changeGapType` 是单行 update——`changeGapType` 先查 (lemma, 新type) 是否已存在,存在则删当前行(合并),否则 update;二者结尾 `revalidatePath("/vocabulary/review")`。`listGaps` 全量 join 返回 `GapListRow[]`,`status != 'dismissed'` 的排前、按 dueAt 升序。
 
-- [ ] **Step 2: 类型检查**
+- [x] **Step 2: 类型检查**
 
 Run: `npx tsc --noEmit && npm run lint`
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/lib/actions/vocab-gaps.ts
@@ -587,7 +600,7 @@ git commit -m "feat(vocab): review queue queries and gap management actions"
 - Consumes: Task 5 全部 actions/类型
 - Produces: 页面路由;无代码级导出
 
-- [ ] **Step 1: page.tsx**
+- [x] **Step 1: page.tsx**
 
 ```tsx
 import { getDueGapCards } from "@/lib/actions/vocab-gaps";
@@ -608,7 +621,7 @@ export default async function VocabReviewPage() {
 
 页面骨架(标题层级、容器宽度)以 `/vocabulary/page.tsx` 现状为准,先读再写。
 
-- [ ] **Step 2: GapReviewRunner**
+- [x] **Step 2: GapReviewRunner**
 
 Client 组件,状态机:`cards[]` + `currentIndex` + `answered: { correct: boolean } | null` + `summary { right, wrong, promoted }`。行为:
 
@@ -619,16 +632,16 @@ Client 组件,状态机:`cards[]` + `currentIndex` + `answered: { correct: boole
 - 全部做完 → 汇总卡(`x justes · y fautes · z promues`)+ 返回链接。空队列 → 「Rien à réviser aujourd'hui」。
 - 键盘:A–D 选选项、Enter 提交/下一张(参考 `use-question-keyboard-nav.ts` 但不必复用——形态不同,内联 `onKeyDown` 即可)。
 
-- [ ] **Step 3: vocabulary 页入口**
+- [x] **Step 3: vocabulary 页入口**
 
 `/vocabulary/page.tsx` 页头加一个 `Button`(variant 参照现有页面)链接到 `/vocabulary/review`,文案 `Réviser (N)`,N 来自 `getDueGapCards` 的 length(或专门 count 查询,如果页面已有并行数据获取就 Promise.all 进去)。
 
-- [ ] **Step 4: 验证**
+- [x] **Step 4: 验证**
 
 Run: `npx tsc --noEmit && npm run lint`
 浏览器:先用 SQL 把几个 gap 行的 `due_at` 改到过去、覆盖三种类型 → 打开 `/vocabulary/review` → 三种卡都出现且可作答;答对后查库 box+1、due_at 后移;答错回 box 1;「Acquis」「Retirer」生效;听力卡出声。把过程与查库结果贴给用户。
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/app/\(main\)/vocabulary/review/ src/app/\(main\)/vocabulary/page.tsx
@@ -647,13 +660,13 @@ git commit -m "feat(vocab): Leitner review queue with per-gap-type cards"
 - Consumes: Task 5 `listGaps` / `GapListRow` / `setGapStatus` / `changeGapType`
 - Produces: 无导出
 
-- [ ] **Step 1: 实现**
+- [x] **Step 1: 实现**
 
 page.tsx 改为 `Promise.all([getDueGapCards(), listGaps()])`,列表传给 `<GapList rows={rows} />`,置于 runner 下方 `<details>`(或现有 Collapsible 模式,先看 components/ui 有没有)内,summary 文案 `Tous les mots (N)`。
 
 GapList:表格布局(`font-mono text-xs` 数据列),列 = 词条 / 类型 / box / 状态 / 下次复习;行内操作:类型下拉(3 值,onChange → `changeGapType`)、「Acquis」「Retirer」按钮(dismissed 行显示「Réactiver」→ `setGapStatus(gapId, "active")`,Task 5 已定义其重置 box/dueAt 的语义)。顶部按 gapType 过滤的 chip 组(客户端过滤,不发请求)。
 
-- [ ] **Step 2: 验证 + Commit**
+- [x] **Step 2: 验证 + Commit**
 
 Run: `npx tsc --noEmit && npm run lint`;浏览器操作每个行内动作各一次并查库确认。
 
@@ -673,7 +686,7 @@ git commit -m "feat(vocab): self-serve gap list with type/status controls"
 - Consumes: `vocabularyGaps`、`vocabularyOccurrences`(schema)
 - Produces: 无新导出(排序内部变化)
 
-- [ ] **Step 1: 取「带活跃缺口的题目 id」**
+- [x] **Step 1: 取「带活跃缺口的题目 id」**
 
 在 `getTcfScheduledDrillQuestions` 的 `Promise.all` 里并行加一个查询:
 
@@ -686,7 +699,7 @@ const gapQuestionRows = await db
 const gapQuestionIds = new Set(gapQuestionRows.map((r) => r.questionId));
 ```
 
-- [ ] **Step 2: 排序注入**
+- [x] **Step 2: 排序注入**
 
 现有 sort 比较器中,`rankDifference` 判定之后、needsReview 时间比较之前,插入同 rank 内的加权:
 
@@ -697,7 +710,7 @@ if (kind !== "all" && gapBoost !== 0) return gapBoost;
 
 (`kind === "all"` 保持完全不重排——沿用现有注释的理由。)
 
-- [ ] **Step 3: 验证 + Commit**
+- [x] **Step 3: 验证 + Commit**
 
 Run: `npx tsc --noEmit && npm run lint`
 真实验证:挑一道未做过的题在其 transcript 标记一个词(Task 4 入口)→ 进入该 level 的 drill(10 题模式)→ 确认这道题排到了同为 unseen 的题之前。贴排序前后对比。
@@ -721,12 +734,12 @@ git commit -m "feat(tcf): boost drill questions that carry active vocab gaps"
 - Consumes: Task 2 `gradeGap`;`vocabularyGaps` / `vocabularyAliases`
 - Produces: `writingTasks.targetLemmas: string[] | null`(jsonb 列 `target_lemmas`);`GenerateTaskOptions.targetLemmas?: string[]`
 
-- [ ] **Step 1: schema 加列 + 迁移**
+- [x] **Step 1: schema 加列 + 迁移**
 
 `writingTasks` 表加:`targetLemmas: jsonb("target_lemmas").$type<string[]>(),`
 Run: `npm run db:generate`(核对 SQL 只有一条 ALTER TABLE ADD COLUMN)→ `npm run db:init`
 
-- [ ] **Step 2: 取词函数**
+- [x] **Step 2: 取词函数**
 
 `src/lib/actions/vocab-gaps.ts` 加(非页面 action,供 tasks.ts 调):
 
@@ -743,7 +756,7 @@ export async function getProductionGapLemmas(limit = 5): Promise<string[]> {
 }
 ```
 
-- [ ] **Step 3: prompt 注入**
+- [x] **Step 3: prompt 注入**
 
 `ai/task.ts`:`GenerateTaskOptions` 加 `targetLemmas?: string[]`;system prompt 组装处(`buildProfileSystemBlock` 同层)追加:
 
@@ -755,15 +768,15 @@ function buildTargetLemmasBlock(lemmas: string[]): string {
 
 `tasks.ts` 的两个 `generateTask` 调用点(`createTask` 约 :48 与 `writeFromTcfPassage` 约 :149):调用前 `const targetLemmas = await getProductionGapLemmas();`,传入 opts,insert `writingTasks` 时带 `targetLemmas: targetLemmas.length ? targetLemmas : null`。
 
-- [ ] **Step 4: chips 展示**
+- [x] **Step 4: chips 展示**
 
 `task-card.tsx` 仿 `targetGrammar` 块(:51-58 现有模式),在其后渲染 `task.targetLemmas` 的 chips,视觉用现有 Chip 组件、`text-accent` 区分,标题 `Mots à employer`。
 
-- [ ] **Step 5: 批改回灌**
+- [x] **Step 5: 批改回灌**
 
 `persistFeedback`(Task 3 已在此处)再加:取 submission 关联 task 的 `targetLemmas`,对每个 lemma——若 `norm(content)` 中出现该 lemma 或其任一 alias(查 `vocabularyAliases` where lemma = X 的 surfaces),且该词未落在任何 Vocabulary 类错误的 `original` 里——则查其 production gap 行并 `gradeGap(gapId, true)`。整段包 try/catch,失败仅 console.error。
 
-- [ ] **Step 6: 验证 + Commit**
+- [x] **Step 6: 验证 + Commit**
 
 Run: `npx tsc --noEmit && npm run lint`
 真实验证:确保库里有 ≥2 个 production 缺口 → 生成一个新写作任务 → 任务卡显示 Mots à employer chips、prompt 里含目标词(dev log 或直接看任务文本是否围绕它们)→ 提交一篇用上其中一个词的短文 → 批改完成后查库确认该 gap box+1。全过程截图/查询贴给用户。
