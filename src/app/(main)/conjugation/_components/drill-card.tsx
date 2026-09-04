@@ -68,7 +68,7 @@ export function DrillCard({ queue }: { queue: DrillItem[] }) {
 
   if (finished) {
     return (
-      <div className="rounded-2xl border border-border/70 bg-surface px-8 py-12 text-center">
+      <div className="rounded-2xl bg-surface shadow-card px-8 py-12 text-center">
         <p className="text-[30px] font-bold tracking-[-0.03em]">
           {score}/{queue.length} correct
         </p>
@@ -84,7 +84,7 @@ export function DrillCard({ queue }: { queue: DrillItem[] }) {
   }
 
   return (
-    <div className="rounded-2xl border border-border/70 bg-surface px-8 py-8">
+    <div className="rounded-2xl bg-surface shadow-card px-8 py-8">
       {/* Prompt */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
