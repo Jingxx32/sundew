@@ -27,7 +27,7 @@ export function EncouragementBanner({ stats }: Props) {
   if (!text) return null;
 
   return (
-    <div className="rounded-2xl border border-border bg-surface/50 px-6 py-4">
+    <div className="rounded-2xl bg-surface-muted px-6 py-4">
       <p className="text-sm text-muted-foreground">{text}</p>
     </div>
   );

@@ -20,22 +20,22 @@ export function StatCards({ stats }: Props) {
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-      <div className="rounded-2xl border border-border bg-surface p-6">
+      <div className="rounded-2xl bg-surface shadow-card p-6">
         <p className="text-[38px] font-bold tracking-[-0.035em] tabular-nums text-foreground">{totalSubmissions}</p>
         <p className="text-xs text-muted-foreground mt-1">writing attempts</p>
       </div>
 
-      <div className="rounded-2xl border border-border bg-surface p-6">
+      <div className="rounded-2xl bg-surface shadow-card p-6">
         <p className="text-[38px] font-bold tracking-[-0.035em] tabular-nums text-foreground">{totalErrors}</p>
         <p className="text-xs text-muted-foreground mt-1">classified errors</p>
       </div>
 
-      <div className="rounded-2xl border border-border bg-surface p-6">
+      <div className="rounded-2xl bg-surface shadow-card p-6">
         <p className="text-[38px] font-bold tracking-[-0.035em] tabular-nums text-foreground">{activeDays}</p>
         <p className="text-xs text-muted-foreground mt-1">days with practice</p>
       </div>
 
-      <div className="rounded-2xl border border-border bg-surface p-6">
+      <div className="rounded-2xl bg-surface shadow-card p-6">
         {mostImprovedLabel && mostImprovedStyle ? (
           <>
             <span

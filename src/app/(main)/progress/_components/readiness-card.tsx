@@ -20,7 +20,7 @@ function SkillTile({ skill, targetCefr }: { skill: SkillReadiness; targetCefr: C
   return (
     <div
       className={cn(
-        "rounded-xl border border-border/70 bg-surface px-4 py-3.5 space-y-1.5",
+        "rounded-xl bg-surface shadow-card px-4 py-3.5 space-y-1.5",
         muted && "opacity-75",
       )}
     >
