@@ -46,7 +46,7 @@ function computeScore(questions: TcfQuestionForDrill[], answers: Record<number, 
 
 function ScoreHeader({ testNumber, score }: { testNumber: number; score: ReturnType<typeof computeScore> }) {
   return (
-    <div className="mb-6 rounded-2xl border border-border/70 bg-surface px-8 py-6">
+    <div className="mb-6 rounded-2xl bg-surface shadow-card px-8 py-6">
       <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Résultat · Test {testNumber}</p>
       <p className="mt-1 text-5xl font-semibold text-foreground">
         {score.correct}
@@ -256,7 +256,7 @@ export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: E
           </div>
 
           {/* Question card */}
-          <div className="space-y-4 rounded-xl border border-border/70 bg-surface px-6 py-5">
+          <div className="space-y-4 rounded-xl bg-surface shadow-card px-6 py-5">
             <p className="text-lg leading-snug text-foreground">{q.questionText}</p>
 
             <QuestionMedia question={q} ref={audioRef} />

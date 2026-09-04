@@ -229,7 +229,7 @@ export function DrillRunner({
     const incorrect = answers.filter((answer) => !answer.correct).length;
     const needsReview = answers.filter((answer) => !answer.correct || answer.uncertain).length;
     return (
-      <section className="mx-auto max-w-xl rounded-2xl border border-border/70 bg-surface px-8 py-10 text-center">
+      <section className="mx-auto max-w-xl rounded-2xl bg-surface shadow-card px-8 py-10 text-center">
         <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Session terminée</p>
         <h2 className="mt-2 text-[30px] font-bold tracking-[-0.03em]">{questions.length} questions parcourues</h2>
         <p className="mt-5 text-sm text-muted-foreground">
@@ -286,7 +286,7 @@ export function DrillRunner({
           )}
         </div>
 
-        <div className="space-y-3 rounded-xl border border-border/70 bg-surface px-4 py-4 md:space-y-4 md:px-6 md:py-5">
+        <div className="space-y-3 rounded-xl bg-surface shadow-card px-4 py-4 md:space-y-4 md:px-6 md:py-5">
           <p className="text-lg leading-snug text-foreground">{q.questionText}</p>
 
           <MarkGapFloater skill={skill} questionId={q.id}>
