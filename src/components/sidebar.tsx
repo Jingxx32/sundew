@@ -93,13 +93,13 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden md:flex w-[200px] shrink-0 flex-col border-r border-border/60 bg-surface-muted/60 px-3 py-6">
+    <aside className="hidden md:flex w-[200px] shrink-0 flex-col px-3 py-6">
       <Link
         href="/library"
         className="flex items-center gap-2 px-3 mb-8 group"
       >
-        <Sparkles className="h-5 w-5 text-accent" strokeWidth={1.8} />
-        <span className="font-serif text-2xl font-semibold tracking-tight text-foreground">
+        <Sparkles className="h-[18px] w-[18px] text-foreground" strokeWidth={2} />
+        <span className="text-xl font-bold tracking-[-0.04em] text-foreground">
           Lumière
         </span>
       </Link>
@@ -117,8 +117,8 @@ export function Sidebar() {
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                 active
-                  ? "bg-accent-soft text-accent"
-                  : "text-muted-foreground hover:bg-surface hover:text-foreground",
+                  ? "bg-surface text-foreground font-semibold shadow-card"
+                  : "text-muted-foreground hover:bg-surface-muted hover:text-foreground",
               )}
             >
               <Icon className="h-4 w-4" strokeWidth={1.8} />
