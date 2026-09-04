@@ -22,7 +22,7 @@ export default async function ScriptPracticePage({
         <ArrowLeft className="h-3.5 w-3.5" />
         Expression orale
       </Link>
-      <p className="text-xs uppercase tracking-wider text-subtle-foreground mb-2">
+      <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
         Tâche {prompt.task}
       </p>
       <h1 className="text-2xl font-semibold tracking-tight mb-2">{prompt.prompt}</h1>

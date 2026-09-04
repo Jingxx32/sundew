@@ -45,7 +45,7 @@ export default async function QuizPage({
       </Suspense>
 
       {/* Set list */}
-      <div className="mb-3 text-[11px] uppercase tracking-wider text-subtle-foreground font-medium">
+      <div className="mb-3 text-[11px] uppercase tracking-wider text-muted-foreground font-medium">
         {exam || section
           ? `${sets.length} result${sets.length === 1 ? "" : "s"}`
           : "All sets"}

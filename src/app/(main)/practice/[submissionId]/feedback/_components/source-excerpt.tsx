@@ -14,7 +14,7 @@ export function SourceExcerpt({ doc }: Props) {
 
   if (!doc) {
     return (
-      <div className="bg-surface rounded-2xl border border-border shadow-sm p-6">
+      <div className="bg-surface rounded-2xl border border-border shadow-card p-6">
         <p className="text-sm text-muted-foreground italic">Original document removed</p>
       </div>
     );
@@ -24,7 +24,7 @@ export function SourceExcerpt({ doc }: Props) {
   const displayText = expanded ? doc.content : doc.content.slice(0, PREVIEW_LEN);
 
   return (
-    <div className="bg-surface rounded-2xl border border-border shadow-sm p-6 space-y-3">
+    <div className="bg-surface rounded-2xl border border-border shadow-card p-6 space-y-3">
       <div className="text-[11px] uppercase tracking-wider text-accent font-medium">Source</div>
       <p className="text-sm leading-relaxed text-foreground whitespace-pre-wrap">
         {displayText}

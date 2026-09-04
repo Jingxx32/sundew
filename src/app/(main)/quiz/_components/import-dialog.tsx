@@ -295,7 +295,7 @@ export function ImportQuizDialog() {
                     <select
                       id="section"
                       name="section"
-                      className="flex h-9 w-full rounded-lg border border-border bg-surface px-3 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
+                      className="flex h-9 w-full rounded-lg border border-border bg-surface px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
                       defaultValue="reading"
                     >
                       <option value="reading">Reading</option>
@@ -372,7 +372,7 @@ export function ImportQuizDialog() {
                     placeholder="https://…/episode.mp3"
                     required
                   />
-                  <p className="text-xs text-subtle-foreground">
+                  <p className="text-xs text-muted-foreground">
                     Direct link to the audio file, under 25MB (≈25 min).
                   </p>
                 </div>
@@ -484,7 +484,7 @@ export function ImportQuizDialog() {
                         ))}
                       </ul>
                       {q.explanation && (
-                        <p className="text-xs text-subtle-foreground">
+                        <p className="text-xs text-muted-foreground">
                           {q.explanation}
                         </p>
                       )}
@@ -531,7 +531,7 @@ export function ImportQuizDialog() {
             </div>
 
             <div className="space-y-2">
-              <p className="text-[11px] uppercase tracking-wider text-subtle-foreground font-medium">
+              <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">
                 Blanks
               </p>
               {clozePayload.blanks.map((blank, index) => (
@@ -552,7 +552,7 @@ export function ImportQuizDialog() {
             </div>
 
             <div className="space-y-2">
-              <p className="text-[11px] uppercase tracking-wider text-subtle-foreground font-medium">
+              <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">
                 Transcript
               </p>
               <article className="reading-prose text-sm whitespace-pre-wrap max-h-56 overflow-y-auto rounded-xl border border-border/70 bg-surface-muted/40 p-4">

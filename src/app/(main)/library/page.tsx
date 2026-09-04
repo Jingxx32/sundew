@@ -52,7 +52,7 @@ export default async function LibraryPage({
       )}
 
       {/* Document list */}
-      <div className="mb-3 text-[11px] uppercase tracking-wider text-subtle-foreground font-medium">
+      <div className="mb-3 text-[11px] uppercase tracking-wider text-muted-foreground font-medium">
         {type || q ? `${docs.length} result${docs.length === 1 ? "" : "s"}` : "All documents"}
       </div>
       {docs.length === 0 ? (

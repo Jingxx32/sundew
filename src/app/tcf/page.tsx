@@ -65,7 +65,7 @@ export default async function TcfPage({
         </span>
       </Link>
 
-      <h2 className="text-xs uppercase tracking-widest text-subtle-foreground font-medium mb-4">
+      <h2 className="text-xs uppercase tracking-widest text-muted-foreground font-medium mb-4">
         {meta.levelVerb} · Choisissez un niveau
       </h2>
 
@@ -88,14 +88,14 @@ export default async function TcfPage({
                 className="group block touch-manipulation rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
               >
                 <Card
-                  className={`px-6 py-5 transition-all group-hover:shadow-sm group-hover:border-accent/40 ${
+                  className={`px-6 py-5 transition-all group-hover:shadow-card group-hover:border-accent/40 ${
                     s.total === 0 ? "opacity-50 pointer-events-none" : ""
                   }`}
                 >
                   <div className="flex items-start justify-between mb-3">
                     <LevelBadge level={s.level} className="px-2 py-0.5 text-sm" />
                     {s.total > 0 && (
-                      <span className="text-[11px] text-subtle-foreground">{s.total} q.</span>
+                      <span className="text-[11px] text-muted-foreground">{s.total} q.</span>
                     )}
                   </div>
                   <p className="text-base font-semibold text-foreground leading-tight">
@@ -140,7 +140,7 @@ export default async function TcfPage({
 
       {sets.length > 0 && (
         <>
-          <h2 className="mt-12 text-xs uppercase tracking-widest text-subtle-foreground font-medium mb-4">
+          <h2 className="mt-12 text-xs uppercase tracking-widest text-muted-foreground font-medium mb-4">
             Examen blanc · Choisissez un test
           </h2>
           <p className="text-sm text-muted-foreground mb-4 -mt-2">
@@ -156,7 +156,7 @@ export default async function TcfPage({
                 <Link
                   key={s.id}
                   href={`/tcf/exam?skill=${skill}&test=${s.testNumber}`}
-                  className={`group flex flex-col items-center justify-center gap-1 rounded-xl border bg-surface px-2 py-3 transition-all touch-manipulation hover:border-accent/40 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 ${
+                  className={`group flex flex-col items-center justify-center gap-1 rounded-xl border bg-surface px-2 py-3 transition-all touch-manipulation hover:border-accent/40 hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 ${
                     exam ? "border-accent/30" : started ? "border-warning/30" : "border-border/70"
                   }`}
                 >
@@ -174,7 +174,7 @@ export default async function TcfPage({
                       {answered}/{s.totalCount}
                     </span>
                   ) : (
-                    <span className="font-mono text-[10px] text-subtle-foreground">{s.totalCount} q.</span>
+                    <span className="font-mono text-[10px] text-muted-foreground">{s.totalCount} q.</span>
                   )}
                 </Link>
               );

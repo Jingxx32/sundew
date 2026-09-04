@@ -33,7 +33,7 @@ export function FeedbackRetry({
   }
 
   return (
-    <div className="max-w-md mx-auto rounded-2xl border border-border bg-surface shadow-sm px-8 py-10 text-center space-y-4">
+    <div className="max-w-md mx-auto rounded-2xl border border-border bg-surface shadow-card px-8 py-10 text-center space-y-4">
       <h2 className="text-xl font-semibold">
         {stalePending ? "Feedback is taking too long" : "Feedback generation failed"}
       </h2>

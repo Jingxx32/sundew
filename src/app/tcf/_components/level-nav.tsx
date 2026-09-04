@@ -98,7 +98,7 @@ export function LevelNav({ questions, currentIndex, onSelect, statusByQuestion, 
         <div className="space-y-3">
           {groups.map((group) => (
             <div key={group.testNumber} className="space-y-1.5">
-              <p className="font-mono text-[10px] uppercase tracking-widest text-subtle-foreground">
+              <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                 Test {group.testNumber}
               </p>
               <div className="flex flex-wrap gap-1">
@@ -129,7 +129,7 @@ export function LevelNav({ questions, currentIndex, onSelect, statusByQuestion, 
           ))}
         </div>
 
-        <div className="space-y-1 text-[11px] text-subtle-foreground">
+        <div className="space-y-1 text-[11px] text-muted-foreground">
           {(["unseen", "in_progress", "needs_review", "stable"] as const).map((status) => (
             <p key={status} className="flex items-center gap-1.5">
               <span className={cn("h-1.5 w-1.5 rounded-full", STATUS_DOT[status])} />

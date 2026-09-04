@@ -70,7 +70,7 @@ export function ExplanationPanel({ markdown }: { markdown: string }) {
 
   return (
     <div className="rounded-lg border border-border/50 bg-surface-muted/60 px-4 py-3">
-      <p className="text-[11px] uppercase tracking-widest text-subtle-foreground font-medium mb-2">
+      <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-medium mb-2">
         Explication
       </p>
       <div className="text-sm leading-relaxed text-foreground">

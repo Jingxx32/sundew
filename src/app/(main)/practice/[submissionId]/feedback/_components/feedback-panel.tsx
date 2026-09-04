@@ -17,7 +17,7 @@ const CATEGORY_ORDER = Object.keys(ERROR_TAXONOMY) as ErrorCategory[];
 export async function FeedbackPanel({ feedback, errors }: Props) {
   if (!feedback) {
     return (
-      <div className="bg-surface rounded-2xl border border-border shadow-sm p-6 space-y-4">
+      <div className="bg-surface rounded-2xl border border-border shadow-card p-6 space-y-4">
         <div className="text-[11px] uppercase tracking-wider text-accent font-medium">
           Feedback
         </div>
@@ -44,7 +44,7 @@ export async function FeedbackPanel({ feedback, errors }: Props) {
   });
 
   return (
-    <div className="bg-surface rounded-2xl border border-border shadow-sm p-6 space-y-5">
+    <div className="bg-surface rounded-2xl border border-border shadow-card p-6 space-y-5">
       <div className="text-[11px] uppercase tracking-wider text-accent font-medium">Feedback</div>
 
       {/* Praise first */}

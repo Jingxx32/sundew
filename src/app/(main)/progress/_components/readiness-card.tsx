@@ -30,7 +30,7 @@ function SkillTile({ skill, targetCefr }: { skill: SkillReadiness; targetCefr: C
           {meta.label}
         </div>
         {targetCefr && isCefr && (
-          <span className="text-[10px] uppercase tracking-wider text-subtle-foreground">
+          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
             target {targetCefr}
           </span>
         )}

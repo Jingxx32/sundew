@@ -91,7 +91,7 @@ export function DrillCard({ queue }: { queue: DrillItem[] }) {
           <Chip variant="accent">{item.tense}</Chip>
           {item.fromErrors && <Chip variant="warning">from your errors</Chip>}
         </div>
-        <span className="text-xs text-subtle-foreground">
+        <span className="text-xs text-muted-foreground">
           {index + 1} / {queue.length}
         </span>
       </div>

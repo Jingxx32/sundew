@@ -230,7 +230,7 @@ export function DrillRunner({
     const needsReview = answers.filter((answer) => !answer.correct || answer.uncertain).length;
     return (
       <section className="mx-auto max-w-xl rounded-2xl border border-border/70 bg-surface px-8 py-10 text-center">
-        <p className="font-mono text-xs uppercase tracking-widest text-subtle-foreground">Session terminée</p>
+        <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Session terminée</p>
         <h2 className="mt-2 text-[30px] font-bold tracking-[-0.03em]">{questions.length} questions parcourues</h2>
         <p className="mt-5 text-sm text-muted-foreground">
           {correct} correctes · {uncertainCorrect} correctes mais incertaines · {incorrect} incorrectes
@@ -269,7 +269,7 @@ export function DrillRunner({
             <span className="text-lg font-semibold">
               Question {currentIndex + 1} de {questions.length}
             </span>
-            <span className="font-mono text-xs text-subtle-foreground">
+            <span className="font-mono text-xs text-muted-foreground">
               Test {q.testNumber} · {q.orderIndex}
             </span>
             <LevelBadge level={q.level} />
@@ -330,14 +330,14 @@ export function DrillRunner({
           total={questions.length}
         />
 
-        <p className="mt-2 hidden text-center font-mono text-[10px] text-subtle-foreground md:block">
+        <p className="mt-2 hidden text-center font-mono text-[10px] text-muted-foreground md:block">
           A–D pour répondre · ← → pour naviguer{q.type !== "reading_mcq" ? " · Espace lecture · R recule" : ""}
         </p>
 
         {showAnswer && q.transcript && (
           <MarkGapFloater skill={skill} questionId={q.id}>
             <div className="mt-4 rounded-lg border border-border/50 bg-surface-muted/60 px-4 py-3">
-              <p className="font-mono text-[11px] uppercase tracking-widest text-subtle-foreground">Transcription</p>
+              <p className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">Transcription</p>
               <p className="mt-1 text-sm whitespace-pre-wrap">{q.transcript}</p>
             </div>
           </MarkGapFloater>

@@ -160,7 +160,7 @@ export const AudioPlayer = forwardRef<AudioPlayerHandle, { src: string }>(functi
       </button>
 
       <div className="flex flex-1 items-center gap-2">
-        <span className="w-9 shrink-0 font-mono text-[11px] text-subtle-foreground">{formatTime(currentTime)}</span>
+        <span className="w-9 shrink-0 font-mono text-[11px] text-muted-foreground">{formatTime(currentTime)}</span>
         <div
           role="slider"
           tabIndex={0}
@@ -187,11 +187,11 @@ export const AudioPlayer = forwardRef<AudioPlayerHandle, { src: string }>(functi
             />
           ))}
           <div
-            className="absolute top-1/2 h-3 w-3 -translate-y-1/2 -translate-x-1/2 rounded-full bg-accent shadow-sm transition-transform group-hover:scale-110"
+            className="absolute top-1/2 h-3 w-3 -translate-y-1/2 -translate-x-1/2 rounded-full bg-accent transition-transform group-hover:scale-110"
             style={{ left: `${progress * 100}%` }}
           />
         </div>
-        <span className="w-9 shrink-0 font-mono text-[11px] text-subtle-foreground">{formatTime(duration)}</span>
+        <span className="w-9 shrink-0 font-mono text-[11px] text-muted-foreground">{formatTime(duration)}</span>
       </div>
 
       <button

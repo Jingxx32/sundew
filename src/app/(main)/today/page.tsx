@@ -68,7 +68,7 @@ export default async function TodayPage() {
   return (
     <div className="px-10 py-10 max-w-2xl mx-auto">
       <div className="mb-8">
-        <p className="text-xs uppercase tracking-widest text-subtle-foreground font-medium mb-1">
+        <p className="text-xs uppercase tracking-widest text-muted-foreground font-medium mb-1">
           {format(new Date(), "EEEE, MMMM d")}
         </p>
         <div className="flex items-end justify-between gap-3 flex-wrap">
@@ -119,7 +119,7 @@ export default async function TodayPage() {
         </div>
       )}
 
-      <p className="mt-10 text-[11px] text-subtle-foreground text-center">
+      <p className="mt-10 text-[11px] text-muted-foreground text-center">
         Picks are heuristic: weakest skill first (within {plan.cefr} ±1), then least-recent.
         Everything else lives in the sidebar.
       </p>

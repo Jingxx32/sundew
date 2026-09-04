@@ -73,7 +73,7 @@ export default async function FeedbackPage({
           <SourceExcerpt doc={doc} />
 
           {/* Centre — submission with inline error highlights */}
-          <div className="bg-surface rounded-2xl border border-border shadow-sm p-6 space-y-4">
+          <div className="bg-surface rounded-2xl border border-border shadow-card p-6 space-y-4">
             <div className="text-[11px] uppercase tracking-wider text-accent font-medium">
               Your Writing
             </div>

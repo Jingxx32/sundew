@@ -129,7 +129,7 @@ export function Sidebar() {
       </nav>
 
       <div className="mt-auto px-3">
-        <p className="text-[11px] uppercase tracking-wider text-subtle-foreground">
+        <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
           v0.2 · self
         </p>
       </div>

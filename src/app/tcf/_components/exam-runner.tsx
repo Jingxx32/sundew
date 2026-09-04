@@ -47,7 +47,7 @@ function computeScore(questions: TcfQuestionForDrill[], answers: Record<number, 
 function ScoreHeader({ testNumber, score }: { testNumber: number; score: ReturnType<typeof computeScore> }) {
   return (
     <div className="mb-6 rounded-2xl border border-border/70 bg-surface px-8 py-6">
-      <p className="font-mono text-xs uppercase tracking-widest text-subtle-foreground">Résultat · Test {testNumber}</p>
+      <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Résultat · Test {testNumber}</p>
       <p className="mt-1 text-5xl font-semibold text-foreground">
         {score.correct}
         <span className="text-xl font-normal text-muted-foreground"> / {score.total}</span>
@@ -218,7 +218,7 @@ export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: E
                 <Flag className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
                 {confirmFinish ? "Confirmer" : "Terminer"}
               </Button>
-              <p className="text-center font-mono text-[11px] text-subtle-foreground">
+              <p className="text-center font-mono text-[11px] text-muted-foreground">
                 {answeredCount} / {questions.length} répondues
               </p>
             </div>
@@ -294,7 +294,7 @@ export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: E
           </div>
 
           {!finished && (
-            <p className="mt-2 text-center font-mono text-[10px] text-subtle-foreground">
+            <p className="mt-2 text-center font-mono text-[10px] text-muted-foreground">
               A–D pour répondre · ← → pour naviguer{q.type !== "reading_mcq" ? " · Espace lecture · R recule" : ""}
             </p>
           )}
@@ -303,7 +303,7 @@ export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: E
               push Suivant off-screen. */}
           {finished && q.transcript && (
             <div className="mt-4 rounded-lg border border-border/50 bg-surface-muted/60 px-4 py-3">
-              <p className="mb-1.5 font-mono text-[11px] uppercase tracking-widest text-subtle-foreground">
+              <p className="mb-1.5 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
                 Transcription
               </p>
               <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">{q.transcript}</p>

@@ -32,7 +32,7 @@ export default async function ConjugationPage() {
       {/* D-8: drill mastery per verb/tense, weakest first */}
       {stats.byTarget.length > 0 && (
         <div className="mt-10">
-          <h2 className="mb-3 text-[11px] uppercase tracking-wider text-subtle-foreground font-medium">
+          <h2 className="mb-3 text-[11px] uppercase tracking-wider text-muted-foreground font-medium">
             Mastery by verb · tense
           </h2>
           <div className="space-y-1">

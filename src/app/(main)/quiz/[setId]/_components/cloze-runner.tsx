@@ -125,7 +125,7 @@ export function ClozeRunner({
               className="rounded-xl border border-border/70 bg-surface px-5 py-4"
             >
               <p className="text-base leading-relaxed mb-3">
-                <span className="font-sans text-xs text-subtle-foreground mr-2">
+                <span className="font-sans text-xs text-muted-foreground mr-2">
                   {index + 1}.
                 </span>
                 {question.questionText}

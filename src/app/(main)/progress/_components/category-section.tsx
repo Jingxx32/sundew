@@ -22,7 +22,7 @@ export function CategorySection({ category, errors, ruleMap, defaultOpen = true 
   const def = ERROR_TAXONOMY[category];
 
   return (
-    <div className="rounded-2xl border border-border bg-surface shadow-sm overflow-hidden">
+    <div className="rounded-2xl border border-border bg-surface shadow-card overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
