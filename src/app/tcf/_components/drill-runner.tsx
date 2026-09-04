@@ -266,7 +266,7 @@ export function DrillRunner({
       <div className="flex-1 min-w-0 pb-16 md:pb-0">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2 md:mb-4">
           <div className="hidden flex-wrap items-center gap-2 md:flex">
-            <span className="font-serif text-lg font-semibold">
+            <span className="text-lg font-semibold">
               Question {currentIndex + 1} de {questions.length}
             </span>
             <span className="font-mono text-xs text-subtle-foreground">
@@ -287,7 +287,7 @@ export function DrillRunner({
         </div>
 
         <div className="space-y-3 rounded-xl border border-border/70 bg-surface px-4 py-4 md:space-y-4 md:px-6 md:py-5">
-          <p className="font-serif text-lg leading-snug text-foreground">{q.questionText}</p>
+          <p className="text-lg leading-snug text-foreground">{q.questionText}</p>
 
           <MarkGapFloater skill={skill} questionId={q.id}>
             <QuestionMedia question={q} ref={audioRef} />
@@ -338,7 +338,7 @@ export function DrillRunner({
           <MarkGapFloater skill={skill} questionId={q.id}>
             <div className="mt-4 rounded-lg border border-border/50 bg-surface-muted/60 px-4 py-3">
               <p className="font-mono text-[11px] uppercase tracking-widest text-subtle-foreground">Transcription</p>
-              <p className="mt-1 font-serif text-sm whitespace-pre-wrap">{q.transcript}</p>
+              <p className="mt-1 text-sm whitespace-pre-wrap">{q.transcript}</p>
             </div>
           </MarkGapFloater>
         )}

@@ -18,14 +18,14 @@ export function ImprovementCard({ improvement, index }: Props) {
         <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
           Original
         </div>
-        <p className="font-serif text-sm text-muted-foreground">{improvement.original}</p>
+        <p className="text-sm text-muted-foreground">{improvement.original}</p>
       </div>
 
       <div className="space-y-0.5">
         <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
           Suggestion
         </div>
-        <p className="font-serif text-sm font-medium text-foreground">{improvement.suggestion}</p>
+        <p className="text-sm font-medium text-foreground">{improvement.suggestion}</p>
       </div>
 
       <p className="text-sm text-foreground leading-relaxed">{improvement.explanation_en}</p>

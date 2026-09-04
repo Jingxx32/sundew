@@ -83,7 +83,7 @@ export function SentenceRow({ index, sentence, sessionId, result, onResult }: Pr
           {result ? (
             <WordScores words={result.words} />
           ) : (
-            <p className="font-serif text-[15px] leading-relaxed">{sentence}</p>
+            <p className="text-[15px] leading-relaxed">{sentence}</p>
           )}
           {result && (
             <p className="mt-1 text-xs text-muted-foreground">

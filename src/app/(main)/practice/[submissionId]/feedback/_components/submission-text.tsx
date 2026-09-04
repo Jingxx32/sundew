@@ -45,7 +45,7 @@ export function SubmissionText({ contentFr, errors }: Props) {
   }
 
   return (
-    <p className="font-serif text-base leading-relaxed whitespace-pre-wrap">
+    <p className="text-base leading-relaxed whitespace-pre-wrap">
       {segments.map((seg, i) => {
         if (seg.type === "text") {
           return <span key={i}>{seg.text}</span>;

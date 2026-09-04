@@ -107,11 +107,6 @@
   --color-level-c2-ink: var(--level-c2-ink);
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  /* DEBT (phase 2): this deliberately points at the sans stack so all 119 UI
-     `font-serif` usages flip at once. The class name lies until those are
-     renamed/removed — see the phase-2 tasks in
-     docs/superpowers/plans/2026-09-03-modern-minimal-ui.md */
-  --font-serif: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-source-code), ui-monospace, "SFMono-Regular", monospace;
 }
 

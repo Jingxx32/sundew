@@ -38,7 +38,7 @@ export default async function TcfExamPage({
 
       {questions.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-surface/50 px-8 py-16 text-center">
-          <p className="font-serif text-xl text-foreground">Test {testNumber} introuvable.</p>
+          <p className="text-xl text-foreground">Test {testNumber} introuvable.</p>
           <p className="mt-2 text-sm text-muted-foreground">Choisissez un autre test depuis la page TCF.</p>
         </div>
       ) : (

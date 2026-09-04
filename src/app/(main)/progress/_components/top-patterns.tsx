@@ -12,7 +12,7 @@ export function TopPatterns({ patterns }: Props) {
 
   return (
     <section>
-      <h2 className="font-serif text-xl font-semibold mb-4">Most frequent errors</h2>
+      <h2 className="text-xl font-semibold mb-4">Most frequent errors</h2>
       <div className="space-y-3">
         {patterns.map((p) => {
           const style = CATEGORY_STYLES[p.category as ErrorCategory];
@@ -38,7 +38,7 @@ export function TopPatterns({ patterns }: Props) {
                     <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium block mb-0.5">
                       Original
                     </span>
-                    <span className="font-serif line-through text-muted-foreground">
+                    <span className="line-through text-muted-foreground">
                       {p.exampleOriginal}
                     </span>
                   </div>
@@ -46,7 +46,7 @@ export function TopPatterns({ patterns }: Props) {
                     <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium block mb-0.5">
                       Correction
                     </span>
-                    <span className="font-serif font-medium">{p.exampleCorrection}</span>
+                    <span className="font-medium">{p.exampleCorrection}</span>
                   </div>
                 </div>
               )}

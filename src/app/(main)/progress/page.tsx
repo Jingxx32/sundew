@@ -106,7 +106,7 @@ export default async function ProgressPage({
       {/* Dashboard layer */}
       {!hasEnoughData ? (
         <div className="rounded-2xl border border-dashed border-border bg-surface/50 px-8 py-10 text-center mb-8">
-          <p className="font-serif text-lg text-foreground">
+          <p className="text-lg text-foreground">
             Submit at least 3 writing tasks to unlock your progress dashboard.
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
@@ -164,7 +164,7 @@ export default async function ProgressPage({
       {/* Error archive list */}
       {visibleErrors.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-surface/50 px-8 py-16 text-center">
-          <p className="font-serif text-xl text-foreground">
+          <p className="text-xl text-foreground">
             {dashboardStats.totalErrors === 0
               ? "No errors yet."
               : "No errors match the current filter."}

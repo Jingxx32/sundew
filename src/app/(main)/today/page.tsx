@@ -111,7 +111,7 @@ export default async function TodayPage() {
 
       {doneCount === plan.blocks.length && (
         <div className="mt-8 rounded-2xl border border-success/30 bg-success-soft px-6 py-5 text-center">
-          <p className="font-serif text-lg text-success">Plan complete — à demain !</p>
+          <p className="text-lg text-success">Plan complete — à demain !</p>
           <p className="mt-1 text-xs text-muted-foreground">
             Check <Link href="/progress" className="text-accent hover:underline">Progress</Link> to
             see where today&apos;s work landed.

@@ -38,7 +38,7 @@ export function WritingForm({ taskId, minWordCount, maxWordCount }: Props) {
         placeholder="Écrivez votre réponse en français…"
         disabled={isPending}
         rows={12}
-        className="w-full font-serif text-base leading-relaxed resize-none rounded-xl border border-border bg-surface px-5 py-4 text-foreground placeholder:text-subtle-foreground focus:outline-none focus:ring-2 focus:ring-accent/40 disabled:opacity-50 transition-colors"
+        className="w-full text-base leading-relaxed resize-none rounded-xl border border-border bg-surface px-5 py-4 text-foreground placeholder:text-subtle-foreground focus:outline-none focus:ring-2 focus:ring-accent/40 disabled:opacity-50 transition-colors"
       />
 
       <div className="flex items-center justify-between gap-4">

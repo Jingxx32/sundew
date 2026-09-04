@@ -41,7 +41,7 @@ export function TaskCard({ task, doc }: Props) {
             Use
           </span>
           {targetWords.map((w) => (
-            <Chip key={w} className="font-serif">
+            <Chip key={w}>
               {w}
             </Chip>
           ))}
@@ -69,7 +69,7 @@ export function TaskCard({ task, doc }: Props) {
             Mots à employer
           </span>
           {targetLemmas.map((l) => (
-            <Chip key={l} variant="accent" className="font-serif">
+            <Chip key={l} variant="accent">
               {l}
             </Chip>
           ))}

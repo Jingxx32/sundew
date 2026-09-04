@@ -146,7 +146,7 @@ export function GapReviewRunner({ initialCards }: { initialCards: GapReviewCard[
   if (cards.length === 0 || done) {
     return cards.length === 0 ? (
       <div className="rounded-xl border border-border/70 bg-surface px-6 py-10 text-center">
-        <p className="font-serif text-lg">Rien à réviser aujourd&rsquo;hui</p>
+        <p className="text-lg">Rien à réviser aujourd&rsquo;hui</p>
         <p className="mt-1 text-sm text-muted-foreground">Revenez quand des mots arriveront à échéance.</p>
         <Link href="/vocabulary" className="mt-4 inline-block text-sm text-accent hover:underline">
           Retour au vocabulaire
@@ -154,7 +154,7 @@ export function GapReviewRunner({ initialCards }: { initialCards: GapReviewCard[
       </div>
     ) : (
       <div className="rounded-xl border border-border/70 bg-surface px-6 py-10 text-center">
-        <p className="font-serif text-lg">
+        <p className="text-lg">
           {summary.right} justes · {summary.wrong} fautes · {summary.promoted} promues
         </p>
         <Link href="/vocabulary" className="mt-4 inline-block text-sm text-accent hover:underline">
@@ -214,7 +214,7 @@ export function GapReviewRunner({ initialCards }: { initialCards: GapReviewCard[
                 </button>
               )}
               {showWordText && (
-                <p className="mt-3 font-serif text-2xl">{card.surface}</p>
+                <p className="mt-3 text-2xl">{card.surface}</p>
               )}
             </div>
             <div className="space-y-1.5">
@@ -270,7 +270,7 @@ export function GapReviewRunner({ initialCards }: { initialCards: GapReviewCard[
         {answered && (
           <div className="rounded-lg bg-surface-muted/60 px-3 py-2 text-sm text-muted-foreground">
             <span className="font-medium text-foreground">{card.lemma}</span> — {card.translation}
-            {card.examples[0] && <p className="mt-1 font-serif text-xs italic">{card.examples[0]}</p>}
+            {card.examples[0] && <p className="mt-1 text-xs italic">{card.examples[0]}</p>}
           </div>
         )}
 
@@ -315,8 +315,8 @@ function ProductionCard({
   const blanked = card.sentenceContext ? blankOut(card.sentenceContext, card.lemma, card.surface) : null;
   return (
     <div className="space-y-3 text-center">
-      <p className="font-serif text-2xl">{card.translation}</p>
-      {blanked && <p className="font-serif text-sm text-muted-foreground">{blanked}</p>}
+      <p className="text-2xl">{card.translation}</p>
+      {blanked && <p className="text-sm text-muted-foreground">{blanked}</p>}
       {!answered ? (
         <input
           autoFocus

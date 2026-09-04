@@ -28,7 +28,7 @@ export function EncouragementBanner({ stats }: Props) {
 
   return (
     <div className="rounded-2xl border border-border bg-surface/50 px-6 py-4">
-      <p className="font-serif text-sm text-muted-foreground">{text}</p>
+      <p className="text-sm text-muted-foreground">{text}</p>
     </div>
   );
 }

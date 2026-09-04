@@ -57,7 +57,7 @@ export default async function TcfDrillPage({
           >
             <ChevronLeft className="h-5 w-5" aria-hidden="true" />
           </Link>
-          <h1 className="font-serif text-xl font-semibold tracking-tight md:text-3xl">{title}</h1>
+          <h1 className="text-xl font-semibold tracking-tight md:text-3xl">{title}</h1>
           <LevelBadge level={level} className="px-2 py-0.5 text-sm" />
         </div>
         <p className="mt-1 hidden text-sm text-muted-foreground md:block">
@@ -76,7 +76,7 @@ export default async function TcfDrillPage({
 
       {questions.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-surface/50 px-8 py-16 text-center">
-          <p className="font-serif text-xl text-foreground">
+          <p className="text-xl text-foreground">
             Aucune question pour le niveau {level}.
           </p>
           <p className="mt-2 text-sm text-muted-foreground">

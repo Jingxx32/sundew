@@ -115,7 +115,7 @@ export function ScriptWorkbench({ prompt, initialScript }: Props) {
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             rows={16}
-            className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-accent/40 resize-y font-serif"
+            className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-accent/40 resize-y"
           />
         ) : (
           <article className="reading-prose text-[15px] whitespace-pre-wrap">

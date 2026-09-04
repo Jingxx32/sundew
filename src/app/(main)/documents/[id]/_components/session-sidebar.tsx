@@ -54,7 +54,7 @@ export function SessionSidebar({ savedWords, isGenerating, onGenerateFromWords }
           {savedWords.map((word) => (
             <div
               key={word}
-              className="text-sm font-serif text-foreground bg-surface rounded-lg px-3 py-1.5 border border-border/60"
+              className="text-sm text-foreground bg-surface rounded-lg px-3 py-1.5 border border-border/60"
             >
               {word}
             </div>

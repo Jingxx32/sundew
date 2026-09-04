@@ -99,7 +99,7 @@ export function QuizRunner({
         </div>
       ) : (
         <div className="rounded-xl border border-border/70 bg-surface px-5 py-4">
-          <p className="font-serif text-xl font-semibold">
+          <p className="text-xl font-semibold">
             {result.score}/{result.total} correct
           </p>
           <p className="mt-0.5 text-xs text-muted-foreground">

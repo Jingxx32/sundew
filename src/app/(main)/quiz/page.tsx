@@ -69,7 +69,7 @@ function QuizSetCard({ set }: { set: QuizSetListItem }) {
       <Card className="px-6 py-4 transition-colors group-hover:border-accent-soft-strong">
         <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
-            <h3 className="font-serif text-lg font-semibold tracking-tight truncate">
+            <h3 className="text-lg font-semibold tracking-tight truncate">
               {set.title}
             </h3>
             <p className="mt-0.5 text-xs text-muted-foreground">
@@ -106,7 +106,7 @@ function QuizSetCard({ set }: { set: QuizSetListItem }) {
 function EmptyState({ filtered }: { filtered: boolean }) {
   return (
     <div className="rounded-2xl border border-dashed border-border bg-surface/50 px-8 py-16 text-center">
-      <p className="font-serif text-xl text-foreground">
+      <p className="text-xl text-foreground">
         {filtered ? "No sets match this filter." : "No quiz sets yet."}
       </p>
       <p className="mt-2 text-sm text-muted-foreground max-w-sm mx-auto">

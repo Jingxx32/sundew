@@ -48,7 +48,7 @@ function ScoreHeader({ testNumber, score }: { testNumber: number; score: ReturnT
   return (
     <div className="mb-6 rounded-2xl border border-border/70 bg-surface px-8 py-6">
       <p className="font-mono text-xs uppercase tracking-widest text-subtle-foreground">Résultat · Test {testNumber}</p>
-      <p className="mt-1 font-serif text-5xl font-semibold text-foreground">
+      <p className="mt-1 text-5xl font-semibold text-foreground">
         {score.correct}
         <span className="text-xl font-normal text-muted-foreground"> / {score.total}</span>
       </p>
@@ -229,7 +229,7 @@ export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: E
         <div className="min-w-0 flex-1">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="font-serif text-lg font-semibold text-foreground">Q{q.orderIndex}</span>
+              <span className="text-lg font-semibold text-foreground">Q{q.orderIndex}</span>
               <LevelBadge level={q.level} />
               <span className="rounded bg-surface-muted px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground">
                 {TYPE_LABELS[q.type]}
@@ -257,7 +257,7 @@ export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: E
 
           {/* Question card */}
           <div className="space-y-4 rounded-xl border border-border/70 bg-surface px-6 py-5">
-            <p className="font-serif text-lg leading-snug text-foreground">{q.questionText}</p>
+            <p className="text-lg leading-snug text-foreground">{q.questionText}</p>
 
             <QuestionMedia question={q} ref={audioRef} />
 
@@ -306,7 +306,7 @@ export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: E
               <p className="mb-1.5 font-mono text-[11px] uppercase tracking-widest text-subtle-foreground">
                 Transcription
               </p>
-              <p className="whitespace-pre-wrap font-serif text-sm leading-relaxed text-foreground">{q.transcript}</p>
+              <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">{q.transcript}</p>
             </div>
           )}
 

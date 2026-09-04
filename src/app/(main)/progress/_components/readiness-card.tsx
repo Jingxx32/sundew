@@ -46,7 +46,7 @@ function SkillTile({ skill, targetCefr }: { skill: SkillReadiness; targetCefr: C
             {skill.label}
           </span>
         ) : (
-          <span className="font-serif text-lg text-subtle-foreground">—</span>
+          <span className="text-lg text-subtle-foreground">—</span>
         )}
       </div>
       <p className="text-[11px] leading-snug text-muted-foreground">{skill.detail}</p>
@@ -62,7 +62,7 @@ export function ReadinessCard({ summary }: { summary: ReadinessSummary }) {
   return (
     <section className="space-y-3">
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <h2 className="font-serif text-xl font-semibold flex items-center gap-2">
+        <h2 className="text-xl font-semibold flex items-center gap-2">
           <Target className="h-4.5 w-4.5 text-accent" strokeWidth={1.8} />
           Readiness
         </h2>

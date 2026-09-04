@@ -71,7 +71,7 @@ export default async function TcfPage({
 
       {summaries.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-surface/50 px-8 py-16 text-center">
-          <p className="font-serif text-xl text-foreground">Aucune question disponible.</p>
+          <p className="text-xl text-foreground">Aucune question disponible.</p>
           <p className="mt-2 text-sm text-muted-foreground">
             Importez les exercices pour commencer.
           </p>
@@ -98,7 +98,7 @@ export default async function TcfPage({
                       <span className="text-[11px] text-subtle-foreground">{s.total} q.</span>
                     )}
                   </div>
-                  <p className="font-serif text-base font-semibold text-foreground leading-tight">
+                  <p className="text-base font-semibold text-foreground leading-tight">
                     {LEVEL_LABELS[s.level]}
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
@@ -160,7 +160,7 @@ export default async function TcfPage({
                     exam ? "border-accent/30" : started ? "border-warning/30" : "border-border/70"
                   }`}
                 >
-                  <span className="font-serif text-lg font-semibold text-foreground group-hover:text-accent">
+                  <span className="text-lg font-semibold text-foreground group-hover:text-accent">
                     {s.testNumber}
                   </span>
                   {/* Score of the last whole-exam run outranks the drill count:

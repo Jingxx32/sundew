@@ -26,7 +26,7 @@ export function SourceExcerpt({ doc }: Props) {
   return (
     <div className="bg-surface rounded-2xl border border-border shadow-sm p-6 space-y-3">
       <div className="text-[11px] uppercase tracking-wider text-accent font-medium">Source</div>
-      <p className="font-serif text-sm leading-relaxed text-foreground whitespace-pre-wrap">
+      <p className="text-sm leading-relaxed text-foreground whitespace-pre-wrap">
         {displayText}
         {!expanded && showToggle && "…"}
       </p>

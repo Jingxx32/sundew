@@ -144,7 +144,7 @@ export function PosDetails({ entry }: { entry: FrenchVocabEntry }) {
       {entry.note && (
         <section>
           <Label>Note</Label>
-          <p className="font-serif text-sm text-foreground">{entry.note}</p>
+          <p className="text-sm text-foreground">{entry.note}</p>
         </section>
       )}
 

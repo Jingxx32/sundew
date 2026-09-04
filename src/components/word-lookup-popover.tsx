@@ -112,7 +112,7 @@ function LoadingSkeleton({ word, onClose }: { word: string; onClose: () => void 
   return (
     <div className="p-4 space-y-3">
       <div className="flex items-start justify-between gap-2">
-        <span className="font-serif text-base font-semibold">{word}</span>
+        <span className="text-base font-semibold">{word}</span>
         <button onClick={onClose} className="text-subtle-foreground hover:text-foreground shrink-0">
           <X className="h-4 w-4" />
         </button>
@@ -172,7 +172,7 @@ function LookupCard({
       {/* Header */}
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <div className="font-serif text-base font-semibold text-foreground">{word}</div>
+          <div className="text-base font-semibold text-foreground">{word}</div>
           <div className="text-xs text-muted-foreground mt-0.5">{result.pos}</div>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
@@ -213,7 +213,7 @@ function LookupCard({
       <Section label="Examples">
         <ul className="space-y-1">
           {result.examples.map((ex, i) => (
-            <li key={i} className="text-foreground font-serif italic">
+            <li key={i} className="text-foreground italic">
               {ex}
             </li>
           ))}

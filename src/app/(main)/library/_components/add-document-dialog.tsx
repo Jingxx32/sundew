@@ -127,7 +127,7 @@ export function AddDocumentDialog() {
               name="content"
               placeholder="Paste your French text here…"
               required
-              className="min-h-[200px] font-serif text-base leading-relaxed"
+              className="min-h-[200px] text-base leading-relaxed"
             />
             {state && !state.ok && state.errors.content && (
               <p className="text-xs text-danger">{state.errors.content}</p>

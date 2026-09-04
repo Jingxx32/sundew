@@ -65,7 +65,7 @@ export function DocumentRow({
 
         {/* Title + meta */}
         <div className="min-w-0 flex-1 relative z-10 pointer-events-none">
-          <div className="font-serif text-base font-medium text-foreground truncate">
+          <div className="text-base font-medium text-foreground truncate">
             {doc.title}
           </div>
           <div className="text-xs text-muted-foreground truncate">

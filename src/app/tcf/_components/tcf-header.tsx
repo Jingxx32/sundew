@@ -17,7 +17,7 @@ export function TcfHeader() {
         <span className="rounded border border-accent/30 bg-accent-soft px-1.5 py-0.5 font-mono text-[11px] font-semibold tracking-wider text-accent">
           TCF
         </span>
-        <span className="hidden font-serif text-lg font-semibold tracking-tight sm:inline">Canada</span>
+        <span className="hidden text-lg font-semibold tracking-tight sm:inline">Canada</span>
       </div>
 
       <div className="inline-flex shrink-0 rounded-lg border border-border/70 bg-surface p-0.5">

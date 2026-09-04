@@ -26,7 +26,7 @@ export function ContinueReadingCard({ document }: { document: Document }) {
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 items-start">
         <div className="min-w-0">
-          <h2 className="font-serif text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             {document.title}
           </h2>
           {document.source && (
@@ -34,7 +34,7 @@ export function ContinueReadingCard({ document }: { document: Document }) {
               {document.source}
             </p>
           )}
-          <p className="mt-3 text-sm italic text-muted-foreground leading-relaxed line-clamp-2 font-serif">
+          <p className="mt-3 text-sm italic text-muted-foreground leading-relaxed line-clamp-2">
             “{excerpt}…”
           </p>
 

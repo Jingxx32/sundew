@@ -539,7 +539,7 @@ export function ImportQuizDialog() {
                   key={index}
                   className="rounded-lg border border-border/60 bg-surface-muted/40 px-3 py-2"
                 >
-                  <p className="font-serif text-sm">{blank.questionText}</p>
+                  <p className="text-sm">{blank.questionText}</p>
                   <p className="mt-1 text-xs text-muted-foreground">
                     <span className="text-success font-medium">
                       {blank.answer[0]}

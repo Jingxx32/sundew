@@ -19,7 +19,7 @@ export default async function PracticePage({
         <div className="flex justify-center mb-2">
           <BookOpen className="h-10 w-10 text-muted-foreground/40" />
         </div>
-        <h1 className="font-serif text-2xl font-semibold">Practice</h1>
+        <h1 className="text-2xl font-semibold">Practice</h1>
         <div className="flex justify-center">
           <QuickWriteButton />
         </div>

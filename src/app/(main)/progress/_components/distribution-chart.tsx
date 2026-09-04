@@ -43,7 +43,7 @@ export function DistributionChart({ counts }: Props) {
 
   return (
     <div className="space-y-3">
-      <h2 className="font-serif text-xl font-semibold">Distribution</h2>
+      <h2 className="text-xl font-semibold">Distribution</h2>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart

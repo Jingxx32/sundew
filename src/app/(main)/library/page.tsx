@@ -77,7 +77,7 @@ function countByType(docs: Array<{ type: string }>) {
 function EmptyState({ filtered }: { filtered: boolean }) {
   return (
     <div className="rounded-2xl border border-dashed border-border bg-surface/50 px-8 py-16 text-center">
-      <p className="font-serif text-xl text-foreground">
+      <p className="text-xl text-foreground">
         {filtered ? "No documents match your search." : "Your library is empty."}
       </p>
       <p className="mt-2 text-sm text-muted-foreground max-w-sm mx-auto">

@@ -58,7 +58,7 @@ export function DrillCard({ queue }: { queue: DrillItem[] }) {
   if (queue.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-border bg-surface/50 px-8 py-16 text-center">
-        <p className="font-serif text-xl">No drills available.</p>
+        <p className="text-xl">No drills available.</p>
         <p className="mt-2 text-sm text-muted-foreground">
           The verb list could not be loaded — try reloading the page.
         </p>
@@ -111,7 +111,7 @@ export function DrillCard({ queue }: { queue: DrillItem[] }) {
           onChange={(e) => setInput(e.target.value)}
           disabled={result !== null || pending}
           placeholder={item.pronominal ? "me …" : "Type the form…"}
-          className="max-w-sm font-serif text-base"
+          className="max-w-sm text-base"
           lang="fr"
           autoComplete="off"
           spellCheck={false}
@@ -149,7 +149,7 @@ export function DrillCard({ queue }: { queue: DrillItem[] }) {
           </p>
           <p className="mt-1">
             {item.personLabel.split(" ")[0]}{" "}
-            <span className="font-serif font-semibold">{result.expected}</span>
+            <span className="font-semibold">{result.expected}</span>
             {result.accepted.length > 1 && (
               <span className="text-xs">
                 {" "}

@@ -51,7 +51,7 @@ export function ArchivedErrorCard({ error, rule }: Props) {
       </div>
 
       {/* Sentence snippet */}
-      <p className="font-serif text-sm leading-relaxed">
+      <p className="text-sm leading-relaxed">
         <span className="text-muted-foreground">{before}</span>
         <mark className={`${style.mark} rounded-sm px-0.5 text-foreground font-medium`}>
           {highlighted}
@@ -65,13 +65,13 @@ export function ArchivedErrorCard({ error, rule }: Props) {
           <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium block mb-0.5">
             Original
           </span>
-          <span className="font-serif line-through text-muted-foreground">{error.original}</span>
+          <span className="line-through text-muted-foreground">{error.original}</span>
         </div>
         <div>
           <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium block mb-0.5">
             Correction
           </span>
-          <span className="font-serif font-medium">{error.correction}</span>
+          <span className="font-medium">{error.correction}</span>
         </div>
       </div>
 
@@ -97,7 +97,7 @@ export function ArchivedErrorCard({ error, rule }: Props) {
                   <p className="text-xs font-medium">{rule.name}</p>
                   <p className="text-xs text-muted-foreground leading-relaxed">{rule.descriptionEn}</p>
                   {(rule.examples as string[] | null)?.map((ex, i) => (
-                    <p key={i} className="font-serif text-xs text-muted-foreground border-l-2 border-border pl-2">
+                    <p key={i} className="text-xs text-muted-foreground border-l-2 border-border pl-2">
                       {ex}
                     </p>
                   ))}

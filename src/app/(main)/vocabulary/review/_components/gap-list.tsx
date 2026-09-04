@@ -77,7 +77,7 @@ export function GapList({ rows }: { rows: GapListRow[] }) {
           <tbody>
             {filtered.map((row) => (
               <tr key={row.gapId} className="border-b border-border/40 last:border-0">
-                <td className="px-3 py-2 font-serif text-sm">
+                <td className="px-3 py-2 text-sm">
                   {row.lemma}
                   {row.translation && <span className="ml-1.5 text-muted-foreground">— {row.translation}</span>}
                 </td>

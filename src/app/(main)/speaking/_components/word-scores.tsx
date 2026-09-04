@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
  */
 export function WordScores({ words }: { words: TurnAssessment["words"] }) {
   return (
-    <p className="font-serif text-[15px] leading-relaxed">
+    <p className="text-[15px] leading-relaxed">
       {words.map((w, i) => (
         <span key={i}>
           <span

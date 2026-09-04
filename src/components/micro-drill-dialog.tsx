@@ -98,17 +98,17 @@ export function MicroDrillDialog({ errorId, microDrill, original, correction }: 
         </DialogHeader>
 
         {/* Drill prompt */}
-        <p className="font-serif text-sm leading-relaxed">{microDrill}</p>
+        <p className="text-sm leading-relaxed">{microDrill}</p>
 
         {/* Error context reminder */}
         <div className="rounded-lg bg-surface-muted border border-border/60 p-3 space-y-1 text-xs">
           <div>
             <span className="text-muted-foreground">Error: </span>
-            <span className="font-serif line-through text-muted-foreground">{original}</span>
+            <span className="line-through text-muted-foreground">{original}</span>
           </div>
           <div>
             <span className="text-muted-foreground">Correction: </span>
-            <span className="font-serif font-medium">{correction}</span>
+            <span className="font-medium">{correction}</span>
           </div>
         </div>
 
@@ -125,7 +125,7 @@ export function MicroDrillDialog({ errorId, microDrill, original, correction }: 
                   key={attempt.id ?? i}
                   className="rounded-lg border border-border p-3 text-xs space-y-1.5"
                 >
-                  <p className="font-serif">{attempt.responseFr}</p>
+                  <p>{attempt.responseFr}</p>
                   {fb && (
                     <p
                       className={
@@ -174,7 +174,7 @@ export function MicroDrillDialog({ errorId, microDrill, original, correction }: 
                   Better examples
                 </div>
                 {feedback.better_examples.map((ex, i) => (
-                  <p key={i} className="font-serif text-sm">
+                  <p key={i} className="text-sm">
                     {ex}
                   </p>
                 ))}
@@ -185,7 +185,7 @@ export function MicroDrillDialog({ errorId, microDrill, original, correction }: 
           /* Response textarea */
           <div className="space-y-2">
             <textarea
-              className="w-full rounded-lg border border-border bg-surface p-3 text-sm font-serif leading-relaxed resize-none h-24 focus:outline-none focus:ring-1 focus:ring-accent"
+              className="w-full rounded-lg border border-border bg-surface p-3 text-sm leading-relaxed resize-none h-24 focus:outline-none focus:ring-1 focus:ring-accent"
               placeholder="Write 2 sentences in French using the correct form…"
               value={response}
               onChange={(e) => setResponse(e.target.value)}

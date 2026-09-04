@@ -162,7 +162,7 @@ export function VocabBrowser({
         <div className="rounded-xl border border-border bg-surface divide-y divide-border/50 overflow-hidden">
           {filtered.length === 0 ? (
             <div className="px-6 py-12 text-center">
-              <p className="font-serif text-lg text-foreground">No words found.</p>
+              <p className="text-lg text-foreground">No words found.</p>
               <p className="mt-1 text-sm text-muted-foreground">Try adjusting the filters.</p>
             </div>
           ) : (
@@ -177,7 +177,7 @@ export function VocabBrowser({
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-serif font-medium text-foreground truncate">
+                    <span className="font-medium text-foreground truncate">
                       {entry.lemma}
                     </span>
                     {entry.saved && (
@@ -265,7 +265,7 @@ function DetailPanel({
       {/* Header */}
       <div className="px-5 py-4 border-b border-border/60">
         <div className="flex items-start justify-between gap-2">
-          <h2 className="font-serif text-2xl font-semibold text-foreground">{detail.lemma}</h2>
+          <h2 className="text-2xl font-semibold text-foreground">{detail.lemma}</h2>
           <div className="flex items-center gap-1.5 mt-1 shrink-0">
             {detail.cefrLevel && (
               <span
@@ -299,7 +299,7 @@ function DetailPanel({
             <h3 className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
               In context
             </h3>
-            <p className="font-serif text-sm text-foreground">{detail.inContext}</p>
+            <p className="text-sm text-foreground">{detail.inContext}</p>
           </section>
         )}
 
@@ -311,7 +311,7 @@ function DetailPanel({
             </h3>
             <ul className="space-y-1">
               {detail.examples.map((ex, i) => (
-                <li key={i} className="font-serif text-sm text-foreground">
+                <li key={i} className="text-sm text-foreground">
                   {ex}
                 </li>
               ))}
@@ -358,7 +358,7 @@ function DetailPanel({
                 <ul className="space-y-1">
                   {detail.richEntry.collocations.map((c, i) => (
                     <li key={i} className="text-sm">
-                      <span className="font-serif text-foreground">{c.fr}</span>
+                      <span className="text-foreground">{c.fr}</span>
                       <span className="text-muted-foreground"> — {c.en}</span>
                     </li>
                   ))}
@@ -412,7 +412,7 @@ function DetailPanel({
                       {label}
                     </Link>
                     {o.sentenceContext && (
-                      <p className="font-serif text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                      <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
                         {o.sentenceContext}
                       </p>
                     )}

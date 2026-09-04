@@ -49,7 +49,7 @@ export function ErrorCard({ error, index, rule }: Props) {
         <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
           Original
         </div>
-        <p className="font-serif text-sm line-through text-muted-foreground">{error.original}</p>
+        <p className="text-sm line-through text-muted-foreground">{error.original}</p>
       </div>
 
       {/* Show correction toggle — two-click per §5.5 No spoilers */}
@@ -75,7 +75,7 @@ export function ErrorCard({ error, index, rule }: Props) {
           <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
             Correction
           </div>
-          <p className="font-serif text-sm font-medium text-foreground">{error.correction}</p>
+          <p className="text-sm font-medium text-foreground">{error.correction}</p>
         </div>
       )}
 
@@ -95,7 +95,7 @@ export function ErrorCard({ error, index, rule }: Props) {
           </div>
           <ul className="space-y-0.5">
             {frExamples.map((ex, i) => (
-              <li key={i} className="font-serif text-xs text-muted-foreground">
+              <li key={i} className="text-xs text-muted-foreground">
                 {ex}
               </li>
             ))}
@@ -129,7 +129,7 @@ export function ErrorCard({ error, index, rule }: Props) {
                   {(rule.examples as string[] | null)?.map((ex, i) => (
                     <p
                       key={i}
-                      className="font-serif text-xs text-muted-foreground border-l-2 border-border pl-2"
+                      className="text-xs text-muted-foreground border-l-2 border-border pl-2"
                     >
                       {ex}
                     </p>

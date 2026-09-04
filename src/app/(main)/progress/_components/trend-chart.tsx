@@ -70,7 +70,7 @@ export function TrendChart({ data, windowDays }: Props) {
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-serif text-xl font-semibold">Error density</h2>
+          <h2 className="text-xl font-semibold">Error density</h2>
           <p className="text-[11px] text-muted-foreground">
             errors per 100 words · bars show words written
           </p>

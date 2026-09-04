@@ -124,7 +124,7 @@ export function ClozeRunner({
               key={question.id}
               className="rounded-xl border border-border/70 bg-surface px-5 py-4"
             >
-              <p className="font-serif text-base leading-relaxed mb-3">
+              <p className="text-base leading-relaxed mb-3">
                 <span className="font-sans text-xs text-subtle-foreground mr-2">
                   {index + 1}.
                 </span>
@@ -155,7 +155,7 @@ export function ClozeRunner({
                   }
                   disabled={submitted}
                   placeholder="Type what you hear…"
-                  className="max-w-xs font-serif"
+                  className="max-w-xs"
                   lang="fr"
                   autoComplete="off"
                   spellCheck={false}
@@ -183,7 +183,7 @@ export function ClozeRunner({
                   {!correct && accepted.length > 0 && (
                     <span>
                       Correct spelling:{" "}
-                      <span className="font-serif font-medium">
+                      <span className="font-medium">
                         {accepted[0]}
                       </span>
                     </span>
@@ -228,7 +228,7 @@ export function ClozeRunner({
         </div>
       ) : (
         <div className="rounded-xl border border-border/70 bg-surface px-5 py-4">
-          <p className="font-serif text-xl font-semibold">
+          <p className="text-xl font-semibold">
             {result.score}/{result.total} correct
           </p>
           <p className="mt-0.5 text-xs text-muted-foreground">

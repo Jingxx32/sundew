@@ -23,7 +23,7 @@ export function ComingSoon({
 
       <div className="mt-12 rounded-2xl border border-dashed border-border bg-surface/50 px-8 py-16 text-center">
         <Sparkles className="h-6 w-6 text-accent mx-auto mb-3" />
-        <p className="font-serif text-lg text-foreground">
+        <p className="text-lg text-foreground">
           Not yet implemented in v0.1
         </p>
         <p className="mt-2 text-sm text-muted-foreground">
