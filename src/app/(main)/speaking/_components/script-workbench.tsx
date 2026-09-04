@@ -68,7 +68,7 @@ export function ScriptWorkbench({ prompt, initialScript }: Props) {
 
   if (!script) {
     return (
-      <div className="rounded-2xl border border-border bg-surface p-10 text-center">
+      <div className="rounded-2xl bg-surface shadow-card p-10 text-center">
         <p className="text-sm text-muted-foreground mb-5">
           Generate a reference script from your speaking profile, then practice it line by line.
         </p>
@@ -85,7 +85,7 @@ export function ScriptWorkbench({ prompt, initialScript }: Props) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Script panel */}
-      <section className="rounded-2xl border border-border bg-surface p-6">
+      <section className="rounded-2xl bg-surface shadow-card p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-medium text-sm">Reference script</h2>
           <div className="flex items-center gap-2">
@@ -125,7 +125,7 @@ export function ScriptWorkbench({ prompt, initialScript }: Props) {
       </section>
 
       {/* Practice panel */}
-      <section className="rounded-2xl border border-border bg-surface p-6">
+      <section className="rounded-2xl bg-surface shadow-card p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-medium text-sm">
             Read-aloud practice

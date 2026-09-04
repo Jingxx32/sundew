@@ -16,7 +16,7 @@ export function PromptList({ prompts }: { prompts: PromptWithStats[] }) {
 
   if (prompts.length === 0) {
     return (
-      <div className="rounded-2xl border border-border bg-surface p-8 text-center text-sm text-muted-foreground">
+      <div className="rounded-2xl bg-surface shadow-card p-8 text-center text-sm text-muted-foreground">
         No prompts yet. Add entries to <code className="font-mono">data/tcf-speaking.json</code> and
         run <code className="font-mono">npx tsx scripts/import-tcf-speaking.ts</code>.
       </div>
@@ -35,7 +35,7 @@ export function PromptList({ prompts }: { prompts: PromptWithStats[] }) {
                 <li key={p.id}>
                   <Link
                     href={`/speaking/${p.id}/script`}
-                    className="flex items-center gap-4 rounded-xl border border-border bg-surface px-5 py-4 hover:border-accent/50 transition-colors"
+                    className="flex items-center gap-4 rounded-xl border border-transparent bg-surface shadow-card px-5 py-4 hover:border-accent/50 transition-colors"
                   >
                     <span className="flex-1 text-sm leading-snug">{p.prompt}</span>
                     <span className="flex items-center gap-3 shrink-0 text-xs text-muted-foreground">
