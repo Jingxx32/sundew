@@ -41,16 +41,79 @@ function clean(raw: string): string[] {
     .filter(Boolean);
 }
 
-/** Split OCR lines into { passage, prompt }. Prompt = trailing interrogative line. */
-function splitPrompt(lines: string[]): { passage: string; prompt: string | null } {
-  if (lines.length >= 2) {
-    const last = lines[lines.length - 1];
-    // A real prompt is a short-ish question; guard against grabbing passage prose.
-    if (last.endsWith("?") && last.length <= 200) {
-      return { passage: lines.slice(0, -1).join("\n").trim(), prompt: last };
+/**
+ * French question-opener words the prompt line can start with. Anchors the
+ * backward scan in splitPrompt — a wrapped passage line almost never starts
+ * with one of these capitalized forms, so it reliably marks where the
+ * (possibly multi-line) prompt begins.
+ */
+const QUESTION_STARTERS =
+  /^(Qu['’ ]|Quel|Quelle|Quels|Quelles|Que |Qui |Quand|Combien|Comment|Pourquoi|Où |A quoi|À |De quoi|De quel|D['’]où|D['’]après|Selon|Dans |En quoi|Pour qui|Pour quoi|Pour quelle|Sur quoi|Sur quel|Lisez le)/;
+
+/**
+ * The question-number chip ("6.", "27", "39)") sometimes OCRs onto the same
+ * line as the prompt's first word, and occasionally the digit itself gets
+ * misread as a stray short token (e.g. "p Où est le musée ?"). Try the line
+ * as-is first, then with a leading digit chip stripped, then with any
+ * leading 1–3 char token stripped — returning the first form that reveals a
+ * recognized question opener, or null if none does.
+ */
+function stripLeadingChip(line: string): string | null {
+  if (QUESTION_STARTERS.test(line)) return line;
+  const noDigit = line.replace(/^\d+[.)]?\s*/, "");
+  if (noDigit !== line && QUESTION_STARTERS.test(noDigit)) return noDigit;
+  const noChip = line.replace(/^\S{1,3}[.)]?\s+/, "");
+  if (noChip !== line && QUESTION_STARTERS.test(noChip)) return noChip;
+  return null;
+}
+
+/**
+ * The on-screen number badge ("35", "32)", "23]") sits just left of the
+ * prompt and, when the prompt wraps, can land on ANY of its OCR lines —
+ * not just the first — landing mid-sentence (e.g. "...est décrit dans /
+ * 35)| cet article ?"). Since we know the exact number for this question,
+ * strip it from every line rather than guessing at punctuation shapes.
+ */
+function stripKnownChip(line: string, questionNumber: number): string {
+  const re = new RegExp(`^${questionNumber}[.)\\]|]{0,3}\\s+`);
+  return line.replace(re, "");
+}
+
+/**
+ * Split OCR lines into { passage, prompt }. The prompt is the trailing
+ * question — usually one line, but long prompts wrap across 2–3 OCR lines
+ * (e.g. "Pourquoi ce dispositif est-il utile aux" / "jeunes ?"). Scan
+ * backward from the last line and grow the prompt until it reaches a line
+ * that looks like a question opener; that's the true start.
+ */
+function splitPrompt(
+  rawLines: string[],
+  questionNumber: number,
+): { passage: string; prompt: string | null } {
+  const lines = rawLines.map((l) => stripKnownChip(l, questionNumber));
+  if (lines.length < 2) return { passage: lines.join("\n").trim(), prompt: null };
+
+  const last = lines[lines.length - 1];
+  // A real prompt is a short-ish question; guard against grabbing passage prose.
+  if (!last.endsWith("?") || last.length > 200) {
+    return { passage: lines.join("\n").trim(), prompt: null };
+  }
+
+  const MAX_LOOKBACK = 4; // prompts wrap at most ~3 lines in practice
+  for (let span = 1; span <= MAX_LOOKBACK && span <= lines.length; span++) {
+    const startIdx = lines.length - span;
+    const cleaned = stripLeadingChip(lines[startIdx]);
+    if (cleaned !== null) {
+      const rest = lines.slice(startIdx + 1);
+      const prompt = [cleaned, ...rest].join(" ").replace(/\s+/g, " ").trim();
+      const passage = lines.slice(0, startIdx).join("\n").trim();
+      return { passage, prompt };
     }
   }
-  return { passage: lines.join("\n").trim(), prompt: null };
+
+  // No recognizable opener within the lookback window — fall back to the
+  // old single-line behaviour rather than guessing.
+  return { passage: lines.slice(0, -1).join("\n").trim(), prompt: last };
 }
 
 async function main() {
@@ -103,7 +166,7 @@ async function main() {
     }
     if (lines.length === 0) continue;
 
-    const { passage, prompt } = splitPrompt(lines);
+    const { passage, prompt } = splitPrompt(lines, r.orderIndex);
     if (prompt) {
       prompts++;
       await sql`UPDATE tcf_questions SET passage = ${passage}, question_text = ${prompt} WHERE id = ${r.id}`;
