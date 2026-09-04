@@ -140,8 +140,14 @@ Question / Text / Options 三样都译
 - **`## Transcript` 必须重排**：库里的 transcript 是 OCR 出来的连体字，句子粘连
   （`…problèmes.Et donc…` 这种）、没有说话人、问题句直接糊在正文末尾（1279 道 dialogue
   里只有 183 道有 `Question:` 标记）。断说话人、断句、补标点是这一节的主要价值。
+- **写了 `## Transcript`，页面内置的「Transcription」面板就会自动隐藏**（drill 和
+  exam 都是），重排版取代原始 OCR，不会同一段对话显示两遍。所以这一节要么不写，
+  要写就得完整——它是那道题唯一的原文。判定靠 `hasTranscriptSection()`，
+  `## Propositions` 不触发（那两个题型的 transcript 只是一句问题，没有重复）。
 - **`↳` 旁注必须写成嵌套列表项**（上面那样，父项下缩进两格的 `- ↳ …`）。用空格
   缩进的续行不行——4 空格在 markdown 里是代码块。
+- **`## Translation` 里的对话每轮之间要空一个 `>` 行**，否则 blockquote 里的连续行
+  会被 markdown 合成一个段落，六轮对话挤成一坨。
 - **标注密度**：决定答案那句必标；其余句只在「会听成另一个词」时才标（同音撞车、
   缩合后认不出、数字/专名）。单纯的常规联诵不标。**一题上限 3 行 ↳**。
 - 题型变体：`dialogue` 走完整模板；`spoken_options`（音频只是一句问句，负荷在四个

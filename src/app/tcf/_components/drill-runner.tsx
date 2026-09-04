@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Eye, Loader2, PenLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { hasTranscriptSection } from "@/lib/tcf/parse-explanation";
 import { ExplanationPanel } from "./explanation-panel";
 import { VerdictBar } from "./verdict-bar";
 import { LevelNav } from "./level-nav";
@@ -252,6 +253,7 @@ export function DrillRunner({
 
   const audioOnly = q.type === "image" || q.type === "spoken_options";
   const why = showAnswer ? q.explanationMeta?.options : undefined;
+  const rewrittenTranscript = q.explanation !== null && hasTranscriptSection(q.explanation);
 
   return (
     <div className="flex flex-col gap-4 min-h-0 md:flex-row md:gap-6">
@@ -334,7 +336,10 @@ export function DrillRunner({
           A–D pour répondre · ← → pour naviguer{q.type !== "reading_mcq" ? " · Espace lecture · R recule" : ""}
         </p>
 
-        {showAnswer && q.transcript && (
+        {/* Suppressed when the explanation rewrites the recording itself: the stored
+            column is OCR run-on text, so showing both prints the same dialogue
+            twice, unreadable version first. */}
+        {showAnswer && q.transcript && !rewrittenTranscript && (
           <MarkGapFloater skill={skill} questionId={q.id}>
             <div className="mt-4 rounded-lg border border-border/50 bg-surface-muted/60 px-4 py-3">
               <p className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">Transcription</p>

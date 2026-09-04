@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Check, X, Flag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { hasTranscriptSection } from "@/lib/tcf/parse-explanation";
 import { ExplanationPanel } from "./explanation-panel";
 import { VerdictBar } from "./verdict-bar";
 import { LevelBadge } from "./level-badge";
@@ -301,7 +302,7 @@ export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: E
 
           {/* Transcript + explanation sit below the nav: a long explanation must not
               push Suivant off-screen. */}
-          {finished && q.transcript && (
+          {finished && q.transcript && !(q.explanation !== null && hasTranscriptSection(q.explanation)) && (
             <div className="mt-4 rounded-lg border border-border/50 bg-surface-muted/60 px-4 py-3">
               <p className="mb-1.5 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
                 Transcription

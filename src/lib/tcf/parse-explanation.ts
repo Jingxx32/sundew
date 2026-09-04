@@ -51,6 +51,8 @@ const FRONTMATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
 /** Accepted spellings per section — English is current, Chinese is the pre-2026-09-04 form. */
 const TRANSLATION_HEADINGS = ["Translation", "全文翻译"] as const;
 const VERDICT_HEADINGS = ["Verdict", "速判"] as const;
+/** Listening only, and English-only — no listening explanation predates the English headings. */
+const TRANSCRIPT_HEADINGS = ["Transcript"] as const;
 /** `- Key: …` / `- 眼: …` — the one line naming what decides the answer. */
 const KEY_POINT_LINE = /^[-*]\s*(?:Key|眼)\s*[:：]\s*(.+)$/i;
 /** `- B ❌ …` — one option's verdict. The ✅/❌ mark is decorative; position is what binds. */
@@ -231,6 +233,19 @@ export function parseExplanationFile(raw: string): ParsedExplanation {
     translationEn: parsed.translationEn,
     meta: parsed.meta,
   };
+}
+
+/**
+ * Whether the explanation carries its own rearranged recording — a `## Transcript`
+ * section with speaker turns, sentence breaks and `↳` sound notes.
+ *
+ * The runners print the stored `transcript` column in a panel of their own, but
+ * that column is OCR run-on text with the question glued to its end. Where a
+ * hand-written rearrangement exists it supersedes that panel, which would
+ * otherwise show the same dialogue twice, unreadable version first.
+ */
+export function hasTranscriptSection(body: string): boolean {
+  return sectionBody(body, TRANSCRIPT_HEADINGS) !== null;
 }
 
 /** Canonical label for a locator — CE = compréhension écrite, CO = orale. */
