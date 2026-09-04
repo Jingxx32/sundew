@@ -19,7 +19,7 @@ export function TopPatterns({ patterns }: Props) {
           return (
             <div
               key={`${p.category}-${p.subcategory}`}
-              className="rounded-xl border border-border bg-background p-4 space-y-3"
+              className="rounded-xl bg-surface shadow-card p-4 space-y-3"
             >
               {/* Header */}
               <div className="flex items-center gap-2 flex-wrap">

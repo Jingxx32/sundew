@@ -145,7 +145,7 @@ export function GapReviewRunner({ initialCards }: { initialCards: GapReviewCard[
 
   if (cards.length === 0 || done) {
     return cards.length === 0 ? (
-      <div className="rounded-xl border border-border/70 bg-surface px-6 py-10 text-center">
+      <div className="rounded-xl bg-surface shadow-card px-6 py-10 text-center">
         <p className="text-lg">Rien à réviser aujourd&rsquo;hui</p>
         <p className="mt-1 text-sm text-muted-foreground">Revenez quand des mots arriveront à échéance.</p>
         <Link href="/vocabulary" className="mt-4 inline-block text-sm text-accent hover:underline">
@@ -153,7 +153,7 @@ export function GapReviewRunner({ initialCards }: { initialCards: GapReviewCard[
         </Link>
       </div>
     ) : (
-      <div className="rounded-xl border border-border/70 bg-surface px-6 py-10 text-center">
+      <div className="rounded-xl bg-surface shadow-card px-6 py-10 text-center">
         <p className="text-lg">
           {summary.right} justes · {summary.wrong} fautes · {summary.promoted} promues
         </p>
@@ -190,7 +190,7 @@ export function GapReviewRunner({ initialCards }: { initialCards: GapReviewCard[
         </div>
       </div>
 
-      <div className="space-y-4 rounded-xl border border-border/70 bg-surface px-6 py-5">
+      <div className="space-y-4 rounded-xl bg-surface shadow-card px-6 py-5">
         {card.gapType === "production" ? (
           <ProductionCard
             card={card}

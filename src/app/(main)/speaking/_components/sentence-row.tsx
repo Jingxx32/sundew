@@ -56,7 +56,7 @@ export function SentenceRow({ index, sentence, sessionId, result, onResult }: Pr
   const active = sessionId !== null;
 
   return (
-    <li className="rounded-xl border border-border/70 px-4 py-3">
+    <li className="rounded-xl bg-surface-muted px-4 py-3">
       <div className="flex items-start gap-3">
         <button
           onClick={handleToggle}

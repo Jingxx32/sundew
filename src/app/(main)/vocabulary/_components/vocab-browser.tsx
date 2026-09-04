@@ -159,7 +159,7 @@ export function VocabBrowser({
         </div>
 
         {/* Word list */}
-        <div className="rounded-xl border border-border bg-surface divide-y divide-border/50 overflow-hidden">
+        <div className="rounded-xl bg-surface shadow-card divide-y divide-border/50 overflow-hidden">
           {filtered.length === 0 ? (
             <div className="px-6 py-12 text-center">
               <p className="text-lg text-foreground">No words found.</p>
@@ -221,7 +221,7 @@ export function VocabBrowser({
             <p className="text-sm text-muted-foreground">Select a word to see details.</p>
           </div>
         ) : isPending ? (
-          <div className="rounded-xl border border-border bg-surface px-6 py-12 flex justify-center">
+          <div className="rounded-xl bg-surface shadow-card px-6 py-12 flex justify-center">
             <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
         ) : detail ? (
@@ -232,7 +232,7 @@ export function VocabBrowser({
             onRetry={handleRetry}
           />
         ) : (
-          <div className="rounded-xl border border-border bg-surface px-6 py-8 text-center">
+          <div className="rounded-xl bg-surface shadow-card px-6 py-8 text-center">
             <p className="text-sm text-muted-foreground">Word not found.</p>
           </div>
         )}
@@ -261,7 +261,7 @@ function DetailPanel({
     "bg-surface-muted text-muted-foreground ring-border/60";
 
   return (
-    <div className="rounded-xl border border-border bg-surface overflow-hidden">
+    <div className="rounded-xl bg-surface shadow-card overflow-hidden">
       {/* Header */}
       <div className="px-5 py-4 border-b border-border/60">
         <div className="flex items-start justify-between gap-2">

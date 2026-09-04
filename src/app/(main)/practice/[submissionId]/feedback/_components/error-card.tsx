@@ -29,7 +29,7 @@ export function ErrorCard({ error, index, rule }: Props) {
   return (
     <div
       id={`error-${index}`}
-      className="bg-surface rounded-xl border border-border p-4 space-y-3 scroll-mt-6"
+      className="bg-surface-muted rounded-xl p-4 space-y-3 scroll-mt-6"
     >
       {/* Header: number + category chip + subcategory label */}
       <div className="flex items-center gap-2 flex-wrap">

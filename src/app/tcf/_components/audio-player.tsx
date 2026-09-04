@@ -122,7 +122,7 @@ export const AudioPlayer = forwardRef<AudioPlayerHandle, { src: string }>(functi
   const progress = duration ? currentTime / duration : 0;
 
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-border/70 bg-surface px-4 py-3">
+    <div className="flex items-center gap-3 rounded-xl bg-surface shadow-card px-4 py-3">
       <audio
         ref={audioRef}
         src={src}

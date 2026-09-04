@@ -12,7 +12,7 @@ export function TcfAttempts({ attempts }: { attempts: TcfAttempt[] }) {
   return (
     <section>
       <h2 className="text-lg font-semibold mb-3">TCF practice</h2>
-      <div className="rounded-xl border border-border bg-surface divide-y divide-border/50 overflow-hidden">
+      <div className="rounded-xl bg-surface shadow-card divide-y divide-border/50 overflow-hidden">
         {attempts.map((a) => {
           const pct = a.total > 0 ? Math.round((a.score / a.total) * 100) : 0;
           return (

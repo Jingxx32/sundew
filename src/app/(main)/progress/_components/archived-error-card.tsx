@@ -39,7 +39,7 @@ export function ArchivedErrorCard({ error, rule }: Props) {
   const relativeDate = formatDistanceToNow(new Date(error.submittedAt), { addSuffix: true });
 
   return (
-    <div className="rounded-xl border border-border bg-background p-4 space-y-3">
+    <div className="rounded-xl bg-background p-4 space-y-3">
       {/* Header row */}
       <div className="flex items-center gap-2 flex-wrap">
         <span

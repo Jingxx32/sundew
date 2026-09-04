@@ -9,7 +9,7 @@ type Props = {
 
 export function ImprovementCard({ improvement, index }: Props) {
   return (
-    <div className="bg-surface rounded-xl border border-border p-4 space-y-3">
+    <div className="bg-surface-muted rounded-xl p-4 space-y-3">
       <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
         Style tip {index + 1}
       </div>
