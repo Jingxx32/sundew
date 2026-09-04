@@ -24,7 +24,7 @@ export default async function SettingsPage() {
         Configuration for AI features and your learner profile.
       </p>
 
-      <section className="rounded-2xl border border-border bg-surface p-6 space-y-5">
+      <section className="rounded-2xl bg-surface shadow-card p-6 space-y-5">
         <div className="flex items-center gap-2">
           <KeyRound className="h-4 w-4 text-muted-foreground" />
           <h2 className="font-medium text-sm">OpenAI API Key</h2>
@@ -81,7 +81,7 @@ export default async function SettingsPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-border bg-surface p-6 space-y-5 mt-6">
+      <section className="rounded-2xl bg-surface shadow-card p-6 space-y-5 mt-6">
         <div className="flex items-center gap-2">
           <GraduationCap className="h-4 w-4 text-muted-foreground" />
           <h2 className="font-medium text-sm">Your CEFR Level</h2>
@@ -93,7 +93,7 @@ export default async function SettingsPage() {
         <CefrLevelPicker currentLevel={cefrLevel} />
       </section>
 
-      <section className="rounded-2xl border border-border bg-surface p-6 space-y-5 mt-6">
+      <section className="rounded-2xl bg-surface shadow-card p-6 space-y-5 mt-6">
         <div className="flex items-center gap-2">
           <Target className="h-4 w-4 text-muted-foreground" />
           <h2 className="font-medium text-sm">Study Goal — TCF Canada</h2>
@@ -104,7 +104,7 @@ export default async function SettingsPage() {
         <StudyGoalEditor initial={studyGoal} />
       </section>
 
-      <section className="rounded-2xl border border-border bg-surface p-6 space-y-5 mt-6">
+      <section className="rounded-2xl bg-surface shadow-card p-6 space-y-5 mt-6">
         <div className="flex items-center gap-2">
           <Mic className="h-4 w-4 text-muted-foreground" />
           <h2 className="font-medium text-sm">Speaking Profile</h2>
