@@ -16,7 +16,7 @@ export function TaskCard({ task, doc }: Props) {
   const level = (task.difficulty ?? "B1") as CefrLevel;
 
   return (
-    <div className="bg-surface rounded-2xl border border-border shadow-card p-6 space-y-5">
+    <div className="bg-surface rounded-2xl shadow-card p-6 space-y-5">
       {/* Source: document title or archive fallback */}
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <BookOpen className="h-3.5 w-3.5 shrink-0" />

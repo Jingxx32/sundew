@@ -37,7 +37,7 @@ export function FeedbackPending({
   if (stale) return <FeedbackRetry submissionId={submissionId} stalePending />;
 
   return (
-    <div className="max-w-md mx-auto rounded-2xl border border-border bg-surface shadow-card px-8 py-10 text-center space-y-4">
+    <div className="max-w-md mx-auto rounded-2xl bg-surface shadow-card px-8 py-10 text-center space-y-4">
       <Loader2 className="h-6 w-6 animate-spin text-accent mx-auto" />
       <h2 className="text-xl font-semibold">Generating feedback…</h2>
       <p className="text-sm text-muted-foreground">
