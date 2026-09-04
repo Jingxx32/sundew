@@ -231,7 +231,7 @@ export function DrillRunner({
     return (
       <section className="mx-auto max-w-xl rounded-2xl border border-border/70 bg-surface px-8 py-10 text-center">
         <p className="font-mono text-xs uppercase tracking-widest text-subtle-foreground">Session terminée</p>
-        <h2 className="mt-2 font-serif text-3xl font-semibold">{questions.length} questions parcourues</h2>
+        <h2 className="mt-2 text-[30px] font-bold tracking-[-0.03em]">{questions.length} questions parcourues</h2>
         <p className="mt-5 text-sm text-muted-foreground">
           {correct} correctes · {uncertainCorrect} correctes mais incertaines · {incorrect} incorrectes
         </p>

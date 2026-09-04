@@ -8,7 +8,7 @@ export default async function SpeakingPage() {
 
   return (
     <div className="px-10 py-10 max-w-3xl mx-auto">
-      <h1 className="font-serif text-4xl font-semibold tracking-tight mb-1">
+      <h1 className="text-[38px] font-bold tracking-[-0.035em] mb-1">
         Expression orale
       </h1>
       <p className="text-sm text-muted-foreground mb-10">

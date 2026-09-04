@@ -33,7 +33,7 @@ export default async function QuizSetPage({
       </Link>
 
       <div className="mb-8">
-        <h1 className="font-serif text-3xl font-semibold tracking-tight">
+        <h1 className="text-[30px] font-bold tracking-[-0.03em]">
           {set.title}
         </h1>
         <div className="mt-2 flex items-center gap-2">

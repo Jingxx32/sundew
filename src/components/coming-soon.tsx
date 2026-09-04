@@ -14,7 +14,7 @@ export function ComingSoon({
   return (
     <div className="px-10 py-10 max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-3">
-        <h1 className="font-serif text-4xl font-semibold tracking-tight">
+        <h1 className="text-[38px] font-bold tracking-[-0.035em]">
           {title}
         </h1>
         {sprint && <Chip variant="accent">Sprint {sprint}</Chip>}

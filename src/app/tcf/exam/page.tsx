@@ -27,7 +27,7 @@ export default async function TcfExamPage({
           <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" />
           TCF
         </Link>
-        <h1 className="font-serif text-3xl font-semibold tracking-tight">
+        <h1 className="text-[30px] font-bold tracking-[-0.03em]">
           Test {testNumber} · {title}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">

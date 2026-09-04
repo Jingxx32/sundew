@@ -69,7 +69,7 @@ export function DrillCard({ queue }: { queue: DrillItem[] }) {
   if (finished) {
     return (
       <div className="rounded-2xl border border-border/70 bg-surface px-8 py-12 text-center">
-        <p className="font-serif text-3xl font-semibold">
+        <p className="text-[30px] font-bold tracking-[-0.03em]">
           {score}/{queue.length} correct
         </p>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -96,7 +96,7 @@ export function DrillCard({ queue }: { queue: DrillItem[] }) {
         </span>
       </div>
 
-      <p className="font-serif text-3xl font-semibold tracking-tight">
+      <p className="text-[30px] font-bold tracking-[-0.03em]">
         {item.verb}
       </p>
       <p className="mt-1 text-sm text-muted-foreground">

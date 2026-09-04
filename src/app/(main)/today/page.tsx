@@ -72,7 +72,7 @@ export default async function TodayPage() {
           {format(new Date(), "EEEE, MMMM d")}
         </p>
         <div className="flex items-end justify-between gap-3 flex-wrap">
-          <h1 className="font-serif text-4xl font-semibold tracking-tight">Today</h1>
+          <h1 className="text-[38px] font-bold tracking-[-0.035em]">Today</h1>
           <div className="flex items-center gap-3 text-sm">
             {plan.streak > 0 && (
               <span className="flex items-center gap-1 text-warning font-medium">
