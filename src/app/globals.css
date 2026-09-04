@@ -97,6 +97,15 @@
   --font-mono: var(--font-source-code), ui-monospace, "SFMono-Regular", monospace;
 }
 
+/* Radius scale — collapsed from the five-way mix the app grew into.
+   Plain @theme (not inline): these are literal values, not var() indirections. */
+@theme {
+  --radius-md: 0.5rem; /* 8px  — was 6px */
+  --radius-lg: 0.625rem; /* 10px — was 8px; buttons, inputs, small panels */
+  --radius-xl: 0.875rem; /* 14px — was 12px; secondary cards */
+  --radius-2xl: 1.25rem; /* 20px — was 16px; primary cards */
+}
+
 html {
   height: 100%;
 }
