@@ -99,7 +99,7 @@ export function ClozeRunner({
   return (
     <div className="space-y-6">
       {/* D-5: the one and only audio element, streaming the original URL */}
-      <div className="rounded-xl border border-border/70 bg-surface px-5 py-4">
+      <div className="rounded-xl bg-surface shadow-card px-5 py-4">
         <audio
           ref={audioRef}
           controls
@@ -122,7 +122,7 @@ export function ClozeRunner({
           return (
             <div
               key={question.id}
-              className="rounded-xl border border-border/70 bg-surface px-5 py-4"
+              className="rounded-xl bg-surface shadow-card px-5 py-4"
             >
               <p className="text-base leading-relaxed mb-3">
                 <span className="font-sans text-xs text-muted-foreground mr-2">
@@ -196,7 +196,7 @@ export function ClozeRunner({
       </div>
 
       {/* Collapsible transcript */}
-      <div className="rounded-xl border border-border/70 bg-surface-muted/40">
+      <div className="rounded-xl bg-surface-muted">
         <button
           type="button"
           onClick={() => setTranscriptOpen((open) => !open)}
@@ -218,7 +218,7 @@ export function ClozeRunner({
 
       {/* Submit / result bar */}
       {result === null ? (
-        <div className="flex items-center justify-between rounded-xl border border-border/70 bg-surface-muted/50 px-5 py-4">
+        <div className="flex items-center justify-between rounded-xl bg-surface-muted px-5 py-4">
           <p className="text-sm text-muted-foreground">
             {answeredCount}/{blanks.length} filled
           </p>
@@ -227,7 +227,7 @@ export function ClozeRunner({
           </Button>
         </div>
       ) : (
-        <div className="rounded-xl border border-border/70 bg-surface px-5 py-4">
+        <div className="rounded-xl bg-surface shadow-card px-5 py-4">
           <p className="text-xl font-semibold">
             {result.score}/{result.total} correct
           </p>

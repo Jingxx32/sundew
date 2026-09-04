@@ -454,7 +454,7 @@ export function ImportQuizDialog() {
               {parsed.passages.map((passage, pIndex) => (
                 <div
                   key={pIndex}
-                  className="rounded-xl border border-border/70 bg-surface-muted/40 p-4 space-y-4"
+                  className="rounded-xl bg-surface-muted p-4 space-y-4"
                 >
                   <article className="reading-prose text-sm whitespace-pre-wrap">
                     {passage.text}
@@ -555,7 +555,7 @@ export function ImportQuizDialog() {
               <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">
                 Transcript
               </p>
-              <article className="reading-prose text-sm whitespace-pre-wrap max-h-56 overflow-y-auto rounded-xl border border-border/70 bg-surface-muted/40 p-4">
+              <article className="reading-prose text-sm whitespace-pre-wrap max-h-56 overflow-y-auto rounded-xl bg-surface-muted p-4">
                 {clozePayload.transcript}
               </article>
             </div>

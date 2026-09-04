@@ -66,7 +66,7 @@ export function QuizRunner({
     <div className="space-y-8">
       {passages.map((passage) => (
         <section key={passage.id} className="space-y-5">
-          <article className="reading-prose whitespace-pre-wrap rounded-xl border border-border/70 bg-surface px-6 py-5">
+          <article className="reading-prose whitespace-pre-wrap rounded-xl bg-surface shadow-card px-6 py-5">
             {passage.text}
           </article>
 
@@ -87,7 +87,7 @@ export function QuizRunner({
 
       {/* Submit / result bar */}
       {result === null ? (
-        <div className="flex items-center justify-between rounded-xl border border-border/70 bg-surface-muted/50 px-5 py-4">
+        <div className="flex items-center justify-between rounded-xl bg-surface-muted px-5 py-4">
           <p className="text-sm text-muted-foreground">
             {allAnswered
               ? "All questions answered — ready to check."
@@ -98,7 +98,7 @@ export function QuizRunner({
           </Button>
         </div>
       ) : (
-        <div className="rounded-xl border border-border/70 bg-surface px-5 py-4">
+        <div className="rounded-xl bg-surface shadow-card px-5 py-4">
           <p className="text-xl font-semibold">
             {result.score}/{result.total} correct
           </p>
@@ -165,7 +165,7 @@ function SingleChoice({
   const isCorrect = selected === correctIndex;
 
   return (
-    <div className="rounded-xl border border-border/70 bg-surface px-5 py-4">
+    <div className="rounded-xl bg-surface shadow-card px-5 py-4">
       <p className="text-sm font-medium mb-3">
         <span className="text-subtle-foreground mr-1.5">{number}.</span>
         {question.questionText}
