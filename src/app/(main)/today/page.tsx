@@ -19,7 +19,7 @@ function BlockCard({ block }: { block: TodayBlock }) {
   return (
     <div
       className={cn(
-        "rounded-2xl border border-border bg-surface p-5 flex items-start gap-4",
+        "rounded-2xl bg-surface shadow-card p-5 flex items-start gap-4",
         block.done && "opacity-70",
       )}
     >
