@@ -59,3 +59,6 @@ RESUME.md
 
 # brainstorming visual companion (local mockups)
 .superpowers/
+
+# git worktrees for isolated feature work
+.worktrees/
