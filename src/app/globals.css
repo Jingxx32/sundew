@@ -1,34 +1,41 @@
 @import "tailwindcss";
 
 /* ------------------------------------------------------------------ */
-/*  Lumière design tokens — warm beige + french blue, calm scholarly  */
+/*  Lumière design tokens — cool neutral, modern minimal              */
 /* ------------------------------------------------------------------ */
 
 :root {
-  /* Surfaces */
-  --background: #faf8f4; /* warm beige page tint */
-  --surface: #ffffff; /* card surface */
-  --surface-muted: #f3efe7; /* sidebar, subtle panels */
-  --border: #e7e1d5;
+  /* Surfaces — cool neutral; cards separate from the page by tint, not borders */
+  --background: #f4f4f5;
+  --surface: #ffffff;
+  --surface-muted: #ededf0;
+  --border: #e4e4e7;
 
   /* Text */
-  --foreground: #1c1917; /* near-black warm */
-  --muted-foreground: #78716c;
-  --subtle-foreground: #a8a29e;
+  --foreground: #09090b;
+  --muted-foreground: #68686f;
+  /* Decorative contrast only (~3:1). Anything under 12px must use
+     --muted-foreground instead. */
+  --subtle-foreground: #8a8a92;
 
-  /* Accents */
-  --accent: #3b5ba9; /* french blue */
+  /* Primary action — neutral black. Buttons and CTAs live here now. */
+  --primary: #09090b;
+  --primary-foreground: #ffffff;
+
+  /* Accent — demoted to a status colour: links, TCF level scale, focus rings.
+     Hue deliberately unchanged so the --level-a1→c2 scale still anchors on it. */
+  --accent: #3b5ba9;
   --accent-foreground: #ffffff;
-  --accent-soft: #eef1f9;
-  --accent-soft-strong: #dde4f3;
+  --accent-soft: #eef2fb;
+  --accent-soft-strong: #dfe6f7;
 
-  /* Semantic */
-  --success: #2f8f5b;
-  --success-soft: #e6f3ec;
-  --warning: #d4922d;
-  --warning-soft: #fbf1de;
-  --danger: #c0492f;
-  --danger-soft: #f7e7e1;
+  /* Semantic — de-warmed; the old ochre/rust read as vintage */
+  --success: #15803d;
+  --success-soft: #ecfdf3;
+  --warning: #b45309;
+  --warning-soft: #fef6ec;
+  --danger: #c81e1e;
+  --danger-soft: #fef2f2;
 
   /* Highlights for inline error spans (used in S4 feedback view) */
   --hl-grammar: #fde68a;
@@ -55,6 +62,10 @@
   --level-b2-ink: #ffffff;
   --level-c1-ink: #ffffff;
   --level-c2-ink: #ffffff;
+
+  /* Long-form reading keeps the serif. Defined here rather than in @theme:
+     only .reading-prose consumes it, so it needs no utility class. */
+  --font-reading: var(--font-source-serif), Georgia, "Times New Roman", serif;
 }
 
 @theme inline {
@@ -71,6 +82,9 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-accent-soft: var(--accent-soft);
   --color-accent-soft-strong: var(--accent-soft-strong);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
 
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
@@ -93,7 +107,11 @@
   --color-level-c2-ink: var(--level-c2-ink);
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-source-serif), Georgia, "Times New Roman", serif;
+  /* DEBT (phase 2): this deliberately points at the sans stack so all 119 UI
+     `font-serif` usages flip at once. The class name lies until those are
+     renamed/removed — see the phase-2 tasks in
+     docs/superpowers/plans/2026-09-03-modern-minimal-ui.md */
+  --font-serif: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-source-code), ui-monospace, "SFMono-Regular", monospace;
 }
 
@@ -104,6 +122,9 @@
   --radius-lg: 0.625rem; /* 10px — was 8px; buttons, inputs, small panels */
   --radius-xl: 0.875rem; /* 14px — was 12px; secondary cards */
   --radius-2xl: 1.25rem; /* 20px — was 16px; primary cards */
+
+  /* Cards carry no border now; this is the whole of their elevation. */
+  --shadow-card: 0 1px 2px rgba(9, 9, 11, 0.05), 0 1px 3px rgba(9, 9, 11, 0.03);
 }
 
 html {
@@ -120,7 +141,7 @@ body {
 /* Reading column typography — used in the Document Reader.
    Generous line-height + slightly larger size = the "reading sanctuary". */
 .reading-prose {
-  font-family: var(--font-serif);
+  font-family: var(--font-reading);
   font-size: 1.15rem;
   line-height: 1.75;
   color: var(--foreground);
