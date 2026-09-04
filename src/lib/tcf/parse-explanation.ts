@@ -10,10 +10,14 @@
  *   written: 2026-08-13
  *   ---
  *
- *   ## 全文翻译
+ *   ## Translation
  *   …
- *   ## 题干
+ *   ## Line by line
  *   …
+ *
+ * Explanations written before 2026-09-04 use Chinese headings (`## 全文翻译`,
+ * `## 速判`, `- 眼:`); both spellings are accepted so the older half of the
+ * corpus keeps its verdict bar and its `translation_en`.
  *
  * Pure: no IO, no DB. `written` is informational and deliberately not returned.
  */
@@ -29,9 +33,9 @@ export interface ExplanationLocator {
 export interface ParsedExplanation extends ExplanationLocator {
   /** Everything after the frontmatter, trimmed — written verbatim to `explanation`. */
   body: string;
-  /** Body of the "## 全文翻译" section, or null when the file has none. */
+  /** Body of the "## Translation" section, or null when the file has none. */
   translationEn: string | null;
-  /** Structured "## 速判" head, or null when the file has none. */
+  /** Structured "## Verdict" head, or null when the file has none. */
   meta: TcfExplanationMeta | null;
 }
 
@@ -44,10 +48,11 @@ export interface ParsedExplanationBody {
 }
 
 const FRONTMATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
-const TRANSLATION_HEADING = "全文翻译";
-const VERDICT_HEADING = "速判";
-/** `- 眼: …` — the one line naming what decides the answer. */
-const KEY_POINT_LINE = /^[-*]\s*眼\s*[:：]\s*(.+)$/;
+/** Accepted spellings per section — English is current, Chinese is the pre-2026-09-04 form. */
+const TRANSLATION_HEADINGS = ["Translation", "全文翻译"] as const;
+const VERDICT_HEADINGS = ["Verdict", "速判"] as const;
+/** `- Key: …` / `- 眼: …` — the one line naming what decides the answer. */
+const KEY_POINT_LINE = /^[-*]\s*(?:Key|眼)\s*[:：]\s*(.+)$/i;
 /** `- B ❌ …` — one option's verdict. The ✅/❌ mark is decorative; position is what binds. */
 const OPTION_LINE = /^[-*]\s*([A-D])\s*(?:[✅❌]\s*)?(.+)$/;
 
@@ -68,17 +73,23 @@ function readNumber(fm: Record<string, string>, key: string): number {
   return n;
 }
 
+/** Exact heading text, case-insensitive so `Verdict` and `verdict` both bind. */
+function isHeading(text: string, headings: readonly string[]): boolean {
+  const t = text.trim().toLowerCase();
+  return headings.some((h) => h.toLowerCase() === t);
+}
+
 /**
  * Content of the first `## <heading>` section, up to the next heading of the
  * same or higher level (fewer or equal `#` marks). Deeper headings (more `#`
  * marks) are nested content and stay in the returned text.
  */
-function sectionBody(body: string, heading: string): string | null {
+function sectionBody(body: string, headings: readonly string[]): string | null {
   const lines = body.split(/\r?\n/);
   const headingLine = /^(#{1,6})\s+(.*)$/;
   const start = lines.findIndex((l) => {
     const m = headingLine.exec(l);
-    return m !== null && m[2].trim() === heading;
+    return m !== null && isHeading(m[2], headings);
   });
   if (start === -1) return null;
   const level = headingLine.exec(lines[start])![1].length;
@@ -92,7 +103,7 @@ function sectionBody(body: string, heading: string): string | null {
 }
 
 /**
- * The markdown with its "## 速判" section removed — heading included.
+ * The markdown with its "## Verdict" section removed — heading included.
  *
  * That section is rendered as structured UI (verdict bar + per-option lines),
  * so leaving it in the prose would print everything twice. Stored bodies keep
@@ -103,7 +114,7 @@ export function stripVerdictSection(body: string): string {
   const headingLine = /^(#{1,6})\s+(.*)$/;
   const start = lines.findIndex((l) => {
     const m = headingLine.exec(l);
-    return m !== null && m[2].trim() === VERDICT_HEADING;
+    return m !== null && isHeading(m[2], VERDICT_HEADINGS);
   });
   if (start === -1) return body;
   const level = headingLine.exec(lines[start])![1].length;
@@ -117,7 +128,7 @@ export function stripVerdictSection(body: string): string {
 }
 
 /**
- * Parse the "## 速判" section into the structured head the UI renders above the
+ * Parse the "## Verdict" section into the structured head the UI renders above the
  * prose: one key point, plus a one-liner per option.
  *
  * Options bind by letter (A–D) to their index, not by order of appearance, so a
@@ -125,7 +136,7 @@ export function stripVerdictSection(body: string): string {
  * section is absent — every explanation written before this format existed.
  */
 function parseVerdict(body: string): TcfExplanationMeta | null {
-  const section = sectionBody(body, VERDICT_HEADING);
+  const section = sectionBody(body, VERDICT_HEADINGS);
   if (section === null) return null;
 
   let keyPoint: string | null = null;
@@ -204,7 +215,7 @@ export function parseExplanationBody(raw: string): ParsedExplanationBody {
   return {
     locator,
     body,
-    translationEn: sectionBody(body, TRANSLATION_HEADING),
+    translationEn: sectionBody(body, TRANSLATION_HEADINGS),
     meta: parseVerdict(body),
   };
 }
