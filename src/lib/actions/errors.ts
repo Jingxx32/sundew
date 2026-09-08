@@ -12,6 +12,7 @@ import type { ErrorCategory } from "@/lib/taxonomy";
 import { ERROR_TAXONOMY } from "@/lib/taxonomy";
 import { evaluateMicroDrill } from "@/lib/ai/micro-drill";
 import type { MicroDrillFeedback } from "@/lib/ai/micro-drill";
+import { requireUser } from "@/lib/auth/session";
 
 export type ErrorWithContext = ErrorRecord & {
   submissionContentFr: string;
@@ -22,22 +23,24 @@ export type ErrorWithContext = ErrorRecord & {
   errorIndex: number;
 };
 
+export type MicroDrillView = Omit<MicroDrill, "userId">;
+
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                             */
 /* ------------------------------------------------------------------ */
 
-async function resolveSubmissionIds(documentId: string): Promise<string[] | null> {
+async function resolveSubmissionIds(documentId: string, userId: string): Promise<string[] | null> {
   const tasks = await db
     .select({ id: writingTasks.id })
     .from(writingTasks)
-    .where(eq(writingTasks.documentId, documentId));
+    .where(and(eq(writingTasks.documentId, documentId), eq(writingTasks.userId, userId)));
   if (tasks.length === 0) return [];
 
   const taskIds = tasks.map((t) => t.id);
   const subs = await db
     .select({ id: submissions.id })
     .from(submissions)
-    .where(inArray(submissions.taskId, taskIds));
+    .where(and(inArray(submissions.taskId, taskIds), eq(submissions.userId, userId)));
   return subs.map((s) => s.id);
 }
 
@@ -52,16 +55,17 @@ export async function listErrors(opts?: {
   limit?: number;
   offset?: number;
 }): Promise<ErrorWithContext[]> {
+  const user = await requireUser();
   const limit = opts?.limit ?? 50;
   const offset = opts?.offset ?? 0;
 
   let allowedSubmissionIds: string[] | null = null;
   if (opts?.documentId) {
-    allowedSubmissionIds = await resolveSubmissionIds(opts.documentId);
+    allowedSubmissionIds = await resolveSubmissionIds(opts.documentId, user.id);
     if (allowedSubmissionIds !== null && allowedSubmissionIds.length === 0) return [];
   }
 
-  const conditions: SQL[] = [];
+  const conditions: SQL[] = [eq(errors.userId, user.id)];
   if (opts?.category) conditions.push(eq(errors.category, opts.category));
   if (opts?.subcategory) conditions.push(eq(errors.subcategory, opts.subcategory));
   if (allowedSubmissionIds) conditions.push(inArray(errors.submissionId, allowedSubmissionIds));
@@ -81,7 +85,7 @@ export async function listErrors(opts?: {
   const submissionRows = await db
     .select()
     .from(submissions)
-    .where(inArray(submissions.id, submissionIds));
+    .where(and(inArray(submissions.id, submissionIds), eq(submissions.userId, user.id)));
   const submissionMap = new Map(submissionRows.map((s) => [s.id, s]));
 
   // Fetch related tasks
@@ -91,7 +95,7 @@ export async function listErrors(opts?: {
       ? await db
           .select()
           .from(writingTasks)
-          .where(inArray(writingTasks.id, taskIds))
+          .where(and(inArray(writingTasks.id, taskIds), eq(writingTasks.userId, user.id)))
       : [];
   const taskMap = new Map(taskRows.map((t) => [t.id, t]));
 
@@ -104,7 +108,7 @@ export async function listErrors(opts?: {
       ? await db
           .select({ id: documents.id, title: documents.title })
           .from(documents)
-          .where(inArray(documents.id, docIds))
+          .where(and(inArray(documents.id, docIds), eq(documents.userId, user.id)))
       : [];
   const docMap = new Map(docRows.map((d) => [d.id, d.title]));
 
@@ -114,7 +118,7 @@ export async function listErrors(opts?: {
   const allSpanRows = await db
     .select({ id: errors.id, submissionId: errors.submissionId, spanStart: errors.spanStart })
     .from(errors)
-    .where(inArray(errors.submissionId, submissionIds))
+    .where(and(inArray(errors.submissionId, submissionIds), eq(errors.userId, user.id)))
     .orderBy(asc(errors.submissionId), asc(errors.spanStart));
 
   const indexMaps = new Map<string, Map<string, number>>();
@@ -156,9 +160,10 @@ export async function listErrors(opts?: {
 export async function getErrorCounts(opts?: {
   documentId?: string;
 }): Promise<Record<ErrorCategory, number>> {
+  const user = await requireUser();
   let allowedSubmissionIds: string[] | null = null;
   if (opts?.documentId) {
-    allowedSubmissionIds = await resolveSubmissionIds(opts.documentId);
+    allowedSubmissionIds = await resolveSubmissionIds(opts.documentId, user.id);
     if (allowedSubmissionIds !== null && allowedSubmissionIds.length === 0) {
       return Object.fromEntries(
         Object.keys(ERROR_TAXONOMY).map((k) => [k, 0]),
@@ -166,7 +171,7 @@ export async function getErrorCounts(opts?: {
     }
   }
 
-  const conditions: SQL[] = [];
+  const conditions: SQL[] = [eq(errors.userId, user.id)];
   if (allowedSubmissionIds) {
     conditions.push(inArray(errors.submissionId, allowedSubmissionIds));
   }
@@ -191,11 +196,19 @@ export async function getErrorCounts(opts?: {
 /*  getMicroDrillsForError                                              */
 /* ------------------------------------------------------------------ */
 
-export async function getMicroDrillsForError(errorId: string): Promise<MicroDrill[]> {
+export async function getMicroDrillsForError(errorId: string): Promise<MicroDrillView[]> {
+  const user = await requireUser();
   return db
-    .select()
+    .select({
+      id: microDrills.id,
+      errorId: microDrills.errorId,
+      promptText: microDrills.promptText,
+      responseFr: microDrills.responseFr,
+      feedbackJson: microDrills.feedbackJson,
+      createdAt: microDrills.createdAt,
+    })
     .from(microDrills)
-    .where(eq(microDrills.errorId, errorId))
+    .where(and(eq(microDrills.errorId, errorId), eq(microDrills.userId, user.id)))
     .orderBy(desc(microDrills.createdAt));
 }
 
@@ -207,12 +220,13 @@ export async function createMicroDrill(
   errorId: string,
   responseFr: string,
 ): Promise<MicroDrillFeedback> {
+  const user = await requireUser();
   if (!responseFr.trim()) throw new Error("Response cannot be empty.");
 
   const errorRow = await db
     .select()
     .from(errors)
-    .where(eq(errors.id, errorId))
+    .where(and(eq(errors.id, errorId), eq(errors.userId, user.id)))
     .limit(1)
     .then((r) => r[0] ?? null);
   if (!errorRow) throw new Error("Error not found.");
@@ -229,6 +243,7 @@ export async function createMicroDrill(
 
   await db.insert(microDrills).values({
     id: randomUUID(),
+    userId: user.id,
     errorId,
     promptText,
     responseFr: normalised,
@@ -244,6 +259,7 @@ export async function createMicroDrill(
 /* ------------------------------------------------------------------ */
 
 export async function getRule(ruleId: string): Promise<Rule | null> {
+  await requireUser();
   return db
     .select()
     .from(rules)
@@ -257,6 +273,7 @@ export async function getRule(ruleId: string): Promise<Rule | null> {
 /* ------------------------------------------------------------------ */
 
 export async function batchGetRules(ruleIds: string[]): Promise<Map<string, Rule>> {
+  await requireUser();
   if (ruleIds.length === 0) return new Map();
   const rows = await db
     .select()
@@ -275,12 +292,13 @@ export async function getDashboardStats(): Promise<{
   activeDays: number;
   mostImprovedCategory: string | null;
 }> {
+  const user = await requireUser();
   const [subResult, errResult, daysResult] = await Promise.all([
-    db.select({ count: count() }).from(submissions),
-    db.select({ count: count() }).from(errors),
+    db.select({ count: count() }).from(submissions).where(eq(submissions.userId, user.id)),
+    db.select({ count: count() }).from(errors).where(eq(errors.userId, user.id)),
     db.select({
       days: sql<number>`count(distinct date_trunc('day', ${submissions.submittedAt})::date)`,
-    }).from(submissions),
+    }).from(submissions).where(eq(submissions.userId, user.id)),
   ]);
 
   const totalSubmissions = Number(subResult[0]?.count ?? 0);
@@ -295,7 +313,7 @@ export async function getDashboardStats(): Promise<{
   const recentErrors = await db
     .select({ category: errors.category, createdAt: errors.createdAt })
     .from(errors)
-    .where(gte(errors.createdAt, cutoff60));
+    .where(and(eq(errors.userId, user.id), gte(errors.createdAt, cutoff60)));
 
   const prior = new Map<string, number>();
   const current = new Map<string, number>();
@@ -335,6 +353,7 @@ export type TrendBucket = {
 /** Weekly error *density* (errors / 100 words), not raw counts: more writing
  *  used to push the old absolute-count line up, reading as regression. */
 export async function getErrorTrend(windowDays: 30 | 90 | 365): Promise<TrendBucket[]> {
+  const user = await requireUser();
   const startDate = new Date(Date.now() - windowDays * 86_400_000);
 
   const [errorRows, wordRows] = await Promise.all([
@@ -344,7 +363,7 @@ export async function getErrorTrend(windowDays: 30 | 90 | 365): Promise<TrendBuc
         count: count(),
       })
       .from(errors)
-      .where(gte(errors.createdAt, startDate))
+      .where(and(eq(errors.userId, user.id), gte(errors.createdAt, startDate)))
       .groupBy(sql`date_trunc('week', ${errors.createdAt})`),
     db
       .select({
@@ -352,7 +371,7 @@ export async function getErrorTrend(windowDays: 30 | 90 | 365): Promise<TrendBuc
         words: sql<number>`coalesce(sum(${submissions.wordCount}), 0)::int`,
       })
       .from(submissions)
-      .where(gte(submissions.submittedAt, startDate))
+      .where(and(eq(submissions.userId, user.id), gte(submissions.submittedAt, startDate)))
       .groupBy(sql`date_trunc('week', ${submissions.submittedAt})`),
   ]);
 
@@ -397,9 +416,11 @@ export type RecurringPattern = {
 };
 
 export async function getTopRecurringPatterns(limit = 3): Promise<RecurringPattern[]> {
+  const user = await requireUser();
   const groups = await db
     .select({ category: errors.category, subcategory: errors.subcategory, count: count() })
     .from(errors)
+    .where(eq(errors.userId, user.id))
     .groupBy(errors.category, errors.subcategory)
     .orderBy(desc(count()))
     .limit(limit);
@@ -413,7 +434,7 @@ export async function getTopRecurringPatterns(limit = 3): Promise<RecurringPatte
         explanationEn: errors.explanationEn,
       })
       .from(errors)
-      .where(and(eq(errors.category, group.category), eq(errors.subcategory, group.subcategory)))
+      .where(and(eq(errors.userId, user.id), eq(errors.category, group.category), eq(errors.subcategory, group.subcategory)))
       .orderBy(desc(errors.createdAt))
       .limit(1)
       .then((r) => r[0] ?? null);

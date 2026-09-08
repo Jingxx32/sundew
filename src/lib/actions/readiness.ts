@@ -6,6 +6,7 @@ import { tcfAttempts, submissions, speakingSessions } from "@/lib/db/schema";
 import type { SessionScores, TcfPerLevel } from "@/lib/db/schema";
 import { getStudyGoal, type StudyGoal } from "./settings";
 import { CEFR_LEVELS, type CefrLevel } from "@/lib/cefr";
+import { requireUser } from "@/lib/auth/session";
 
 export type SkillReadiness = {
   skill: "listening" | "reading" | "writing" | "speaking";
@@ -79,6 +80,7 @@ function estimateTcfSkill(
 }
 
 export async function getReadinessSummary(): Promise<ReadinessSummary> {
+  const user = await requireUser();
   const cutoff = new Date(Date.now() - WINDOW_DAYS * 86_400_000);
 
   const [goalBase, tcfRows, writingRows, speakingRows] = await Promise.all([
@@ -86,17 +88,23 @@ export async function getReadinessSummary(): Promise<ReadinessSummary> {
     db
       .select({ skill: tcfAttempts.skill, perLevel: tcfAttempts.perLevel })
       .from(tcfAttempts)
-      .where(gte(tcfAttempts.answeredAt, cutoff)),
+      .where(and(eq(tcfAttempts.userId, user.id), gte(tcfAttempts.answeredAt, cutoff))),
     db
       .select({ estimatedLevel: submissions.estimatedLevel })
       .from(submissions)
-      .where(isNotNull(submissions.estimatedLevel))
+      .where(and(eq(submissions.userId, user.id), isNotNull(submissions.estimatedLevel)))
       .orderBy(desc(submissions.submittedAt))
       .limit(5),
     db
       .select({ scores: speakingSessions.scores })
       .from(speakingSessions)
-      .where(and(eq(speakingSessions.status, "completed"), isNotNull(speakingSessions.scores))),
+      .where(
+        and(
+          eq(speakingSessions.userId, user.id),
+          eq(speakingSessions.status, "completed"),
+          isNotNull(speakingSessions.scores),
+        ),
+      ),
   ]);
 
   const listening = estimateTcfSkill(

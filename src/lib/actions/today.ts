@@ -1,6 +1,6 @@
 "use server";
 
-import { desc, eq, gte, sql } from "drizzle-orm";
+import { and, desc, eq, gte, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
   submissions,
@@ -9,12 +9,13 @@ import {
   tcfSets,
   conjugationAttempts,
   quizAttempts,
-  vocabularyLookups,
+  userVocabulary,
 } from "@/lib/db/schema";
 import { isNotNull } from "drizzle-orm";
 import { getCefrLevel, getStudyGoal } from "./settings";
 import { getTopRecurringPatterns } from "./errors";
 import { CEFR_LEVELS, type CefrLevel } from "@/lib/cefr";
+import { requireUser } from "@/lib/auth/session";
 
 export type TodayBlock = {
   key: "tcf" | "writing" | "review";
@@ -44,6 +45,7 @@ const dayKey = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
 export async function getTodayPlan(): Promise<TodayPlan> {
+  const user = await requireUser();
   const now = new Date();
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const cutoff30 = new Date(now.getTime() - 30 * 86_400_000);
@@ -73,33 +75,51 @@ export async function getTodayPlan(): Promise<TodayPlan> {
       .from(tcfQuestionAttempts)
       .innerJoin(tcfQuestions, eq(tcfQuestionAttempts.questionId, tcfQuestions.id))
       .innerJoin(tcfSets, eq(tcfQuestions.setId, tcfSets.id))
-      .where(gte(tcfQuestionAttempts.answeredAt, cutoff30)),
+      .where(
+        and(
+          eq(tcfQuestionAttempts.userId, user.id),
+          gte(tcfQuestionAttempts.answeredAt, cutoff30),
+        ),
+      ),
     db
       .select({ submittedAt: submissions.submittedAt })
       .from(submissions)
+      .where(eq(submissions.userId, user.id))
       .orderBy(desc(submissions.submittedAt))
       .limit(1)
       .then((r) => r[0] ?? null),
     db
       .select({ at: submissions.submittedAt })
       .from(submissions)
-      .where(gte(submissions.submittedAt, cutoff60)),
+      .where(and(eq(submissions.userId, user.id), gte(submissions.submittedAt, cutoff60))),
     db
       .select({ at: tcfQuestionAttempts.answeredAt })
       .from(tcfQuestionAttempts)
-      .where(gte(tcfQuestionAttempts.answeredAt, cutoff60)),
+      .where(
+        and(
+          eq(tcfQuestionAttempts.userId, user.id),
+          gte(tcfQuestionAttempts.answeredAt, cutoff60),
+        ),
+      ),
     db
       .select({ at: conjugationAttempts.answeredAt })
       .from(conjugationAttempts)
-      .where(gte(conjugationAttempts.answeredAt, cutoff60)),
+      .where(
+        and(
+          eq(conjugationAttempts.userId, user.id),
+          gte(conjugationAttempts.answeredAt, cutoff60),
+        ),
+      ),
     db
       .select({ at: quizAttempts.answeredAt })
       .from(quizAttempts)
-      .where(gte(quizAttempts.answeredAt, cutoff60)),
+      .where(
+        and(eq(quizAttempts.userId, user.id), gte(quizAttempts.answeredAt, cutoff60)),
+      ),
     db
       .select({ count: sql<number>`count(*)::int` })
-      .from(vocabularyLookups)
-      .where(isNotNull(vocabularyLookups.savedAt))
+      .from(userVocabulary)
+      .where(and(eq(userVocabulary.userId, user.id), isNotNull(userVocabulary.savedAt)))
       .then((r) => r[0]),
     getTopRecurringPatterns(1),
   ]);

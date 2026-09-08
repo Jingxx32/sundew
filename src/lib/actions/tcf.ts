@@ -18,6 +18,7 @@ import {
   type TcfLearningAttempt,
   type TcfQuestionLearningSummary,
 } from "@/lib/tcf/learning";
+import { requireUser } from "@/lib/auth/session";
 
 export type TcfLevel = (typeof tcfLevelEnum.enumValues)[number];
 
@@ -32,6 +33,7 @@ export interface TcfSetWithCounts {
 }
 
 export async function listTcfSets(skill: "listening" | "reading" = "listening"): Promise<TcfSetWithCounts[]> {
+  await requireUser();
   const sets = await db
     .select()
     .from(tcfSets)
@@ -76,6 +78,7 @@ export interface TcfLevelSummary {
 
 /** Aggregate across all sets for the overview cards */
 export async function getTcfLevelSummaries(skill: "listening" | "reading" = "listening"): Promise<TcfLevelSummary[]> {
+  await requireUser();
   const sets = await db.select({ id: tcfSets.id }).from(tcfSets).where(eq(tcfSets.skill, skill));
   if (sets.length === 0) return [];
 
@@ -128,6 +131,7 @@ export interface TcfProgressOverview {
 export async function getTcfProgressOverview(
   skill: "listening" | "reading" = "listening",
 ): Promise<TcfProgressOverview> {
+  const user = await requireUser();
   const LEVELS: TcfLevel[] = ["A1", "A2", "B1", "B2", "C1", "C2"];
   const empty = (): TcfProgressOverview => ({
     byLevel: LEVELS.map((level) => ({ level, total: 0, answered: 0, accuracy: null, needsReview: 0 })),
@@ -158,7 +162,7 @@ export async function getTcfProgressOverview(
       .from(tcfQuestionAttempts)
       .innerJoin(tcfQuestions, eq(tcfQuestionAttempts.questionId, tcfQuestions.id))
       .innerJoin(tcfSets, eq(tcfQuestions.setId, tcfSets.id))
-      .where(eq(tcfSets.skill, skill)),
+      .where(and(eq(tcfSets.skill, skill), eq(tcfQuestionAttempts.userId, user.id))),
     db
       .select({
         testNumber: tcfAttempts.testNumber,
@@ -167,7 +171,7 @@ export async function getTcfProgressOverview(
         answeredAt: tcfAttempts.answeredAt,
       })
       .from(tcfAttempts)
-      .where(eq(tcfAttempts.skill, skill))
+      .where(and(eq(tcfAttempts.skill, skill), eq(tcfAttempts.userId, user.id)))
       .orderBy(asc(tcfAttempts.answeredAt)),
   ]);
 
@@ -260,6 +264,7 @@ export async function getTcfSetQuestions(
   skill: "listening" | "reading",
   testNumber: number,
 ): Promise<TcfQuestionForDrill[]> {
+  await requireUser();
   const rows = await db
     .select({
       id: tcfQuestions.id,
@@ -299,6 +304,7 @@ export async function getTcfSetQuestions(
 export async function getTcfQuestionById(
   id: string,
 ): Promise<{ skill: "listening" | "reading"; level: TcfLevel } | null> {
+  await requireUser();
   try {
     const row = (
       await db
@@ -331,12 +337,14 @@ export async function recordTcfExamAttempt(input: {
   /** Per-question detail; unanswered questions are simply absent. */
   answers?: TcfExamAnswer[];
 }): Promise<void> {
+  const user = await requireUser();
   const total = Math.max(0, Math.round(input.total));
   const score = Math.min(total, Math.max(0, Math.round(input.score)));
   await db.transaction(async (tx) => {
     const [attempt] = await tx
       .insert(tcfAttempts)
       .values({
+        userId: user.id,
         setId: input.setId,
         skill: input.skill,
         testNumber: input.testNumber,
@@ -348,6 +356,7 @@ export async function recordTcfExamAttempt(input: {
     if (input.answers && input.answers.length > 0) {
       await tx.insert(tcfQuestionAttempts).values(
         input.answers.map((a) => ({
+          userId: user.id,
           questionId: a.questionId,
           mode: "exam" as const,
           examAttemptId: attempt.id,
@@ -370,6 +379,7 @@ export async function recordTcfQuestionAttempt(input: {
   uncertain?: boolean;
   mode?: "drill" | "review";
 }): Promise<void> {
+  const user = await requireUser();
   if (!Number.isFinite(input.chosen)) throw new Error("Réponse invalide.");
   const chosen = Math.max(0, Math.round(input.chosen));
   const [question] = await db
@@ -380,6 +390,7 @@ export async function recordTcfQuestionAttempt(input: {
   if (!question) throw new Error("Question TCF introuvable.");
 
   await db.insert(tcfQuestionAttempts).values({
+    userId: user.id,
     questionId: input.questionId,
     mode: input.mode ?? "drill",
     chosen,
@@ -398,16 +409,22 @@ function assertUuid(id: string, label: string): void {
 /** Removes exactly one historical answer. Learning summaries are always
  * derived from the remaining rows, so there is no cache to repair. */
 export async function deleteTcfQuestionAttempt(attemptId: string): Promise<void> {
+  const user = await requireUser();
   assertUuid(attemptId, "Identifiant de tentative");
-  await db.delete(tcfQuestionAttempts).where(eq(tcfQuestionAttempts.id, attemptId));
+  await db
+    .delete(tcfQuestionAttempts)
+    .where(and(eq(tcfQuestionAttempts.id, attemptId), eq(tcfQuestionAttempts.userId, user.id)));
   revalidateTcfLearningPaths();
 }
 
 /** Deliberately separate from deleting one row: callers must ask the learner
  * for a second explicit confirmation before invoking it. */
 export async function resetTcfQuestionLearningHistory(questionId: string): Promise<void> {
+  const user = await requireUser();
   assertUuid(questionId, "Identifiant de question");
-  await db.delete(tcfQuestionAttempts).where(eq(tcfQuestionAttempts.questionId, questionId));
+  await db
+    .delete(tcfQuestionAttempts)
+    .where(and(eq(tcfQuestionAttempts.questionId, questionId), eq(tcfQuestionAttempts.userId, user.id)));
   revalidateTcfLearningPaths();
 }
 
@@ -424,6 +441,7 @@ export async function getTcfQuestionLearning(
   skill: "listening" | "reading",
   level: TcfLevel,
 ): Promise<TcfQuestionLearning[]> {
+  const user = await requireUser();
   const questions = await db
     .select({ id: tcfQuestions.id })
     .from(tcfQuestions)
@@ -441,7 +459,13 @@ export async function getTcfQuestionLearning(
       answeredAt: tcfQuestionAttempts.answeredAt,
     })
     .from(tcfQuestionAttempts)
-    .where(and(inArray(tcfQuestionAttempts.questionId, ids), inArray(tcfQuestionAttempts.mode, ["drill", "review"])));
+    .where(
+      and(
+        eq(tcfQuestionAttempts.userId, user.id),
+        inArray(tcfQuestionAttempts.questionId, ids),
+        inArray(tcfQuestionAttempts.mode, ["drill", "review"]),
+      ),
+    );
 
   const byQuestion = new Map<string, typeof attempts>();
   for (const attempt of attempts) {
@@ -457,6 +481,7 @@ export async function getTcfQuestionLearning(
 }
 
 export async function getTcfQuestionHistory(questionId: string): Promise<TcfQuestionAttemptHistory[]> {
+  const user = await requireUser();
   assertUuid(questionId, "Identifiant de question");
   const rows = await db
     .select({
@@ -468,7 +493,12 @@ export async function getTcfQuestionHistory(questionId: string): Promise<TcfQues
       answeredAt: tcfQuestionAttempts.answeredAt,
     })
     .from(tcfQuestionAttempts)
-    .where(eq(tcfQuestionAttempts.questionId, questionId))
+    .where(
+      and(
+        eq(tcfQuestionAttempts.questionId, questionId),
+        eq(tcfQuestionAttempts.userId, user.id),
+      ),
+    )
     .orderBy(desc(tcfQuestionAttempts.answeredAt));
   return rows.map((row) => ({ ...row, mode: row.mode as TcfQuestionAttemptHistory["mode"] }));
 }
@@ -486,14 +516,28 @@ export async function getTcfScheduledDrillQuestions(
   level: TcfLevel,
   kind: TcfDrillSessionKind,
 ): Promise<{ questions: TcfQuestionForDrill[]; learning: TcfQuestionLearning[] }> {
+  const user = await requireUser();
   const [questions, learning, gapQuestionRows] = await Promise.all([
     getTcfDrillQuestions(skill, level),
     getTcfQuestionLearning(skill, level),
     db
       .selectDistinct({ questionId: vocabularyOccurrences.tcfQuestionId })
       .from(vocabularyOccurrences)
-      .innerJoin(vocabularyGaps, eq(vocabularyOccurrences.lemma, vocabularyGaps.lemma))
-      .where(and(eq(vocabularyGaps.status, "active"), isNotNull(vocabularyOccurrences.tcfQuestionId))),
+      .innerJoin(
+        vocabularyGaps,
+        and(
+          eq(vocabularyOccurrences.userId, vocabularyGaps.userId),
+          eq(vocabularyOccurrences.lemma, vocabularyGaps.lemma),
+        ),
+      )
+      .where(
+        and(
+          eq(vocabularyOccurrences.userId, user.id),
+          eq(vocabularyGaps.userId, user.id),
+          eq(vocabularyGaps.status, "active"),
+          isNotNull(vocabularyOccurrences.tcfQuestionId),
+        ),
+      ),
   ]);
   const gapQuestionIds = new Set(gapQuestionRows.map((r) => r.questionId));
   const summaryById = new Map(learning.map((summary) => [summary.questionId, summary]));
@@ -531,6 +575,7 @@ export async function getTcfReviewCount(
   skill: "listening" | "reading",
   level?: TcfLevel,
 ): Promise<number> {
+  await requireUser();
   if (level) return (await getTcfQuestionLearning(skill, level)).filter((summary) => summary.needsReview).length;
   const levels: TcfLevel[] = ["A1", "A2", "B1", "B2", "C1", "C2"];
   const counts = await Promise.all(levels.map((currentLevel) => getTcfReviewCount(skill, currentLevel)));
@@ -542,6 +587,7 @@ export async function getTcfReviewQueue(filters: {
   level?: TcfLevel;
   tag?: string;
 } = {}): Promise<Array<TcfQuestionForDrill & { skill: "listening" | "reading"; learning: TcfQuestionLearning }>> {
+  await requireUser();
   const skills: Array<"listening" | "reading"> = filters.skill ? [filters.skill] : ["listening", "reading"];
   const levels: TcfLevel[] = filters.level ? [filters.level] : ["A1", "A2", "B1", "B2", "C1", "C2"];
   const groups = await Promise.all(skills.flatMap((skill) => levels.map(async (level) => {
@@ -558,19 +604,28 @@ export async function getTcfDoneQuestionIds(
   skill: "listening" | "reading",
   level: TcfLevel,
 ): Promise<string[]> {
+  const user = await requireUser();
   const rows = await db
     .selectDistinct({ questionId: tcfQuestionAttempts.questionId })
     .from(tcfQuestionAttempts)
     .innerJoin(tcfQuestions, eq(tcfQuestionAttempts.questionId, tcfQuestions.id))
     .innerJoin(tcfSets, eq(tcfQuestions.setId, tcfSets.id))
-    .where(and(eq(tcfSets.skill, skill), eq(tcfQuestions.level, level)));
+    .where(
+      and(
+        eq(tcfSets.skill, skill),
+        eq(tcfQuestions.level, level),
+        eq(tcfQuestionAttempts.userId, user.id),
+      ),
+    );
   return rows.map((r) => r.questionId);
 }
 
 export async function listRecentTcfAttempts(limit = 10): Promise<TcfAttempt[]> {
+  const user = await requireUser();
   return db
     .select()
     .from(tcfAttempts)
+    .where(eq(tcfAttempts.userId, user.id))
     .orderBy(desc(tcfAttempts.answeredAt))
     .limit(limit);
 }
@@ -579,6 +634,7 @@ export async function getTcfDrillQuestions(
   skill: "listening" | "reading",
   level: TcfLevel,
 ): Promise<TcfQuestionForDrill[]> {
+  await requireUser();
   const rows = await db
     .select({
       id: tcfQuestions.id,

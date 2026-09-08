@@ -34,7 +34,7 @@ export function CefrLevelPicker({ currentLevel }: Props) {
               disabled={isPending}
               onClick={() => handleSelect(level)}
               className={cn(
-                "px-4 py-1.5 rounded-full text-sm font-medium ring-1 transition-all",
+                "px-4 py-1.5 rounded-full text-sm font-medium ring-1 transition-[background-color,border-color,color,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2",
                 isActive
                   ? CEFR_CHIP_CLASSES[level]
                   : "bg-surface border border-border text-muted-foreground hover:text-foreground ring-transparent",

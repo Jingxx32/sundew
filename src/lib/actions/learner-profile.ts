@@ -1,6 +1,6 @@
 "use server";
 
-import { eq, desc, count, gte } from "drizzle-orm";
+import { and, eq, desc, count, gte } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import { errors, submissions, userSettings } from "@/lib/db/schema";
@@ -13,6 +13,7 @@ import {
   PROFILE_MIN_ERRORS,
   PROFILE_MIN_SUBMISSIONS,
 } from "@/lib/learner-profile";
+import { requireUser } from "@/lib/auth/session";
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                             */
@@ -37,6 +38,7 @@ function classifyTrend(
 /* ------------------------------------------------------------------ */
 
 export async function buildLearnerProfile(): Promise<LearnerProfile> {
+  const user = await requireUser();
   const now = Date.now();
   const cutoff60 = new Date(now - 60 * 86_400_000);
   const cutoff30 = new Date(now - TREND_WINDOW_DAYS * 86_400_000);
@@ -53,11 +55,11 @@ export async function buildLearnerProfile(): Promise<LearnerProfile> {
     db
       .select()
       .from(userSettings)
-      .where(eq(userSettings.key, "cefr_level"))
+      .where(and(eq(userSettings.userId, user.id), eq(userSettings.key, "cefr_level")))
       .limit(1)
       .then((r) => r[0] ?? null),
-    db.select({ count: count() }).from(submissions),
-    db.select({ count: count() }).from(errors),
+    db.select({ count: count() }).from(submissions).where(eq(submissions.userId, user.id)),
+    db.select({ count: count() }).from(errors).where(eq(errors.userId, user.id)),
     db
       .select({
         category: errors.category,
@@ -65,6 +67,7 @@ export async function buildLearnerProfile(): Promise<LearnerProfile> {
         count: count(),
       })
       .from(errors)
+      .where(eq(errors.userId, user.id))
       .groupBy(errors.category, errors.subcategory)
       .orderBy(desc(count()))
       .limit(8),
@@ -75,11 +78,11 @@ export async function buildLearnerProfile(): Promise<LearnerProfile> {
         createdAt: errors.createdAt,
       })
       .from(errors)
-      .where(gte(errors.createdAt, cutoff60)),
+      .where(and(eq(errors.userId, user.id), gte(errors.createdAt, cutoff60))),
     db
       .select({ subcategory: errors.subcategory })
       .from(errors)
-      .where(gte(errors.createdAt, cutoff90)),
+      .where(and(eq(errors.userId, user.id), gte(errors.createdAt, cutoff90))),
   ]);
 
   const declaredLevel = cefrRow?.value;
@@ -128,4 +131,3 @@ export async function buildLearnerProfile(): Promise<LearnerProfile> {
     hasEnoughSignal,
   };
 }
-

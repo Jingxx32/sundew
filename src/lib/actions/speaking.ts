@@ -15,6 +15,7 @@ import {
 } from "@/lib/db/schema";
 import { generateSpeakingScript } from "@/lib/ai/speaking-script";
 import { getSpeakingProfile } from "./settings";
+import { requireUser } from "@/lib/auth/session";
 
 export type PromptWithStats = SpeakingPrompt & {
   sessionCount: number;
@@ -22,6 +23,7 @@ export type PromptWithStats = SpeakingPrompt & {
 };
 
 export async function listPromptsWithStats(): Promise<PromptWithStats[]> {
+  const user = await requireUser();
   const rows = await db
     .select({
       prompt: speakingPrompts,
@@ -31,7 +33,7 @@ export async function listPromptsWithStats(): Promise<PromptWithStats[]> {
     .from(speakingPrompts)
     .leftJoin(
       speakingSessions,
-      sql`${speakingSessions.promptId} = ${speakingPrompts.id} and ${speakingSessions.status} = 'completed'`,
+      sql`${speakingSessions.promptId} = ${speakingPrompts.id} and ${speakingSessions.status} = 'completed' and ${speakingSessions.userId} = ${user.id}`,
     )
     .groupBy(speakingPrompts.id)
     .orderBy(speakingPrompts.task, speakingPrompts.createdAt);
@@ -42,6 +44,7 @@ export async function listPromptsWithStats(): Promise<PromptWithStats[]> {
 export async function getPromptWithScript(
   promptId: string,
 ): Promise<{ prompt: SpeakingPrompt; script: SpeakingScript | null }> {
+  const user = await requireUser();
   const prompt = await db
     .select()
     .from(speakingPrompts)
@@ -53,7 +56,7 @@ export async function getPromptWithScript(
   const script = await db
     .select()
     .from(speakingScripts)
-    .where(eq(speakingScripts.promptId, promptId))
+    .where(and(eq(speakingScripts.promptId, promptId), eq(speakingScripts.userId, user.id)))
     .orderBy(desc(speakingScripts.createdAt))
     .limit(1)
     .then((r) => r[0] ?? null);
@@ -62,13 +65,14 @@ export async function getPromptWithScript(
 }
 
 export async function generateScript(promptId: string): Promise<SpeakingScript> {
+  const user = await requireUser();
   const { prompt } = await getPromptWithScript(promptId);
   const profile = await getSpeakingProfile();
   const content = await generateSpeakingScript(prompt, profile);
 
   const [script] = await db
     .insert(speakingScripts)
-    .values({ promptId, content, profileSnapshot: profile || null })
+    .values({ userId: user.id, promptId, content, profileSnapshot: profile || null })
     .returning();
 
   revalidatePath(`/speaking/${promptId}/script`);
@@ -76,29 +80,38 @@ export async function generateScript(promptId: string): Promise<SpeakingScript> 
 }
 
 export async function updateScript(scriptId: string, content: string): Promise<void> {
+  const user = await requireUser();
   const trimmed = content.trim();
   if (!trimmed) throw new Error("Script content cannot be empty");
   const [row] = await db
     .update(speakingScripts)
     .set({ content: trimmed })
-    .where(eq(speakingScripts.id, scriptId))
+    .where(and(eq(speakingScripts.id, scriptId), eq(speakingScripts.userId, user.id)))
     .returning({ promptId: speakingScripts.promptId });
   if (row) revalidatePath(`/speaking/${row.promptId}/script`);
 }
 
 export async function startScriptSession(promptId: string): Promise<string> {
+  const user = await requireUser();
   const [session] = await db
     .insert(speakingSessions)
-    .values({ promptId, mode: "script_practice" })
+    .values({ userId: user.id, promptId, mode: "script_practice" })
     .returning({ id: speakingSessions.id });
   return session.id;
 }
 
 export async function finishScriptSession(sessionId: string): Promise<SessionScores> {
+  const user = await requireUser();
   const turns = await db
     .select()
     .from(speakingTurns)
-    .where(and(eq(speakingTurns.sessionId, sessionId), eq(speakingTurns.role, "user")))
+    .where(
+      and(
+        eq(speakingTurns.sessionId, sessionId),
+        eq(speakingTurns.userId, user.id),
+        eq(speakingTurns.role, "user"),
+      ),
+    )
     .orderBy(speakingTurns.orderIndex, desc(speakingTurns.createdAt));
 
   // Keep only the latest attempt per sentence (orderIndex)
@@ -122,7 +135,7 @@ export async function finishScriptSession(sessionId: string): Promise<SessionSco
   const [row] = await db
     .update(speakingSessions)
     .set({ status: "completed", scores, completedAt: new Date() })
-    .where(eq(speakingSessions.id, sessionId))
+    .where(and(eq(speakingSessions.id, sessionId), eq(speakingSessions.userId, user.id)))
     .returning({ promptId: speakingSessions.promptId });
 
   revalidatePath("/speaking");

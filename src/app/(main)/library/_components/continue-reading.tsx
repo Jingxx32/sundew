@@ -41,7 +41,7 @@ export function ContinueReadingCard({ document }: { document: Document }) {
           <div className="mt-5 max-w-md">
             <div className="h-1.5 w-full rounded-full bg-surface-muted overflow-hidden">
               <div
-                className="h-full bg-accent transition-all"
+                className="h-full bg-accent transition-[width]"
                 style={{ width: `${Math.max(2, progress)}%` }}
               />
             </div>

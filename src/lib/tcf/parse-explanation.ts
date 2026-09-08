@@ -23,7 +23,7 @@
  */
 import type { TcfExplanationMeta } from "@/lib/db/schema";
 
-/** 唯一确定一道题的三元组。 */
+/** The three-part identifier that uniquely identifies a question. */
 export interface ExplanationLocator {
   test: number;
   skill: "reading" | "listening";
@@ -39,7 +39,7 @@ export interface ParsedExplanation extends ExplanationLocator {
   meta: TcfExplanationMeta | null;
 }
 
-/** 与 ParsedExplanation 的区别：没有 frontmatter 时 locator 为 null 而不是抛错。 */
+/** Unlike ParsedExplanation, this permits absent frontmatter and returns a null locator. */
 export interface ParsedExplanationBody {
   locator: ExplanationLocator | null;
   body: string;
@@ -53,7 +53,7 @@ const TRANSLATION_HEADINGS = ["Translation", "全文翻译"] as const;
 const VERDICT_HEADINGS = ["Verdict", "速判"] as const;
 /** Listening only, and English-only — no listening explanation predates the English headings. */
 const TRANSCRIPT_HEADINGS = ["Transcript"] as const;
-/** `- Key: …` / `- 眼: …` — the one line naming what decides the answer. */
+/** `- Key: …` / legacy `- 眼: …` — the one line naming what decides the answer. */
 const KEY_POINT_LINE = /^[-*]\s*(?:Key|眼)\s*[:：]\s*(.+)$/i;
 /** `- B ❌ …` — one option's verdict. The ✅/❌ mark is decorative; position is what binds. */
 const OPTION_LINE = /^[-*]\s*([A-D])\s*(?:[✅❌]\s*)?(.+)$/;

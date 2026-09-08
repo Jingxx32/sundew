@@ -7,6 +7,7 @@ import { ERROR_TAXONOMY } from "@/lib/taxonomy";
 import type { ErrorCategory } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
 import { CATEGORY_STYLES } from "@/lib/category-styles";
+import { FilterChip } from "@/components/ui/filter-chip";
 
 const CATEGORIES = Object.keys(ERROR_TAXONOMY) as ErrorCategory[];
 
@@ -44,18 +45,12 @@ export function ProgressFilters({ counts, documentTitle }: Props) {
     <div className="space-y-3 mb-6">
       <div className="flex flex-wrap items-center gap-1.5 text-xs">
         {/* All chip */}
-        <button
-          type="button"
+        <FilterChip
+          active={!activeCategory}
           onClick={() => updateParams({ category: "", documentId })}
-          className={cn(
-            "px-3 h-8 rounded-full transition-colors",
-            !activeCategory
-              ? "bg-foreground text-background font-medium"
-              : "bg-surface text-muted-foreground hover:text-foreground border border-border/60",
-          )}
         >
           All ({totalErrors})
-        </button>
+        </FilterChip>
 
         {/* Category chips */}
         {CATEGORIES.map((cat) => {
@@ -67,11 +62,12 @@ export function ProgressFilters({ counts, documentTitle }: Props) {
             <button
               key={cat}
               type="button"
+              aria-pressed={isActive}
               onClick={() =>
                 updateParams({ category: isActive ? "" : cat, documentId })
               }
               className={cn(
-                "px-3 h-8 rounded-full transition-colors text-xs font-medium",
+                "px-3 h-8 rounded-full transition-colors text-xs font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2",
                 isActive
                   ? style.chip + " ring-1 ring-current/30"
                   : "bg-surface text-muted-foreground hover:text-foreground border border-border/60",
@@ -92,10 +88,10 @@ export function ProgressFilters({ counts, documentTitle }: Props) {
             <button
               type="button"
               onClick={() => updateParams({ category: activeCategory, documentId: "" })}
-              className="ml-0.5 hover:text-foreground transition-colors"
+              className="ml-0.5 rounded-sm transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
               aria-label="Remove document filter"
             >
-              <X className="h-3 w-3" />
+              <X className="h-3 w-3" aria-hidden="true" />
             </button>
           </span>
         </div>

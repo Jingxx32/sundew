@@ -6,11 +6,12 @@ import { db } from "@/lib/db";
 import { resolveLookup } from "@/lib/actions/vocabulary";
 import { upsertGap, gradeGap } from "@/lib/vocabulary/gaps";
 import {
+  userVocabulary,
   vocabularyGaps,
-  vocabularyLookups,
   type VocabGapType,
   type VocabGapStatus,
 } from "@/lib/db/schema";
+import { requireUser } from "@/lib/auth/session";
 
 /** Manual gap marking from a TCF question. Creates the entry (cache-first lookup),
  *  the occurrence, and the gap row. */
@@ -20,11 +21,12 @@ export async function markTcfVocabGap(input: {
   tcfQuestionId: string;
   gapType: VocabGapType;
 }): Promise<void> {
+  const user = await requireUser();
   const { lemma } = await resolveLookup(input.surface, input.sentenceContext, {
     type: "tcf",
     tcfQuestionId: input.tcfQuestionId,
   });
-  await upsertGap({ lemma, gapType: input.gapType, source: "manual" });
+  await upsertGap({ userId: user.id, lemma, gapType: input.gapType, source: "manual" });
 }
 
 /* ------------------------------------------------------------------ */
@@ -49,29 +51,44 @@ export type GapReviewCard = {
 const shuffle = <T,>(a: T[]) => a.map((v) => [Math.random(), v] as const).sort((x, y) => x[0] - y[0]).map(([, v]) => v);
 
 export async function getDueGapCards(limit = 20): Promise<GapReviewCard[]> {
+  const user = await requireUser();
   const rows = await db
     .select({
       gapId: vocabularyGaps.id,
       lemma: vocabularyGaps.lemma,
       gapType: vocabularyGaps.gapType,
       box: vocabularyGaps.box,
-      surface: vocabularyLookups.surface,
-      translation: vocabularyLookups.translation,
-      sentenceContext: vocabularyLookups.sentenceContext,
-      inContext: vocabularyLookups.inContext,
-      examples: vocabularyLookups.examples,
+      surface: userVocabulary.surface,
+      translation: userVocabulary.translation,
+      sentenceContext: userVocabulary.sentenceContext,
+      inContext: userVocabulary.inContext,
+      examples: userVocabulary.examples,
     })
     .from(vocabularyGaps)
-    .innerJoin(vocabularyLookups, eq(vocabularyGaps.lemma, vocabularyLookups.lemma))
-    .where(and(eq(vocabularyGaps.status, "active"), lte(vocabularyGaps.dueAt, new Date())))
+    .innerJoin(
+      userVocabulary,
+      and(
+        eq(vocabularyGaps.userId, userVocabulary.userId),
+        eq(vocabularyGaps.lemma, userVocabulary.lemma),
+      ),
+    )
+    .where(
+      and(
+        eq(vocabularyGaps.userId, user.id),
+        eq(vocabularyGaps.status, "active"),
+        lte(vocabularyGaps.dueAt, new Date()),
+      ),
+    )
     .orderBy(asc(vocabularyGaps.dueAt))
     .limit(limit);
 
   // Distractor pool: 30 random other entries with a translation.
   const pool = await db
-    .select({ lemma: vocabularyLookups.lemma, translation: vocabularyLookups.translation })
-    .from(vocabularyLookups)
-    .where(sql`${vocabularyLookups.translation} is not null`)
+    .select({ lemma: userVocabulary.lemma, translation: userVocabulary.translation })
+    .from(userVocabulary)
+    .where(
+      and(eq(userVocabulary.userId, user.id), sql`${userVocabulary.translation} is not null`),
+    )
     .orderBy(sql`random()`)
     .limit(30);
 
@@ -103,7 +120,8 @@ export async function getDueGapCards(limit = 20): Promise<GapReviewCard[]> {
 }
 
 export async function gradeGapReview(gapId: string, correct: boolean): Promise<{ box: number; status: VocabGapStatus }> {
-  const result = await gradeGap(gapId, correct);
+  const user = await requireUser();
+  const result = await gradeGap(user.id, gapId, correct);
   revalidatePath("/vocabulary/review");
   return result;
 }
@@ -111,13 +129,17 @@ export async function gradeGapReview(gapId: string, correct: boolean): Promise<{
 /** Set a gap's status. Setting `active` also resets box/dueAt (used by the
  *  management list's "Réactiver" on a dismissed/mastered row). */
 export async function setGapStatus(gapId: string, status: VocabGapStatus): Promise<void> {
+  const user = await requireUser();
   if (status === "active") {
     await db
       .update(vocabularyGaps)
       .set({ status: "active", box: 1, dueAt: new Date() })
-      .where(eq(vocabularyGaps.id, gapId));
+      .where(and(eq(vocabularyGaps.id, gapId), eq(vocabularyGaps.userId, user.id)));
   } else {
-    await db.update(vocabularyGaps).set({ status }).where(eq(vocabularyGaps.id, gapId));
+    await db
+      .update(vocabularyGaps)
+      .set({ status })
+      .where(and(eq(vocabularyGaps.id, gapId), eq(vocabularyGaps.userId, user.id)));
   }
   revalidatePath("/vocabulary/review");
 }
@@ -125,8 +147,13 @@ export async function setGapStatus(gapId: string, status: VocabGapStatus): Promi
 /** Change a gap's type. If a row for (lemma, newType) already exists, the
  *  current row is dropped (merge) rather than creating a duplicate. */
 export async function changeGapType(gapId: string, gapType: VocabGapType): Promise<void> {
+  const user = await requireUser();
   const current = (
-    await db.select().from(vocabularyGaps).where(eq(vocabularyGaps.id, gapId)).limit(1)
+    await db
+      .select()
+      .from(vocabularyGaps)
+      .where(and(eq(vocabularyGaps.id, gapId), eq(vocabularyGaps.userId, user.id)))
+      .limit(1)
   )[0];
   if (!current) return;
 
@@ -134,14 +161,25 @@ export async function changeGapType(gapId: string, gapType: VocabGapType): Promi
     await db
       .select()
       .from(vocabularyGaps)
-      .where(and(eq(vocabularyGaps.lemma, current.lemma), eq(vocabularyGaps.gapType, gapType)))
+      .where(
+        and(
+          eq(vocabularyGaps.userId, user.id),
+          eq(vocabularyGaps.lemma, current.lemma),
+          eq(vocabularyGaps.gapType, gapType),
+        ),
+      )
       .limit(1)
   )[0];
 
   if (existing) {
-    await db.delete(vocabularyGaps).where(eq(vocabularyGaps.id, gapId));
+    await db
+      .delete(vocabularyGaps)
+      .where(and(eq(vocabularyGaps.id, gapId), eq(vocabularyGaps.userId, user.id)));
   } else {
-    await db.update(vocabularyGaps).set({ gapType }).where(eq(vocabularyGaps.id, gapId));
+    await db
+      .update(vocabularyGaps)
+      .set({ gapType })
+      .where(and(eq(vocabularyGaps.id, gapId), eq(vocabularyGaps.userId, user.id)));
   }
   revalidatePath("/vocabulary/review");
 }
@@ -157,28 +195,43 @@ export type GapListRow = {
 };
 
 export async function listGaps(): Promise<GapListRow[]> {
+  const user = await requireUser();
   const rows = await db
     .select({
       gapId: vocabularyGaps.id,
       lemma: vocabularyGaps.lemma,
-      translation: vocabularyLookups.translation,
+      translation: userVocabulary.translation,
       gapType: vocabularyGaps.gapType,
       status: vocabularyGaps.status,
       box: vocabularyGaps.box,
       dueAt: vocabularyGaps.dueAt,
     })
     .from(vocabularyGaps)
-    .innerJoin(vocabularyLookups, eq(vocabularyGaps.lemma, vocabularyLookups.lemma))
+    .innerJoin(
+      userVocabulary,
+      and(
+        eq(vocabularyGaps.userId, userVocabulary.userId),
+        eq(vocabularyGaps.lemma, userVocabulary.lemma),
+      ),
+    )
+    .where(eq(vocabularyGaps.userId, user.id))
     .orderBy(sql`case when ${vocabularyGaps.status} != 'dismissed' then 0 else 1 end`, asc(vocabularyGaps.dueAt));
   return rows;
 }
 
 /** Top production gaps for task injection: lowest box first, then oldest. */
 export async function getProductionGapLemmas(limit = 5): Promise<string[]> {
+  const user = await requireUser();
   const rows = await db
     .select({ lemma: vocabularyGaps.lemma })
     .from(vocabularyGaps)
-    .where(and(eq(vocabularyGaps.status, "active"), eq(vocabularyGaps.gapType, "production")))
+    .where(
+      and(
+        eq(vocabularyGaps.userId, user.id),
+        eq(vocabularyGaps.status, "active"),
+        eq(vocabularyGaps.gapType, "production"),
+      ),
+    )
     .orderBy(asc(vocabularyGaps.box), asc(vocabularyGaps.createdAt))
     .limit(limit);
   return rows.map((r) => r.lemma);

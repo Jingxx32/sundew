@@ -14,6 +14,7 @@ import {
   PERSON_LABELS,
   type DrillTense,
 } from "@/lib/conjugation/source";
+import { requireUser } from "@/lib/auth/session";
 
 /* ------------------------------------------------------------------ */
 /*  Drill targets                                                      */
@@ -80,6 +81,7 @@ export type DrillItem = {
 /* ------------------------------------------------------------------ */
 
 export async function getDrillQueue(limit = 10): Promise<DrillItem[]> {
+  const user = await requireUser();
   const verbErrors = await db
     .select({
       subcategory: errors.subcategory,
@@ -89,6 +91,7 @@ export async function getDrillQueue(limit = 10): Promise<DrillItem[]> {
     .from(errors)
     .where(
       and(
+        eq(errors.userId, user.id),
         eq(errors.category, "Grammar"),
         inArray(errors.subcategory, Object.keys(ERROR_SUBCATEGORY_TENSES)),
       ),
@@ -242,6 +245,7 @@ export async function recordConjugationAttempt(input: {
   person: number;
   userInput: string;
 }): Promise<GradeResult> {
+  const user = await requireUser();
   if (!DRILL_TENSES.includes(input.tense) || !isKnownVerb(input.verb)) {
     throw new Error(`Unknown drill target: ${input.verb} / ${input.tense}`);
   }
@@ -254,6 +258,7 @@ export async function recordConjugationAttempt(input: {
 
   await db.insert(conjugationAttempts).values({
     id: randomUUID(),
+    userId: user.id,
     verb: input.verb,
     tense: input.tense,
     person,
@@ -285,6 +290,7 @@ export type ConjugationStats = {
 };
 
 export async function getConjugationStats(): Promise<ConjugationStats> {
+  const user = await requireUser();
   // Aggregate in SQL so this doesn't get slower as attempt history grows.
   const rows = await db
     .select({
@@ -294,6 +300,7 @@ export async function getConjugationStats(): Promise<ConjugationStats> {
       correct: sql<number>`count(*) filter (where ${conjugationAttempts.correct})`,
     })
     .from(conjugationAttempts)
+    .where(eq(conjugationAttempts.userId, user.id))
     .groupBy(conjugationAttempts.verb, conjugationAttempts.tense);
 
   let totalAttempts = 0;

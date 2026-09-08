@@ -4,7 +4,7 @@
  * this PDF carries real, machine-readable text: passage + prompt + 4 options,
  * with a compact answer key on the last page. No AI, no network.
  *
- * pdf-parse emits tab-separated words, a repeated 闲鱼 watermark, and
+ * pdf-parse emits tab-separated words, a repeated legacy marketplace watermark, and
  * "-- N of M --" page markers; we normalise those away first.
  *
  * Questions are anchored on the regular A/B/C/D option run (option text may
@@ -21,7 +21,7 @@ export interface ParsedReadingPdfQuestion {
 }
 
 const ANSWER_KEY_RE = /^\d+\s*-\s*\d+\s+[A-D]{2,}$/;
-/** A line that introduces a new question block (bare "12." or "12. Texte corrigé（…）") */
+/** A line that introduces a new question block (bare "12." or "12. Texte corrigé (...)"). */
 const MARKER_RE = /^(?:\d+\.\s*)?Texte\s+corrig[ée]/i;
 const NUMBER_MARKER_RE = /^\d+\.\s*$/;
 // Options appear in two styles across the source: "A Texte" and "A. Texte".

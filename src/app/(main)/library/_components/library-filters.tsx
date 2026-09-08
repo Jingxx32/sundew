@@ -4,7 +4,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useCallback, useTransition } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { FilterChip } from "@/components/ui/filter-chip";
 
 const TYPES = [
   { label: "All", value: "all" },
@@ -44,6 +44,8 @@ export function LibraryFilters({ counts }: { counts: Record<string, number> }) {
       <div className="relative flex-1 max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-subtle-foreground" />
         <Input
+          type="search"
+          aria-label="Search your library"
           placeholder="Search your library…"
           className="pl-9"
           defaultValue={activeQuery}
@@ -57,19 +59,13 @@ export function LibraryFilters({ counts }: { counts: Record<string, number> }) {
           const count = value === "all" ? total : (counts[value] ?? 0);
           const isActive = activeType === value;
           return (
-            <button
+            <FilterChip
               key={value}
-              type="button"
+              active={isActive}
               onClick={() => updateParams({ type: value === "all" ? "" : value, q: activeQuery })}
-              className={cn(
-                "px-3 h-8 rounded-full transition-colors",
-                isActive
-                  ? "bg-foreground text-background font-medium"
-                  : "bg-surface text-muted-foreground hover:text-foreground border border-border/60",
-              )}
             >
               {label} ({count})
-            </button>
+            </FilterChip>
           );
         })}
       </div>

@@ -4,9 +4,15 @@
  */
 
 import { randomUUID } from "node:crypto";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { vocabularyLookups, vocabularyAliases, vocabularyOccurrences } from "@/lib/db/schema";
+import {
+  userVocabulary,
+  userVocabularyAliases,
+  vocabularyLookups,
+  vocabularyAliases,
+  vocabularyOccurrences,
+} from "@/lib/db/schema";
 import type { LookupResult } from "@/lib/ai/lookup";
 
 /** Either the root client or a transaction handle — lets callers group the
@@ -15,8 +21,10 @@ export type Dbx = typeof db | Parameters<Parameters<(typeof db)["transaction"]>[
 
 export const norm = (s: string) => s.toLowerCase().normalize("NFC").trim();
 
-/** Upsert the lemma entry (never overwrites richEntry/savedAt/enrichedAt). */
+/** Ensure the global lemma exists, then upsert only this user's contextual
+ * fields. Never overwrites richEntry/savedAt/enrichedAt. */
 export async function upsertEntry(
+  userId: string,
   lemma: string,
   surface: string,
   result: LookupResult,
@@ -28,17 +36,27 @@ export async function upsertEntry(
       id: randomUUID(),
       lemma,
       surface,
+      lookedUpAt: new Date(),
+    })
+    .onConflictDoNothing({ target: vocabularyLookups.lemma });
+
+  await dbx
+    .insert(userVocabulary)
+    .values({
+      userId,
+      lemma,
+      surface,
       pos: result.pos,
       translation: result.translation,
       cefrLevel: result.level,
       inContext: result.in_context,
       examples: result.examples,
-      sentenceContext: "",
+      sentenceContext: null,
       lookedUpAt: new Date(),
     })
     .onConflictDoUpdate({
-      target: vocabularyLookups.lemma,
-      // Flat fields are refreshed on each lookup so the card always shows the most recent AI gloss.
+      target: [userVocabulary.userId, userVocabulary.lemma],
+      // Flat fields are refreshed for this user only.
       // richEntry, savedAt, and enrichedAt are intentionally excluded — they survive re-lookups.
       set: {
         pos: result.pos,
@@ -51,14 +69,20 @@ export async function upsertEntry(
     });
 }
 
-export async function upsertAlias(surface: string, lemma: string, dbx: Dbx = db) {
+export async function upsertAlias(
+  userId: string,
+  surface: string,
+  lemma: string,
+  dbx: Dbx = db,
+) {
   await dbx
-    .insert(vocabularyAliases)
-    .values({ surface, lemma, createdAt: new Date() })
+    .insert(userVocabularyAliases)
+    .values({ userId, surface, lemma, createdAt: new Date() })
     .onConflictDoNothing();
 }
 
 export async function recordOccurrence(opts: {
+  userId: string;
   lemma: string;
   surface: string;
   sentenceContext: string;
@@ -70,6 +94,7 @@ export async function recordOccurrence(opts: {
     .insert(vocabularyOccurrences)
     .values({
       id: randomUUID(),
+      userId: opts.userId,
       lemma: opts.lemma,
       surface: opts.surface,
       sentenceContext: opts.sentenceContext,
@@ -81,8 +106,9 @@ export async function recordOccurrence(opts: {
     .onConflictDoNothing();
 }
 
-/** Resolve a surface (or lemma) to its lemma via the alias table. */
-export async function resolveLemma(surface: string): Promise<string | null> {
+/** Resolve a surface (or lemma) through this user's aliases, with the global
+ * read-only alias table as a compatibility/curated fallback. */
+export async function resolveLemma(userId: string, surface: string): Promise<string | null> {
   const s = norm(surface);
   const direct = await db
     .select({ lemma: vocabularyLookups.lemma })
@@ -90,6 +116,17 @@ export async function resolveLemma(surface: string): Promise<string | null> {
     .where(eq(vocabularyLookups.lemma, s))
     .limit(1);
   if (direct[0]) return direct[0].lemma;
+  const personalAlias = await db
+    .select({ lemma: userVocabularyAliases.lemma })
+    .from(userVocabularyAliases)
+    .where(
+      and(
+        eq(userVocabularyAliases.userId, userId),
+        eq(userVocabularyAliases.surface, s),
+      ),
+    )
+    .limit(1);
+  if (personalAlias[0]) return personalAlias[0].lemma;
   const alias = await db
     .select({ lemma: vocabularyAliases.lemma })
     .from(vocabularyAliases)
@@ -99,15 +136,22 @@ export async function resolveLemma(surface: string): Promise<string | null> {
 }
 
 /** Ensure a lookup entry exists for a word; returns its lemma (null when the AI lookup fails). */
-export async function ensureEntryForWord(word: string): Promise<string | null> {
-  const known = await resolveLemma(word);
-  if (known) return known;
+export async function ensureEntryForWord(userId: string, word: string): Promise<string | null> {
+  const known = await resolveLemma(userId, word);
+  if (known) {
+    const personal = await db
+      .select({ lemma: userVocabulary.lemma })
+      .from(userVocabulary)
+      .where(and(eq(userVocabulary.userId, userId), eq(userVocabulary.lemma, known)))
+      .limit(1);
+    if (personal[0]) return known;
+  }
   const { lookupWord } = await import("@/lib/ai/lookup");
   try {
     const result = await lookupWord(word, "");
     const lemma = norm(result.lemma || word);
-    await upsertEntry(lemma, word, result);
-    await upsertAlias(norm(word), lemma);
+    await upsertEntry(userId, lemma, word, result);
+    await upsertAlias(userId, norm(word), lemma);
     return lemma;
   } catch {
     return null;

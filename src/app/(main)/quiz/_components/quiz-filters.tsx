@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useCallback, useTransition } from "react";
 
-import { cn } from "@/lib/utils";
+import { FilterChip } from "@/components/ui/filter-chip";
 
 const SECTIONS = [
   { label: "All sections", value: "all" },
@@ -42,13 +42,13 @@ export function QuizFilters({ exams }: { exams: string[] }) {
     <div className="flex flex-wrap items-center gap-y-2 gap-x-4 mb-6">
       {/* Exam chips */}
       <div className="flex items-center gap-1.5 text-xs">
-        <FilterChip
+        <QuizFilterChip
           label="All exams"
           active={activeExam === "all"}
           onClick={() => updateParams({ exam: "all" })}
         />
         {exams.map((exam) => (
-          <FilterChip
+          <QuizFilterChip
             key={exam}
             label={exam}
             active={activeExam === exam}
@@ -62,7 +62,7 @@ export function QuizFilters({ exams }: { exams: string[] }) {
       {/* Section chips */}
       <div className="flex flex-wrap items-center gap-1.5 text-xs">
         {SECTIONS.map(({ label, value }) => (
-          <FilterChip
+          <QuizFilterChip
             key={value}
             label={label}
             active={activeSection === value}
@@ -74,7 +74,7 @@ export function QuizFilters({ exams }: { exams: string[] }) {
   );
 }
 
-function FilterChip({
+function QuizFilterChip({
   label,
   active,
   onClick,
@@ -84,17 +84,11 @@ function FilterChip({
   onClick: () => void;
 }) {
   return (
-    <button
-      type="button"
+    <FilterChip
+      active={active}
       onClick={onClick}
-      className={cn(
-        "px-3 h-8 rounded-full transition-colors",
-        active
-          ? "bg-foreground text-background font-medium"
-          : "bg-surface text-muted-foreground hover:text-foreground border border-border/60",
-      )}
     >
       {label}
-    </button>
+    </FilterChip>
   );
 }

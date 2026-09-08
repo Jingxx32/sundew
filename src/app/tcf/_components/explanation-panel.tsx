@@ -63,7 +63,7 @@ const MARKDOWN_COMPONENTS = {
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 export function ExplanationPanel({ markdown }: { markdown: string }) {
-  // The 速判 section is rendered as a verdict bar and per-option lines by the
+  // The verdict section is rendered as a verdict bar and per-option lines by the
   // runners; printing it again here would duplicate every line.
   const prose = stripVerdictSection(markdown);
   if (!prose.trim()) return null;

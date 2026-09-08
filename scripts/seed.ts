@@ -10,14 +10,15 @@ config({ path: ".env.local" });
 config({ path: ".env" });
 
 import { randomUUID } from "node:crypto";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
 import * as schema from "../src/lib/db/schema";
 import { documents, type NewDocument } from "../src/lib/db/schema";
 import { countWords, naiveLevelEstimate } from "../src/lib/cefr";
+import { LEGACY_OWNER_ID } from "../src/lib/db/constants";
 
-type Seed = Omit<NewDocument, "id" | "wordCount" | "estimatedLevel">;
+type Seed = Omit<NewDocument, "id" | "userId" | "wordCount" | "estimatedLevel">;
 
 const SEEDS: Seed[] = [
   {
@@ -54,7 +55,7 @@ L'après-midi, je suis allée au musée Carnavalet. C'est gratuit, et il y a bea
   },
   {
     title: "L'intelligence artificielle change-t-elle nos métiers ?",
-    source: "Lumière (sample)",
+    source: "Sundew (sample)",
     type: "news",
     content: `Depuis l'arrivée des grands modèles de langage, le débat sur l'avenir du travail a pris une nouvelle ampleur. Selon une étude récente publiée par l'OCDE, près d'un emploi sur quatre dans les pays développés pourrait être profondément transformé par l'intelligence artificielle dans les dix prochaines années.
 
@@ -75,7 +76,7 @@ async function main() {
     const existing = await db
       .select({ id: documents.id })
       .from(documents)
-      .where(eq(documents.title, seed.title))
+      .where(and(eq(documents.userId, LEGACY_OWNER_ID), eq(documents.title, seed.title)))
       .limit(1)
       .then((r) => r[0]);
 
@@ -87,6 +88,7 @@ async function main() {
     await db.insert(documents).values({
       ...seed,
       id: randomUUID(),
+      userId: LEGACY_OWNER_ID,
       wordCount: countWords(seed.content),
       estimatedLevel: naiveLevelEstimate(seed.content),
     });

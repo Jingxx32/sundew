@@ -88,7 +88,7 @@ export default async function TcfPage({
                 className="group block touch-manipulation rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
               >
                 <Card
-                  className={`px-6 py-5 transition-all group-hover:shadow-card group-hover:border-accent/40 ${
+                  className={`px-6 py-5 transition-[border-color,box-shadow] group-hover:shadow-card group-hover:border-accent/40 ${
                     s.total === 0 ? "opacity-50 pointer-events-none" : ""
                   }`}
                 >
@@ -156,7 +156,7 @@ export default async function TcfPage({
                 <Link
                   key={s.id}
                   href={`/tcf/exam?skill=${skill}&test=${s.testNumber}`}
-                  className={`group flex flex-col items-center justify-center gap-1 rounded-xl border bg-surface px-2 py-3 transition-all touch-manipulation hover:border-accent/40 hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 ${
+                  className={`group flex flex-col items-center justify-center gap-1 rounded-xl border bg-surface px-2 py-3 transition-[border-color,box-shadow] touch-manipulation hover:border-accent/40 hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 ${
                     exam ? "border-accent/30" : started ? "border-warning/30" : "border-border/70"
                   }`}
                 >

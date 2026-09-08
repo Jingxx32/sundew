@@ -30,7 +30,7 @@ export default async function LibraryPage({
           <h1 className="text-[38px] font-bold tracking-[-0.035em]">
             Library
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 text-[15px] text-muted-foreground">
             {allDocs.length === 0
               ? "Your French reading material will live here."
               : `${allDocs.length} ${allDocs.length === 1 ? "document" : "documents"} · ${totalWords.toLocaleString()} words`}
@@ -80,7 +80,7 @@ function EmptyState({ filtered }: { filtered: boolean }) {
       <p className="text-xl text-foreground">
         {filtered ? "No documents match your search." : "Your library is empty."}
       </p>
-      <p className="mt-2 text-sm text-muted-foreground max-w-sm mx-auto">
+      <p className="mt-2 max-w-sm mx-auto text-[15px] text-muted-foreground">
         {filtered
           ? "Try a different search term or remove the filter."
           : "Click Add Document to paste your first French text."}

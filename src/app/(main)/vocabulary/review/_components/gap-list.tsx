@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { cn } from "@/lib/utils";
+import { FilterChip } from "@/components/ui/filter-chip";
 import { changeGapType, setGapStatus, type GapListRow } from "@/lib/actions/vocab-gaps";
 import type { VocabGapType, VocabGapStatus } from "@/lib/db/schema";
 
@@ -46,19 +46,13 @@ export function GapList({ rows }: { rows: GapListRow[] }) {
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-1.5 text-xs">
         {FILTERS.map((f) => (
-          <button
+          <FilterChip
             key={f.value}
-            type="button"
+            active={filter === f.value}
             onClick={() => setFilter(f.value)}
-            className={cn(
-              "px-3 h-8 rounded-full transition-colors",
-              filter === f.value
-                ? "bg-foreground text-background font-medium"
-                : "bg-surface text-muted-foreground hover:text-foreground border border-border/60",
-            )}
           >
             {f.label}
-          </button>
+          </FilterChip>
         ))}
       </div>
 
@@ -83,10 +77,11 @@ export function GapList({ rows }: { rows: GapListRow[] }) {
                 </td>
                 <td className="px-3 py-2">
                   <select
+                    aria-label={`Gap type for ${row.lemma}`}
                     value={row.gapType}
                     disabled={pending}
                     onChange={(e) => onTypeChange(row.gapId, e.target.value as VocabGapType)}
-                    className="rounded border border-border/60 bg-surface px-1.5 py-1 text-xs"
+                    className="rounded border border-border/60 bg-surface px-1.5 py-1 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
                   >
                     {(Object.keys(TYPE_LABEL) as VocabGapType[]).map((t) => (
                       <option key={t} value={t}>

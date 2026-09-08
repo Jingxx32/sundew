@@ -10,10 +10,9 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { createMicroDrill, getMicroDrillsForError } from "@/lib/actions/errors";
+import { Textarea } from "@/components/ui/input";
+import { createMicroDrill, getMicroDrillsForError, type MicroDrillView } from "@/lib/actions/errors";
 import type { MicroDrillFeedback } from "@/lib/ai/micro-drill";
-
-import type { MicroDrill } from "@/lib/db/schema";
 
 type Props = {
   errorId: string;
@@ -27,7 +26,7 @@ export function MicroDrillDialog({ errorId, microDrill, original, correction }: 
   const [response, setResponse] = useState("");
   const [feedback, setFeedback] = useState<MicroDrillFeedback | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [priorAttempts, setPriorAttempts] = useState<MicroDrill[]>([]);
+  const [priorAttempts, setPriorAttempts] = useState<MicroDrillView[]>([]);
   const [isPending, startTransition] = useTransition();
 
   // Load prior attempts whenever the dialog opens
@@ -184,14 +183,15 @@ export function MicroDrillDialog({ errorId, microDrill, original, correction }: 
         ) : (
           /* Response textarea */
           <div className="space-y-2">
-            <textarea
-              className="w-full rounded-lg border border-border bg-surface p-3 text-sm leading-relaxed resize-none h-24 focus:outline-none focus:ring-1 focus:ring-accent"
+            <Textarea
+              aria-label="Your French response"
+              className="h-24 min-h-0 resize-none text-sm leading-relaxed"
               placeholder="Write 2 sentences in French using the correct form…"
               value={response}
               onChange={(e) => setResponse(e.target.value)}
               disabled={isPending}
             />
-            {errorMsg && <p className="text-xs text-danger">{errorMsg}</p>}
+            {errorMsg && <p className="text-xs text-danger" role="alert">{errorMsg}</p>}
           </div>
         )}
 

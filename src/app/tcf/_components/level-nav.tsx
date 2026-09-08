@@ -75,7 +75,7 @@ export function LevelNav({ questions, currentIndex, onSelect, statusByQuestion, 
                 >
                   <span
                     className={cn(
-                      "block rounded-full transition-all",
+                      "block rounded-full transition-[height,background-color]",
                       isCurrent ? "h-2 bg-accent" : "h-1.5",
                       isCurrent ? "" : STATUS_DOT[status],
                     )}

@@ -9,7 +9,7 @@
  *     B. Proposition/Réponse b
  *     C. Proposition/Réponse c
  *     D. Proposition/Réponse d
- *     不正确
+ *     legacy separator ("incorrect")
  *     [spoken_options only: transcript sentence(s)]
  *     A. [real French option]   ← real options
  *     B. …
@@ -23,11 +23,11 @@
  *     B. …
  *     C. …
  *     D. …
- *     不正确
+ *     legacy separator ("incorrect")
  *     [French transcript / dialogue lines]
  *     [Question sentence, e.g. "Quel est le problème?"]
  *     [CJK translation — stripped]
- *     [Chinese explanation — stripped]
+ *     [legacy Chinese explanation — stripped]
  */
 
 export interface ParsedQuestion {
@@ -117,7 +117,7 @@ export function parseQuestions(rawText: string): ParsedQuestion[] {
     if (!match) continue;
     const num = parseInt(match[1], 10);
 
-    // --- Collect instruction lines (stop at first option or 不正确) ---
+    // --- Collect instruction lines (stop at the first option or legacy separator) ---
     const instructionLines: string[] = [];
     let i = 0;
     while (i < block.length) {
@@ -132,13 +132,13 @@ export function parseQuestions(rawText: string): ParsedQuestion[] {
     const questionText = instructionRaw.replace(/^\d+\.\s*/, "").trim();
     const type = detectType(questionText);
 
-    // --- Find 不正确 separator ---
+    // --- Find the legacy separator ---
     const notCorrectIdx = block.findIndex((l) => l.trim() === "不正确");
     const before = notCorrectIdx >= 0 ? block.slice(0, notCorrectIdx) : block;
     const after = notCorrectIdx >= 0 ? block.slice(notCorrectIdx + 1) : [];
 
     if (type === "dialogue") {
-      // Real options are BEFORE 不正确
+      // Real options precede the legacy separator.
       const optionLines = before.filter((l) => isOptionLine(l.trim()) && !isPlaceholderOption(l));
 
       const correctLine = optionLines.find((l) => /Correct answer/i.test(l));
@@ -146,7 +146,7 @@ export function parseQuestions(rawText: string): ParsedQuestion[] {
       const answer = letterToIndex(answerLetter);
       const options = optionLines.slice(0, 4).map(stripOptionPrefix);
 
-      // Transcript: French lines AFTER 不正确, excluding CJK + separators + explanation
+      // Transcript: French lines after the legacy separator, excluding CJK, separators, and explanations.
       const transcriptLines = after.filter((l) => {
         const t = l.trim();
         if (!t) return false;
@@ -164,13 +164,13 @@ export function parseQuestions(rawText: string): ParsedQuestion[] {
       });
 
     } else {
-      // image / spoken_options: placeholder options BEFORE 不正确; real options AFTER
+      // image / spoken_options: placeholders precede the legacy separator; real options follow it.
       const placeholders = before.filter(isPlaceholderOption);
       const correctPlaceholder = placeholders.find((l) => /Correct answer/i.test(l));
       const answerLetter = correctPlaceholder?.trim().match(/^([A-D])\./i)?.[1] ?? "A";
       const answer = letterToIndex(answerLetter);
 
-      // Non-CJK, non-blank lines after 不正确
+      // Non-CJK, non-blank lines after the legacy separator.
       const afterClean = after.filter((l) => {
         const t = l.trim();
         return t && !hasCJK(t) && !isPageMarker(t);

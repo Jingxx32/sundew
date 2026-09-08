@@ -18,6 +18,7 @@ import {
 import { extractPdfText } from "@/lib/pdf/extract";
 import { parseQuizFromText } from "@/lib/ai/quiz-parse";
 import { QuizParseSchema, type ParsedQuiz } from "@/lib/ai/quiz-schema";
+import { requireUser } from "@/lib/auth/session";
 
 const QUIZ_SECTIONS = [
   "reading",
@@ -40,6 +41,7 @@ export type ImportQuizResult =
 export async function importQuizFromPdf(
   formData: FormData,
 ): Promise<ImportQuizResult> {
+  await requireUser();
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) {
     return { ok: false, error: "empty" };
@@ -57,6 +59,7 @@ export async function importQuizFromPdf(
 export async function parseQuizFromPastedText(
   rawText: string,
 ): Promise<ImportQuizResult> {
+  await requireUser();
   if (!rawText.trim()) return { ok: false, error: "empty" };
   return parsePastedOrExtractedText(rawText);
 }
@@ -87,6 +90,7 @@ export async function confirmQuizImport(input: {
   source?: string | null;
   parsed: ParsedQuiz;
 }): Promise<{ setId: string }> {
+  const user = await requireUser();
   // Re-validate the client-held preview payload before trusting it
   const parsed = QuizParseSchema.parse(input.parsed);
 
@@ -115,6 +119,7 @@ export async function confirmQuizImport(input: {
   await db.transaction(async (tx) => {
     await tx.insert(quizSets).values({
       id: setId,
+      userId: user.id,
       exam: input.exam.trim() || "TCF",
       number: input.number,
       section: input.section,
@@ -140,12 +145,20 @@ export async function submitQuizAttempt(input: {
   score: number;
   total: number;
 }): Promise<QuizAttempt> {
+  const user = await requireUser();
   const total = Math.max(0, Math.round(input.total));
   const score = Math.min(total, Math.max(0, Math.round(input.score)));
+  const ownedSet = await db
+    .select({ id: quizSets.id })
+    .from(quizSets)
+    .where(and(eq(quizSets.id, input.setId), eq(quizSets.userId, user.id)))
+    .limit(1);
+  if (ownedSet.length === 0) throw new Error("Quiz set not found");
   const [attempt] = await db
     .insert(quizAttempts)
     .values({
       id: randomUUID(),
+      userId: user.id,
       setId: input.setId,
       score,
       total,
@@ -169,7 +182,8 @@ export async function listQuizSets(opts?: {
   exam?: string;
   section?: string;
 }): Promise<QuizSetListItem[]> {
-  const filters: SQL[] = [];
+  const user = await requireUser();
+  const filters: SQL[] = [eq(quizSets.userId, user.id)];
   if (opts?.exam && opts.exam !== "all") {
     filters.push(eq(quizSets.exam, opts.exam));
   }
@@ -198,7 +212,7 @@ export async function listQuizSets(opts?: {
     db
       .select()
       .from(quizAttempts)
-      .where(inArray(quizAttempts.setId, setIds))
+      .where(and(eq(quizAttempts.userId, user.id), inArray(quizAttempts.setId, setIds)))
       .orderBy(desc(quizAttempts.answeredAt)),
   ]);
 
@@ -239,10 +253,11 @@ export type QuizSetDetail = {
 };
 
 export async function getQuizSet(setId: string): Promise<QuizSetDetail | null> {
+  const user = await requireUser();
   const set = await db
     .select()
     .from(quizSets)
-    .where(eq(quizSets.id, setId))
+    .where(and(eq(quizSets.id, setId), eq(quizSets.userId, user.id)))
     .limit(1)
     .then((r) => r[0] ?? null);
   if (!set) return null;
@@ -277,6 +292,7 @@ export async function getQuizSet(setId: string): Promise<QuizSetDetail | null> {
 }
 
 export async function deleteQuizSet(setId: string) {
-  await db.delete(quizSets).where(eq(quizSets.id, setId));
+  const user = await requireUser();
+  await db.delete(quizSets).where(and(eq(quizSets.id, setId), eq(quizSets.userId, user.id)));
   revalidatePath("/quiz");
 }

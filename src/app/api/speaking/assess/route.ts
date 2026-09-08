@@ -1,14 +1,29 @@
 import { mkdir, writeFile } from "fs/promises";
 import path from "path";
+import { and, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { speakingTurns } from "@/lib/db/schema";
+import { speakingSessions, speakingTurns } from "@/lib/db/schema";
 import { assessPronunciation } from "@/lib/speech/azure";
+import { AuthenticationError, requireUser } from "@/lib/auth/session";
 
 /** ~30s of 16kHz mono PCM16 WAV is <1MB; 10MB is a generous ceiling. */
 const MAX_AUDIO_BYTES = 10 * 1024 * 1024;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function POST(request: Request) {
+  let user: Awaited<ReturnType<typeof requireUser>>;
+  try {
+    user = await requireUser();
+  } catch (error) {
+    if (error instanceof AuthenticationError) {
+      return Response.json(
+        { error: error.code.toLowerCase() },
+        { status: error.code === "FORBIDDEN" ? 403 : error.code === "AUTH_MISCONFIGURED" ? 503 : 401 },
+      );
+    }
+    throw error;
+  }
+
   let form: FormData;
   try {
     form = await request.formData();
@@ -30,6 +45,17 @@ export async function POST(request: Request) {
   }
   const sessionId = sessionIdRaw;
   const orderIndexRaw = form.get("orderIndex") as string | null;
+
+  if (sessionId) {
+    const ownedSession = await db
+      .select({ id: speakingSessions.id })
+      .from(speakingSessions)
+      .where(and(eq(speakingSessions.id, sessionId), eq(speakingSessions.userId, user.id)))
+      .limit(1);
+    if (ownedSession.length === 0) {
+      return Response.json({ error: "invalid_session" }, { status: 404 });
+    }
+  }
 
   const wav = Buffer.from(await audio.arrayBuffer());
 
@@ -56,6 +82,7 @@ export async function POST(request: Request) {
     const [turn] = await db
       .insert(speakingTurns)
       .values({
+        userId: user.id,
         sessionId,
         orderIndex,
         role: "user",

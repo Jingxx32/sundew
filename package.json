@@ -1,5 +1,5 @@
 {
-  "name": "lumiere",
+  "name": "sundew",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -8,6 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "tsx --test 'src/**/*.test.ts'",
     "db:init": "tsx scripts/db-init.ts",
     "db:generate": "drizzle-kit generate",
     "db:studio": "drizzle-kit studio",

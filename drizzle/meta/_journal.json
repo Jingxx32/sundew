@@ -148,6 +148,41 @@
       "when": 1788218128724,
       "tag": "0020_vengeful_khan",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1788841948218,
+      "tag": "0021_majestic_supernaut",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1788842516279,
+      "tag": "0022_minor_namorita",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1788843646222,
+      "tag": "0023_round_dormammu",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1788844443443,
+      "tag": "0024_public_the_call",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1788844722504,
+      "tag": "0025_dear_ironclad",
+      "breakpoints": true
     }
   ]
 }

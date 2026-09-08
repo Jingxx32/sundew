@@ -53,7 +53,7 @@ export function AddDocumentDialog() {
           <DialogTitle>Add a French document</DialogTitle>
           <DialogDescription>
             Paste any French text — an article, a book chapter, a journal
-            entry, or transcribed audio. Lumière will analyse it and let you
+            entry, or transcribed audio. Sundew will analyse it and let you
             generate writing tasks from it.
           </DialogDescription>
         </DialogHeader>

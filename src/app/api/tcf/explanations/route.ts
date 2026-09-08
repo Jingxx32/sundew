@@ -24,6 +24,7 @@ import { tcfQuestions, tcfSets } from "@/lib/db/schema";
 import { parseExplanationBody, explanationLocatorLabel } from "@/lib/tcf/parse-explanation";
 import type { ParsedExplanationBody } from "@/lib/tcf/parse-explanation";
 import { resolveExplanationLocator } from "@/lib/tcf/explanation-locator";
+import { requireAdmin } from "@/lib/auth/session";
 
 /** Hand-written prose with tables; the longest realistic explanation is a few KB. */
 const MAX_BODY_BYTES = 256 * 1024;
@@ -32,6 +33,8 @@ export async function POST(request: Request) {
   if (process.env.NODE_ENV === "production") {
     return new Response("Not Found", { status: 404 });
   }
+
+  await requireAdmin();
 
   // Route handlers get no CSRF protection — Next's cross-site dev block only
   // covers /_next and /__nextjs — and a text/plain body is a CORS-simple

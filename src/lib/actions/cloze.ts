@@ -12,6 +12,7 @@ import {
   type ClozeBlankParsed,
   type ClozePayload,
 } from "@/lib/ai/cloze-schema";
+import { requireUser } from "@/lib/auth/session";
 
 /** Seconds of audio padding around a blanked word's loop window. */
 const LOOP_PAD_SEC = 0.5;
@@ -37,6 +38,7 @@ export type PrepareClozeResult =
 export async function preparePodcastCloze(input: {
   url: string;
 }): Promise<PrepareClozeResult> {
+  await requireUser();
   let parsedUrl: URL;
   try {
     parsedUrl = new URL(input.url);
@@ -114,6 +116,7 @@ export async function confirmPodcastCloze(input: {
   source?: string | null;
   payload: ClozePayload;
 }): Promise<{ setId: string }> {
+  const user = await requireUser();
   // Re-validate the client-held preview payload before trusting it
   const payload = ClozePayloadSchema.parse(input.payload);
 
@@ -124,6 +127,7 @@ export async function confirmPodcastCloze(input: {
   await db.transaction(async (tx) => {
     await tx.insert(quizSets).values({
       id: setId,
+      userId: user.id,
       exam: "podcast",
       number: null,
       section: "dictation",

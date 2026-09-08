@@ -139,7 +139,7 @@ export const AudioPlayer = forwardRef<AudioPlayerHandle, { src: string }>(functi
         type="button"
         onClick={togglePlay}
         aria-label={playing ? "Pause" : "Lecture"}
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground transition-colors touch-manipulation hover:bg-accent/90"
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground transition-colors touch-manipulation hover:bg-accent/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2"
       >
         {playing ? (
           <Pause className="h-4 w-4" fill="currentColor" aria-hidden="true" />
@@ -153,14 +153,14 @@ export const AudioPlayer = forwardRef<AudioPlayerHandle, { src: string }>(functi
         onClick={rewind}
         aria-label={`Reculer de ${REWIND_SECONDS} secondes`}
         title={`-${REWIND_SECONDS} s`}
-        className="flex shrink-0 items-center gap-1 rounded-lg px-1.5 py-1 text-xs font-mono text-muted-foreground transition-colors touch-manipulation hover:text-accent"
+        className="flex shrink-0 items-center gap-1 rounded-lg px-1.5 py-1 text-[13px] font-mono text-muted-foreground transition-colors touch-manipulation hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
       >
         <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
         {REWIND_SECONDS}s
       </button>
 
       <div className="flex flex-1 items-center gap-2">
-        <span className="w-9 shrink-0 font-mono text-[11px] text-muted-foreground">{formatTime(currentTime)}</span>
+        <span className="w-10 shrink-0 font-mono text-[13px] text-muted-foreground">{formatTime(currentTime)}</span>
         <div
           role="slider"
           tabIndex={0}
@@ -191,14 +191,14 @@ export const AudioPlayer = forwardRef<AudioPlayerHandle, { src: string }>(functi
             style={{ left: `${progress * 100}%` }}
           />
         </div>
-        <span className="w-9 shrink-0 font-mono text-[11px] text-muted-foreground">{formatTime(duration)}</span>
+        <span className="w-10 shrink-0 font-mono text-[13px] text-muted-foreground">{formatTime(duration)}</span>
       </div>
 
       <button
         type="button"
         onClick={restart}
         aria-label="Recommencer"
-        className="shrink-0 rounded-lg px-1.5 py-1 text-[11px] font-mono text-muted-foreground transition-colors touch-manipulation hover:text-accent"
+        className="shrink-0 rounded-lg px-1.5 py-1 text-[13px] font-mono text-muted-foreground transition-colors touch-manipulation hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
       >
         ⟲ 0:00
       </button>
@@ -208,7 +208,7 @@ export const AudioPlayer = forwardRef<AudioPlayerHandle, { src: string }>(functi
         onClick={toggleRate}
         aria-label={`Vitesse de lecture : ${rate}×`}
         className={cn(
-          "shrink-0 rounded-lg px-2 py-1 font-mono text-[11px] font-medium transition-colors touch-manipulation",
+          "shrink-0 rounded-lg px-2 py-1 font-mono text-[13px] font-medium transition-colors touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40",
           rate === 0.75 ? "bg-accent-soft text-accent" : "text-muted-foreground hover:text-accent",
         )}
       >

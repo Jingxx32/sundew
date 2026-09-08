@@ -1,18 +1,20 @@
 "use server";
 
-import { eq, inArray } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { openai, MODELS } from "@/lib/ai/client";
 import { db } from "@/lib/db";
 import { userSettings } from "@/lib/db/schema";
 import type { CefrLevel } from "@/lib/cefr";
 import { CEFR_LEVELS } from "@/lib/cefr";
+import { requireAdmin, requireUser } from "@/lib/auth/session";
 
 export type ApiKeyStatus =
   | { ok: true; maskedKey: string; models: typeof MODELS }
   | { ok: false; error: string };
 
 export async function testApiKey(): Promise<ApiKeyStatus> {
+  await requireAdmin();
   const key = process.env.OPENAI_API_KEY;
   if (!key) {
     return { ok: false, error: "OPENAI_API_KEY is not set in your .env file." };
@@ -33,10 +35,11 @@ export async function testApiKey(): Promise<ApiKeyStatus> {
 /* ------------------------------------------------------------------ */
 
 export async function getCefrLevel(): Promise<CefrLevel | null> {
+  const user = await requireUser();
   const row = await db
     .select()
     .from(userSettings)
-    .where(eq(userSettings.key, "cefr_level"))
+    .where(and(eq(userSettings.userId, user.id), eq(userSettings.key, "cefr_level")))
     .limit(1)
     .then((r) => r[0] ?? null);
   const val = row?.value;
@@ -44,11 +47,12 @@ export async function getCefrLevel(): Promise<CefrLevel | null> {
 }
 
 export async function setCefrLevel(level: CefrLevel): Promise<void> {
+  const user = await requireUser();
   await db
     .insert(userSettings)
-    .values({ key: "cefr_level", value: level })
+    .values({ userId: user.id, key: "cefr_level", value: level })
     .onConflictDoUpdate({
-      target: userSettings.key,
+      target: [userSettings.userId, userSettings.key],
       set: { value: level, updatedAt: new Date() },
     });
   revalidatePath("/settings");
@@ -59,21 +63,23 @@ export async function setCefrLevel(level: CefrLevel): Promise<void> {
 /* ------------------------------------------------------------------ */
 
 export async function getSpeakingProfile(): Promise<string> {
+  const user = await requireUser();
   const row = await db
     .select()
     .from(userSettings)
-    .where(eq(userSettings.key, "speaking_profile"))
+    .where(and(eq(userSettings.userId, user.id), eq(userSettings.key, "speaking_profile")))
     .limit(1)
     .then((r) => r[0] ?? null);
   return row?.value ?? "";
 }
 
 export async function setSpeakingProfile(text: string): Promise<void> {
+  const user = await requireUser();
   await db
     .insert(userSettings)
-    .values({ key: "speaking_profile", value: text })
+    .values({ userId: user.id, key: "speaking_profile", value: text })
     .onConflictDoUpdate({
-      target: userSettings.key,
+      target: [userSettings.userId, userSettings.key],
       set: { value: text, updatedAt: new Date() },
     });
   revalidatePath("/settings");
@@ -93,10 +99,11 @@ export type StudyGoal = {
 const EXAM_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 export async function getStudyGoal(): Promise<StudyGoal> {
+  const user = await requireUser();
   const rows = await db
     .select()
     .from(userSettings)
-    .where(inArray(userSettings.key, ["target_clb", "exam_date"]));
+    .where(and(eq(userSettings.userId, user.id), inArray(userSettings.key, ["target_clb", "exam_date"])));
   const map = new Map(rows.map((r) => [r.key, r.value]));
   const clb = Number(map.get("target_clb"));
   const date = map.get("exam_date") ?? "";
@@ -107,6 +114,7 @@ export async function getStudyGoal(): Promise<StudyGoal> {
 }
 
 export async function setStudyGoal(goal: StudyGoal): Promise<void> {
+  const user = await requireUser();
   const clb =
     goal.targetClb !== null && Number.isInteger(goal.targetClb) && goal.targetClb >= 4 && goal.targetClb <= 10
       ? String(goal.targetClb)
@@ -118,9 +126,9 @@ export async function setStudyGoal(goal: StudyGoal): Promise<void> {
   ] as const) {
     await db
       .insert(userSettings)
-      .values({ key, value })
+      .values({ userId: user.id, key, value })
       .onConflictDoUpdate({
-        target: userSettings.key,
+        target: [userSettings.userId, userSettings.key],
         set: { value, updatedAt: new Date() },
       });
   }

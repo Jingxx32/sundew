@@ -22,6 +22,7 @@ const days = (n: number) => new Date(Date.now() + n * 24 * 60 * 60 * 1000);
  * - dismissed         → manual signals revive it; automatic ones respect the dismissal
  */
 export async function upsertGap(opts: {
+  userId: string;
   lemma: string;
   gapType: VocabGapType;
   source: "lookup" | "feedback" | "manual";
@@ -32,12 +33,19 @@ export async function upsertGap(opts: {
     await dbx
       .select()
       .from(vocabularyGaps)
-      .where(and(eq(vocabularyGaps.lemma, opts.lemma), eq(vocabularyGaps.gapType, opts.gapType)))
+      .where(
+        and(
+          eq(vocabularyGaps.userId, opts.userId),
+          eq(vocabularyGaps.lemma, opts.lemma),
+          eq(vocabularyGaps.gapType, opts.gapType),
+        ),
+      )
       .limit(1)
   )[0];
 
   if (!existing) {
     await dbx.insert(vocabularyGaps).values({
+      userId: opts.userId,
       lemma: opts.lemma,
       gapType: opts.gapType,
       source: opts.source,
@@ -45,22 +53,33 @@ export async function upsertGap(opts: {
     return;
   }
   if (existing.status === "active") {
-    await dbx.update(vocabularyGaps).set({ source: opts.source }).where(eq(vocabularyGaps.id, existing.id));
+    await dbx
+      .update(vocabularyGaps)
+      .set({ source: opts.source })
+      .where(and(eq(vocabularyGaps.id, existing.id), eq(vocabularyGaps.userId, opts.userId)));
     return;
   }
   if (existing.status === "mastered" || (existing.status === "dismissed" && opts.source === "manual")) {
     await dbx
       .update(vocabularyGaps)
       .set({ status: "active", box: 1, dueAt: new Date(), source: opts.source })
-      .where(eq(vocabularyGaps.id, existing.id));
+      .where(and(eq(vocabularyGaps.id, existing.id), eq(vocabularyGaps.userId, opts.userId)));
   }
   // dismissed + automatic source → no-op: the user said no.
 }
 
 /** Apply one review result. Correct: box+1 & schedule out (box 5 → mastered). Wrong: back to box 1, due tomorrow. */
-export async function gradeGap(gapId: string, correct: boolean): Promise<{ box: number; status: VocabGapStatus }> {
+export async function gradeGap(
+  userId: string,
+  gapId: string,
+  correct: boolean,
+): Promise<{ box: number; status: VocabGapStatus }> {
   const row = (
-    await db.select().from(vocabularyGaps).where(eq(vocabularyGaps.id, gapId)).limit(1)
+    await db
+      .select()
+      .from(vocabularyGaps)
+      .where(and(eq(vocabularyGaps.id, gapId), eq(vocabularyGaps.userId, userId)))
+      .limit(1)
   )[0];
   if (!row) throw new Error(`gap ${gapId} not found`);
 
@@ -85,6 +104,6 @@ export async function gradeGap(gapId: string, correct: boolean): Promise<{ box: 
   await db
     .update(vocabularyGaps)
     .set({ box, status, dueAt, lastReviewedAt: new Date() })
-    .where(eq(vocabularyGaps.id, gapId));
+    .where(and(eq(vocabularyGaps.id, gapId), eq(vocabularyGaps.userId, userId)));
   return { box, status };
 }

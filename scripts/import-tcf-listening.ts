@@ -31,7 +31,7 @@ if (!PDF_DIR) {
 /** Stored on every imported set, so rows can be traced back to their origin. */
 const SOURCE = "TCF Canada — local practice material";
 
-/** Extract test number from filename, e.g. "Compréhension orale test 3 (Member) - 题库.pdf" → 3 */
+/** Extract the test number from a filename, e.g. "Compréhension orale test 3 (Member) - question bank.pdf" → 3. */
 function extractTestNumber(filename: string): number | null {
   // Handles: "test 1 (Member)", "test 10 (Member)", "test 10 Member"
   const m = filename.match(/test\s+(\d+)\s*(?:\(Member\)|Member)/i);

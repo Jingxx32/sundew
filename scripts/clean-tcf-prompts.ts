@@ -40,14 +40,14 @@ async function main() {
 
   const emptied = changes.filter(({ cleaned }) => cleaned.length === 0);
   if (emptied.length > 0) {
-    console.error(`\n中止：${emptied.length} 题清理后会变成空题干。`);
+    console.error(`\nAborted: cleaning would leave ${emptied.length} question prompts empty.`);
     await sql.end();
     process.exit(1);
   }
 
-  console.log(`\n扫描 ${rows.length} 题，需要清理 ${changes.length} 题。`);
+  console.log(`\nScanned ${rows.length} questions; ${changes.length} require cleaning.`);
   if (!apply) {
-    console.log("这是 dry run，没有写库。加 --apply 才会写入。");
+    console.log("This is a dry run; the database was not changed. Pass --apply to write changes.");
     await sql.end();
     return;
   }
@@ -57,7 +57,7 @@ async function main() {
     const updated = await sql`UPDATE tcf_questions SET question_text = ${cleaned} WHERE id = ${row.id} RETURNING id`;
     written += updated.length;
   }
-  console.log(`已写入 ${written} 题。`);
+  console.log(`Wrote ${written} questions.`);
   await sql.end();
 }
 

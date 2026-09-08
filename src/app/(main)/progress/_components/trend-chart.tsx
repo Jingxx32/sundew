@@ -14,7 +14,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import type { TrendBucket } from "@/lib/actions/errors";
-import { cn } from "@/lib/utils";
+import { FilterChip } from "@/components/ui/filter-chip";
 
 const WINDOWS = [30, 90, 365] as const;
 type WindowDays = (typeof WINDOWS)[number];
@@ -77,19 +77,14 @@ export function TrendChart({ data, windowDays }: Props) {
         </div>
         <div className="flex gap-1">
           {WINDOWS.map((w) => (
-            <button
+            <FilterChip
               key={w}
-              type="button"
+              active={w === windowDays}
               onClick={() => setWindow(w)}
-              className={cn(
-                "px-3 h-7 rounded-full text-xs transition-colors",
-                w === windowDays
-                  ? "bg-foreground text-background font-medium"
-                  : "bg-surface text-muted-foreground hover:text-foreground border border-border/60",
-              )}
+              className="h-7"
             >
               {w}d
-            </button>
+            </FilterChip>
           ))}
         </div>
       </div>

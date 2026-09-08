@@ -4,7 +4,7 @@ import { after } from "next/server";
 import { eq, and, isNotNull, desc } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
-  vocabularyLookups,
+  userVocabulary,
   vocabularyOccurrences,
   documents,
   tcfQuestions,
@@ -16,6 +16,7 @@ import { enrichVocab, type FrenchVocabEntry } from "@/lib/ai/enrich";
 import { norm, upsertEntry, upsertAlias, recordOccurrence, resolveLemma } from "@/lib/vocabulary/helpers";
 import { upsertGap } from "@/lib/vocabulary/gaps";
 import type { LookupSource, VocabEntrySummary, VocabEntryDetail } from "@/lib/vocabulary/types";
+import { requireUser } from "@/lib/auth/session";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                               */
@@ -32,15 +33,22 @@ export async function resolveLookup(
   sentenceContext: string,
   source: LookupSource,
 ): Promise<{ lemma: string; surface: string; result: LookupResult; cached: boolean }> {
-  const lemma = await resolveLemma(surface);
+  const user = await requireUser();
+  await assertLookupSource(user.id, source);
+  const lemma = await resolveLemma(user.id, surface);
 
   // Cache hit — zero AI
   if (lemma) {
     const row = (
-      await db.select().from(vocabularyLookups).where(eq(vocabularyLookups.lemma, lemma)).limit(1)
+      await db
+        .select()
+        .from(userVocabulary)
+        .where(and(eq(userVocabulary.userId, user.id), eq(userVocabulary.lemma, lemma)))
+        .limit(1)
     )[0];
     if (row) {
       await recordOccurrence({
+        userId: user.id,
         lemma,
         surface,
         sentenceContext,
@@ -48,7 +56,7 @@ export async function resolveLookup(
         documentId: source.type === "reading" ? source.documentId : null,
         tcfQuestionId: source.type === "tcf" ? source.tcfQuestionId : null,
       });
-      await upsertGap({ lemma, gapType: "recognition", source: "lookup" });
+      await upsertGap({ userId: user.id, lemma, gapType: "recognition", source: "lookup" });
       const result: LookupResult = {
         lemma: row.lemma,
         pos: row.pos ?? "",
@@ -66,9 +74,10 @@ export async function resolveLookup(
   const result = await lookupWord(surface, sentenceContext);
   const resolved = norm(result.lemma || surface);
   await db.transaction(async (tx) => {
-    await upsertEntry(resolved, surface, result, tx);
-    await upsertAlias(norm(surface), resolved, tx);
+    await upsertEntry(user.id, resolved, surface, result, tx);
+    await upsertAlias(user.id, norm(surface), resolved, tx);
     await recordOccurrence({
+      userId: user.id,
       lemma: resolved,
       surface,
       sentenceContext,
@@ -76,19 +85,30 @@ export async function resolveLookup(
       documentId: source.type === "reading" ? source.documentId : null,
       tcfQuestionId: source.type === "tcf" ? source.tcfQuestionId : null,
     }, tx);
-    await upsertGap({ lemma: resolved, gapType: "recognition", source: "lookup", dbx: tx });
+    await upsertGap({
+      userId: user.id,
+      lemma: resolved,
+      gapType: "recognition",
+      source: "lookup",
+      dbx: tx,
+    });
   });
   return { lemma: resolved, surface, result, cached: false };
 }
 
 export async function reexplainInContext(lemma: string, sentenceContext: string): Promise<string> {
+  const user = await requireUser();
+  const owned = await db
+    .select({ lemma: userVocabulary.lemma })
+    .from(userVocabulary)
+    .where(and(eq(userVocabulary.userId, user.id), eq(userVocabulary.lemma, lemma)))
+    .limit(1);
+  if (owned.length === 0) throw new Error("Vocabulary entry not found");
   const r = await lookupWord(lemma, sentenceContext);
-  // Persist as the entry's latest contextual gloss (that's what `inContext` means),
-  // so re-opening the word doesn't pay for the same AI call again.
   await db
-    .update(vocabularyLookups)
-    .set({ inContext: r.in_context })
-    .where(eq(vocabularyLookups.lemma, lemma));
+    .update(userVocabulary)
+    .set({ inContext: r.in_context, sentenceContext, lookedUpAt: new Date() })
+    .where(and(eq(userVocabulary.userId, user.id), eq(userVocabulary.lemma, lemma)));
   return r.in_context;
 }
 
@@ -97,16 +117,19 @@ export async function reexplainInContext(lemma: string, sentenceContext: string)
 /* ------------------------------------------------------------------ */
 
 export async function saveVocabularyWord(word: string): Promise<void> {
-  const lemma = (await resolveLemma(word)) ?? norm(word);
-  await db
-    .update(vocabularyLookups)
+  const user = await requireUser();
+  const lemma = (await resolveLemma(user.id, word)) ?? norm(word);
+  const saved = await db
+    .update(userVocabulary)
     .set({ savedAt: new Date() })
-    .where(eq(vocabularyLookups.lemma, lemma));
+    .where(and(eq(userVocabulary.userId, user.id), eq(userVocabulary.lemma, lemma)))
+    .returning({ lemma: userVocabulary.lemma });
+  if (saved.length === 0) return;
   // Enrich after the response is sent (Next's official post-response hook), so
   // the save returns instantly and the work is still guaranteed to run.
   after(async () => {
     try {
-      await enrichEntry(lemma);
+      await enrichEntryForUser(user.id, lemma);
     } catch (err) {
       console.error(`enrich failed for "${lemma}":`, err);
     }
@@ -114,15 +137,24 @@ export async function saveVocabularyWord(word: string): Promise<void> {
 }
 
 export async function enrichEntry(lemma: string): Promise<void> {
+  const user = await requireUser();
+  await enrichEntryForUser(user.id, lemma);
+}
+
+async function enrichEntryForUser(userId: string, lemma: string): Promise<void> {
   const row = (
-    await db.select().from(vocabularyLookups).where(eq(vocabularyLookups.lemma, lemma)).limit(1)
+    await db
+      .select()
+      .from(userVocabulary)
+      .where(and(eq(userVocabulary.userId, userId), eq(userVocabulary.lemma, lemma)))
+      .limit(1)
   )[0];
   if (!row) return;
   const rich = await enrichVocab(lemma, row.pos);
   await db
-    .update(vocabularyLookups)
+    .update(userVocabulary)
     .set({ richEntry: rich, enrichedAt: new Date() })
-    .where(eq(vocabularyLookups.lemma, lemma));
+    .where(and(eq(userVocabulary.userId, userId), eq(userVocabulary.lemma, lemma)));
 }
 
 /* ------------------------------------------------------------------ */
@@ -132,21 +164,27 @@ export async function enrichEntry(lemma: string): Promise<void> {
 export async function getVocabEntries(
   filter: { savedOnly?: boolean } = {},
 ): Promise<VocabEntrySummary[]> {
+  const user = await requireUser();
   // Summary columns only — never pull the (potentially multi-KB) richEntry jsonb
   // for the list view.
   const rows = await db
     .select({
-      lemma: vocabularyLookups.lemma,
-      surface: vocabularyLookups.surface,
-      pos: vocabularyLookups.pos,
-      cefrLevel: vocabularyLookups.cefrLevel,
-      translation: vocabularyLookups.translation,
-      savedAt: vocabularyLookups.savedAt,
-      enrichedAt: vocabularyLookups.enrichedAt,
+      lemma: userVocabulary.lemma,
+      surface: userVocabulary.surface,
+      pos: userVocabulary.pos,
+      cefrLevel: userVocabulary.cefrLevel,
+      translation: userVocabulary.translation,
+      savedAt: userVocabulary.savedAt,
+      enrichedAt: userVocabulary.enrichedAt,
     })
-    .from(vocabularyLookups)
-    .where(filter.savedOnly ? isNotNull(vocabularyLookups.savedAt) : undefined)
-    .orderBy(desc(vocabularyLookups.lookedUpAt));
+    .from(userVocabulary)
+    .where(
+      and(
+        eq(userVocabulary.userId, user.id),
+        filter.savedOnly ? isNotNull(userVocabulary.savedAt) : undefined,
+      ),
+    )
+    .orderBy(desc(userVocabulary.lookedUpAt));
   return rows.map((r) => ({
     lemma: r.lemma,
     surface: r.surface,
@@ -159,8 +197,13 @@ export async function getVocabEntries(
 }
 
 export async function getVocabEntryDetail(lemma: string): Promise<VocabEntryDetail | null> {
+  const user = await requireUser();
   const row = (
-    await db.select().from(vocabularyLookups).where(eq(vocabularyLookups.lemma, lemma)).limit(1)
+    await db
+      .select()
+      .from(userVocabulary)
+      .where(and(eq(userVocabulary.userId, user.id), eq(userVocabulary.lemma, lemma)))
+      .limit(1)
   )[0];
   if (!row) return null;
   const occ = await db
@@ -178,7 +221,12 @@ export async function getVocabEntryDetail(lemma: string): Promise<VocabEntryDeta
     .leftJoin(documents, eq(vocabularyOccurrences.documentId, documents.id))
     .leftJoin(tcfQuestions, eq(vocabularyOccurrences.tcfQuestionId, tcfQuestions.id))
     .leftJoin(tcfSets, eq(tcfQuestions.setId, tcfSets.id))
-    .where(eq(vocabularyOccurrences.lemma, lemma))
+    .where(
+      and(
+        eq(vocabularyOccurrences.userId, user.id),
+        eq(vocabularyOccurrences.lemma, lemma),
+      ),
+    )
     .orderBy(desc(vocabularyOccurrences.createdAt));
   return {
     lemma: row.lemma,
@@ -205,25 +253,53 @@ export async function getVocabEntryDetail(lemma: string): Promise<VocabEntryDeta
   };
 }
 
-/** All saved lemmas (global) — used by contexts without a document scope, e.g. TCF drills. */
+/** This user's saved lemmas, used by contexts without a document scope such as TCF drills. */
 export async function getAllSavedLemmas(): Promise<string[]> {
+  const user = await requireUser();
   const rows = await db
-    .select({ lemma: vocabularyLookups.lemma })
-    .from(vocabularyLookups)
-    .where(isNotNull(vocabularyLookups.savedAt));
+    .select({ lemma: userVocabulary.lemma })
+    .from(userVocabulary)
+    .where(and(eq(userVocabulary.userId, user.id), isNotNull(userVocabulary.savedAt)));
   return rows.map((r) => r.lemma);
 }
 
 export async function getSavedWordsByDocument(documentId: string): Promise<string[]> {
+  const user = await requireUser();
   const rows = await db
     .select({ lemma: vocabularyOccurrences.lemma })
     .from(vocabularyOccurrences)
-    .innerJoin(vocabularyLookups, eq(vocabularyOccurrences.lemma, vocabularyLookups.lemma))
+    .innerJoin(
+      userVocabulary,
+      and(
+        eq(vocabularyOccurrences.userId, userVocabulary.userId),
+        eq(vocabularyOccurrences.lemma, userVocabulary.lemma),
+      ),
+    )
     .where(
       and(
+        eq(vocabularyOccurrences.userId, user.id),
         eq(vocabularyOccurrences.documentId, documentId),
-        isNotNull(vocabularyLookups.savedAt),
+        isNotNull(userVocabulary.savedAt),
       ),
     );
   return Array.from(new Set(rows.map((r) => r.lemma)));
+}
+
+async function assertLookupSource(userId: string, source: LookupSource): Promise<void> {
+  if (source.type === "reading") {
+    const document = await db
+      .select({ id: documents.id })
+      .from(documents)
+      .where(and(eq(documents.id, source.documentId), eq(documents.userId, userId)))
+      .limit(1);
+    if (document.length === 0) throw new Error("Document not found");
+    return;
+  }
+
+  const question = await db
+    .select({ id: tcfQuestions.id })
+    .from(tcfQuestions)
+    .where(eq(tcfQuestions.id, source.tcfQuestionId))
+    .limit(1);
+  if (question.length === 0) throw new Error("TCF question not found");
 }

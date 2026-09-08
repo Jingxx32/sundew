@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 
 /** One-click entry into the writing loop: generates an archive-driven task
  *  (no document required) and redirects to the task stage. */
-export function QuickWriteButton() {
+export function QuickWriteButton({ compact = false }: { compact?: boolean }) {
   const [pending, startTransition] = useTransition();
   const [failed, setFailed] = useState(false);
 
@@ -27,7 +27,7 @@ export function QuickWriteButton() {
 
   return (
     <div className="space-y-2">
-      <Button onClick={handleClick} disabled={pending} size="lg">
+      <Button onClick={handleClick} disabled={pending} size={compact ? "default" : "lg"}>
         {pending ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -40,9 +40,11 @@ export function QuickWriteButton() {
           </>
         )}
       </Button>
-      <p className="text-xs text-muted-foreground">
-        A prompt tuned to your error profile — no document needed.
-      </p>
+      {!compact && (
+        <p className="text-xs text-muted-foreground">
+          A prompt tuned to your error profile — no document needed.
+        </p>
+      )}
       {failed && (
         <p className="text-xs text-danger">
           Task generation failed. Check your API key in Settings and retry.

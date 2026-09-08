@@ -1,4 +1,4 @@
-import { pgEnum, pgTable, text, integer, timestamp, jsonb, boolean, uuid, uniqueIndex, unique, index } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, text, integer, timestamp, jsonb, boolean, uuid, uniqueIndex, unique, index, primaryKey, foreignKey } from "drizzle-orm/pg-core";
 // Type-only imports (erased at build — they do NOT pull the OpenAI SDK into the
 // schema module, so drizzle-kit stays unaffected).
 import type { FeedbackResult } from "../ai/feedback";
@@ -16,26 +16,54 @@ export const documentTypeEnum = pgEnum("document_type", [
   "other",
 ]);
 
+export const userRoleEnum = pgEnum("user_role", ["admin", "member"]);
+export const userStatusEnum = pgEnum("user_status", ["active", "disabled"]);
+
+export const users = pgTable(
+  "users",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    authIssuer: text("auth_issuer").notNull(),
+    authSubject: text("auth_subject").notNull(),
+    email: text("email").notNull(),
+    role: userRoleEnum("role").notNull().default("member"),
+    status: userStatusEnum("status").notNull().default("active"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    unique("users_auth_identity_key").on(t.authIssuer, t.authSubject),
+    index("users_email_idx").on(t.email),
+  ],
+);
+
+export type AppUser = typeof users.$inferSelect;
+
 /* ------------------------------------------------------------------ */
 /*  documents — your library of French source material                 */
 /* ------------------------------------------------------------------ */
 
-export const documents = pgTable("documents", {
-  id: text("id").primaryKey(),
-  title: text("title").notNull(),
-  source: text("source"),
-  sourceUrl: text("source_url"),
-  type: documentTypeEnum("type").notNull().default("other"),
-  /** Raw French text. Paragraph breaks preserved with \n\n. */
-  content: text("content").notNull(),
-  language: text("language").notNull().default("fr"),
-  estimatedLevel: text("estimated_level"),
-  wordCount: integer("word_count").notNull().default(0),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  lastReadAt: timestamp("last_read_at"),
-  /** 0 - 100, updated by Document Reader as user scrolls. */
-  readingProgress: integer("reading_progress").notNull().default(0),
-});
+export const documents = pgTable(
+  "documents",
+  {
+    id: text("id").primaryKey(),
+    userId: uuid("user_id").notNull().references(() => users.id),
+    title: text("title").notNull(),
+    source: text("source"),
+    sourceUrl: text("source_url"),
+    type: documentTypeEnum("type").notNull().default("other"),
+    /** Raw French text. Paragraph breaks preserved with \n\n. */
+    content: text("content").notNull(),
+    language: text("language").notNull().default("fr"),
+    estimatedLevel: text("estimated_level"),
+    wordCount: integer("word_count").notNull().default(0),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    lastReadAt: timestamp("last_read_at"),
+    /** 0 - 100, updated by Document Reader as user scrolls. */
+    readingProgress: integer("reading_progress").notNull().default(0),
+  },
+  (t) => [index("documents_user_id_idx").on(t.userId)],
+);
 
 export type Document = typeof documents.$inferSelect;
 export type NewDocument = typeof documents.$inferInsert;
@@ -44,17 +72,22 @@ export type NewDocument = typeof documents.$inferInsert;
 /*  reading_sessions — captures vocab looked up while reading a doc    */
 /* ------------------------------------------------------------------ */
 
-export const readingSessions = pgTable("reading_sessions", {
-  id: text("id").primaryKey(),
-  documentId: text("document_id").references(() => documents.id, {
-    onDelete: "set null",
-  }),
-  /** Snapshot of the document title at session creation time — preserved after document deletion. */
-  documentTitleSnapshot: text("document_title_snapshot"),
-  startedAt: timestamp("started_at").notNull().defaultNow(),
-  endedAt: timestamp("ended_at"),
-  durationSeconds: integer("duration_seconds").notNull().default(0),
-});
+export const readingSessions = pgTable(
+  "reading_sessions",
+  {
+    id: text("id").primaryKey(),
+    userId: uuid("user_id").notNull().references(() => users.id),
+    documentId: text("document_id").references(() => documents.id, {
+      onDelete: "set null",
+    }),
+    /** Snapshot of the document title at session creation time — preserved after document deletion. */
+    documentTitleSnapshot: text("document_title_snapshot"),
+    startedAt: timestamp("started_at").notNull().defaultNow(),
+    endedAt: timestamp("ended_at"),
+    durationSeconds: integer("duration_seconds").notNull().default(0),
+  },
+  (t) => [index("reading_sessions_user_id_idx").on(t.userId)],
+);
 
 export type ReadingSession = typeof readingSessions.$inferSelect;
 
@@ -64,6 +97,7 @@ export type ReadingSession = typeof readingSessions.$inferSelect;
 
 export const writingTasks = pgTable("writing_tasks", {
   id: text("id").primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id),
   documentId: text("document_id").references(() => documents.id, {
     onDelete: "set null",
   }),
@@ -78,7 +112,7 @@ export const writingTasks = pgTable("writing_tasks", {
   minWordCount: integer("min_word_count").notNull().default(50),
   maxWordCount: integer("max_word_count").notNull().default(200),
   createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+}, (t) => [index("writing_tasks_user_id_idx").on(t.userId)]);
 
 export type WritingTask = typeof writingTasks.$inferSelect;
 
@@ -90,6 +124,7 @@ export const submissions = pgTable(
   "submissions",
   {
     id: text("id").primaryKey(),
+    userId: uuid("user_id").notNull().references(() => users.id),
     taskId: text("task_id")
       .notNull()
       .references(() => writingTasks.id, { onDelete: "cascade" }),
@@ -106,7 +141,10 @@ export const submissions = pgTable(
      *  Default 'ready' so pre-existing rows render normally. */
     feedbackStatus: text("feedback_status").notNull().default("ready"),
   },
-  (t) => [index("submissions_task_id_idx").on(t.taskId)],
+  (t) => [
+    index("submissions_task_id_idx").on(t.taskId),
+    index("submissions_user_id_idx").on(t.userId),
+  ],
 );
 
 export type Submission = typeof submissions.$inferSelect;
@@ -119,6 +157,7 @@ export const errors = pgTable(
   "errors",
   {
     id: text("id").primaryKey(),
+    userId: uuid("user_id").notNull().references(() => users.id),
     submissionId: text("submission_id")
       .notNull()
       .references(() => submissions.id, { onDelete: "cascade" }),
@@ -140,6 +179,7 @@ export const errors = pgTable(
   },
   (t) => [
     index("errors_submission_id_idx").on(t.submissionId),
+    index("errors_user_id_idx").on(t.userId),
     index("errors_category_subcategory_idx").on(t.category, t.subcategory),
     index("errors_created_at_idx").on(t.createdAt),
   ],
@@ -171,6 +211,7 @@ export const microDrills = pgTable(
   "micro_drills",
   {
     id: text("id").primaryKey(),
+    userId: uuid("user_id").notNull().references(() => users.id),
     errorId: text("error_id")
       .notNull()
       .references(() => errors.id, { onDelete: "cascade" }),
@@ -182,7 +223,10 @@ export const microDrills = pgTable(
     feedbackJson: jsonb("feedback_json").$type<MicroDrillFeedback>(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
-  (t) => [index("micro_drills_error_id_idx").on(t.errorId)],
+  (t) => [
+    index("micro_drills_error_id_idx").on(t.errorId),
+    index("micro_drills_user_id_idx").on(t.userId),
+  ],
 );
 export type MicroDrill = typeof microDrills.$inferSelect;
 
@@ -214,6 +258,38 @@ export const vocabularyLookups = pgTable("vocabulary_lookups", {
 
 export type VocabularyLookup = typeof vocabularyLookups.$inferSelect;
 
+/** Per-user vocabulary state. The legacy contextual fields remain on
+ * vocabulary_lookups for one recovery window, but application reads/writes use
+ * this table so private contexts and learning state never cross users. */
+export const userVocabulary = pgTable(
+  "user_vocabulary",
+  {
+    userId: uuid("user_id").notNull().references(() => users.id),
+    lemma: text("lemma")
+      .notNull()
+      .references(() => vocabularyLookups.lemma, { onDelete: "cascade" }),
+    surface: text("surface").notNull(),
+    pos: text("pos"),
+    translation: text("translation"),
+    cefrLevel: text("cefr_level"),
+    inContext: text("in_context"),
+    examples: jsonb("examples").$type<string[]>(),
+    conjugation: text("conjugation"),
+    sentenceContext: text("sentence_context"),
+    richEntry: jsonb("rich_entry").$type<FrenchVocabEntry>(),
+    enrichedAt: timestamp("enriched_at"),
+    lookedUpAt: timestamp("looked_up_at").notNull().defaultNow(),
+    savedAt: timestamp("saved_at"),
+  },
+  (t) => [
+    primaryKey({ columns: [t.userId, t.lemma] }),
+    index("user_vocabulary_user_saved_idx").on(t.userId, t.savedAt),
+    index("user_vocabulary_user_looked_up_idx").on(t.userId, t.lookedUpAt),
+  ],
+);
+
+export type UserVocabulary = typeof userVocabulary.$inferSelect;
+
 export const vocabSourceEnum = pgEnum("vocab_source", ["reading", "tcf"]);
 
 export const vocabularyAliases = pgTable("vocabulary_aliases", {
@@ -225,10 +301,32 @@ export const vocabularyAliases = pgTable("vocabulary_aliases", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+/** User-created surface-to-lemma mappings. Global vocabularyAliases remains
+ * read-only application data so one learner cannot influence another's lookup. */
+export const userVocabularyAliases = pgTable(
+  "user_vocabulary_aliases",
+  {
+    userId: uuid("user_id").notNull().references(() => users.id),
+    surface: text("surface").notNull(),
+    lemma: text("lemma").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.userId, t.surface] }),
+    foreignKey({
+      columns: [t.userId, t.lemma],
+      foreignColumns: [userVocabulary.userId, userVocabulary.lemma],
+      name: "user_vocab_alias_user_lemma_fk",
+    }).onDelete("cascade"),
+    index("user_vocab_alias_user_lemma_idx").on(t.userId, t.lemma),
+  ],
+);
+
 export const vocabularyOccurrences = pgTable(
   "vocabulary_occurrences",
   {
     id: text("id").primaryKey(),
+    userId: uuid("user_id").notNull().references(() => users.id),
     lemma: text("lemma")
       .notNull()
       .references(() => vocabularyLookups.lemma, { onDelete: "cascade" }),
@@ -243,9 +341,14 @@ export const vocabularyOccurrences = pgTable(
     // nullsNotDistinct: the always-null source column would otherwise make every row unique
     // and break dedupe (spec §3.3). unique().on() supports nullsNotDistinct; uniqueIndex does not.
     unique("vocab_occ_unique_idx")
-      .on(t.lemma, t.sourceType, t.documentId, t.tcfQuestionId)
+      .on(t.userId, t.lemma, t.sourceType, t.documentId, t.tcfQuestionId)
       .nullsNotDistinct(),
-    index("vocab_occ_lemma_idx").on(t.lemma),
+    foreignKey({
+      columns: [t.userId, t.lemma],
+      foreignColumns: [userVocabulary.userId, userVocabulary.lemma],
+      name: "vocab_occ_user_lemma_fk",
+    }).onDelete("cascade"),
+    index("vocab_occ_user_lemma_idx").on(t.userId, t.lemma),
   ],
 );
 
@@ -257,9 +360,9 @@ export type VocabularyOccurrence = typeof vocabularyOccurrences.$inferSelect;
 /* ------------------------------------------------------------------ */
 
 export const vocabGapTypeEnum = pgEnum("vocab_gap_type", [
-  "listening",     // 听不懂 — recognises in text but not by ear
-  "recognition",   // 不认识 — unknown on sight
-  "production",    // 不会用 — understood but can't produce
+  "listening",     // Understands in text but not by ear
+  "recognition",   // Does not recognize it on sight
+  "production",    // Understands it but cannot produce it
 ]);
 
 export const vocabGapSourceEnum = pgEnum("vocab_gap_source", ["lookup", "feedback", "manual"]);
@@ -270,6 +373,7 @@ export const vocabularyGaps = pgTable(
   "vocabulary_gaps",
   {
     id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").notNull().references(() => users.id),
     lemma: text("lemma")
       .notNull()
       .references(() => vocabularyLookups.lemma, { onDelete: "cascade" }),
@@ -283,8 +387,13 @@ export const vocabularyGaps = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
-    unique("vocab_gaps_lemma_type_key").on(t.lemma, t.gapType),
-    index("vocab_gaps_status_due_idx").on(t.status, t.dueAt),
+    unique("vocab_gaps_user_lemma_type_key").on(t.userId, t.lemma, t.gapType),
+    foreignKey({
+      columns: [t.userId, t.lemma],
+      foreignColumns: [userVocabulary.userId, userVocabulary.lemma],
+      name: "vocab_gaps_user_lemma_fk",
+    }).onDelete("cascade"),
+    index("vocab_gaps_user_status_due_idx").on(t.userId, t.status, t.dueAt),
   ],
 );
 
@@ -317,18 +426,23 @@ export const quizTypeEnum = pgEnum("quiz_type", [
 /*  quiz_sets — one exam paper / podcast episode / drill batch         */
 /* ------------------------------------------------------------------ */
 
-export const quizSets = pgTable("quiz_sets", {
-  id: text("id").primaryKey(),
-  /** Exam system identifier: 'TCF' | 'TEF' | 'DELF_B1' | 'podcast' | 'conjugation' … */
-  exam: text("exam").notNull(),
-  /** Paper number within the exam series, e.g. TCF blanc nº 3 */
-  number: integer("number"),
-  section: quizSectionEnum("section").notNull(),
-  title: text("title").notNull(),
-  /** Source material / podcast name */
-  source: text("source"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+export const quizSets = pgTable(
+  "quiz_sets",
+  {
+    id: text("id").primaryKey(),
+    userId: uuid("user_id").notNull().references(() => users.id),
+    /** Exam system identifier: 'TCF' | 'TEF' | 'DELF_B1' | 'podcast' | 'conjugation' … */
+    exam: text("exam").notNull(),
+    /** Paper number within the exam series, e.g. TCF blanc nº 3 */
+    number: integer("number"),
+    section: quizSectionEnum("section").notNull(),
+    title: text("title").notNull(),
+    /** Source material / podcast name */
+    source: text("source"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => [index("quiz_sets_user_id_created_at_idx").on(t.userId, t.createdAt)],
+);
 
 export type QuizSet = typeof quizSets.$inferSelect;
 
@@ -403,6 +517,7 @@ export const quizAttempts = pgTable(
   "quiz_attempts",
   {
     id: text("id").primaryKey(),
+    userId: uuid("user_id").notNull().references(() => users.id),
     setId: text("set_id")
       .notNull()
       .references(() => quizSets.id, { onDelete: "cascade" }),
@@ -410,7 +525,10 @@ export const quizAttempts = pgTable(
     total: integer("total").notNull(),
     answeredAt: timestamp("answered_at").notNull().defaultNow(),
   },
-  (t) => [index("quiz_attempts_set_id_idx").on(t.setId)],
+  (t) => [
+    index("quiz_attempts_set_id_idx").on(t.setId),
+    index("quiz_attempts_user_id_answered_at_idx").on(t.userId, t.answeredAt),
+  ],
 );
 
 export type QuizAttempt = typeof quizAttempts.$inferSelect;
@@ -425,6 +543,7 @@ export const conjugationAttempts = pgTable(
   "conjugation_attempts",
   {
     id: text("id").primaryKey(),
+    userId: uuid("user_id").notNull().references(() => users.id),
     /** Display infinitive, e.g. "se lever" */
     verb: text("verb").notNull(),
     /** One of the 6 drill tenses, e.g. "passé composé" */
@@ -438,7 +557,10 @@ export const conjugationAttempts = pgTable(
     correct: boolean("correct").notNull(),
     answeredAt: timestamp("answered_at").notNull().defaultNow(),
   },
-  (t) => [index("conjugation_attempts_verb_tense_idx").on(t.verb, t.tense)],
+  (t) => [
+    index("conjugation_attempts_verb_tense_idx").on(t.verb, t.tense),
+    index("conjugation_attempts_user_id_answered_at_idx").on(t.userId, t.answeredAt),
+  ],
 );
 
 export type ConjugationAttempt = typeof conjugationAttempts.$inferSelect;
@@ -447,12 +569,17 @@ export type ConjugationAttempt = typeof conjugationAttempts.$inferSelect;
 /*  user_settings — key/value store for per-user preferences           */
 /* ------------------------------------------------------------------ */
 
-export const userSettings = pgTable("user_settings", {
-  /** Stable key, e.g. "cefr_level" */
-  key: text("key").primaryKey(),
-  value: text("value").notNull(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+export const userSettings = pgTable(
+  "user_settings",
+  {
+    userId: uuid("user_id").notNull().references(() => users.id),
+    /** Stable key, e.g. "cefr_level" */
+    key: text("key").notNull(),
+    value: text("value").notNull(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.key] })],
+);
 
 export type UserSetting = typeof userSettings.$inferSelect;
 
@@ -484,7 +611,7 @@ export const tcfSets = pgTable(
 
 export type TcfSet = typeof tcfSets.$inferSelect;
 
-/** The "速判" head of a hand-written explanation — see CLAUDE.md 「写入单题 TCF 讲解」. */
+/** The structured verdict header of a hand-written explanation — see CLAUDE.md's TCF explanation authoring guide. */
 export type TcfExplanationMeta = {
   /** One line naming what in the text decides the answer. */
   keyPoint: string | null;
@@ -517,9 +644,9 @@ export const tcfQuestions = pgTable(
   passage: text("passage"),
   translationEn: text("translation_en"),
   explanation: text("explanation"),
-  /** Structured head of the explanation — the "速判" section. Drives the verdict
+  /** Structured head of the explanation — the verdict section. Drives the verdict
    *  bar and the per-option one-liners, which the full markdown cannot: it is
-   *  one opaque blob to the renderer. null = the explanation has no 速判 section. */
+   *  one opaque blob to the renderer. null = the explanation has no verdict section. */
   explanationMeta: jsonb("explanation_meta").$type<TcfExplanationMeta>(),
   /** Relative path, e.g. /media/tcf/test1/q01.png */
   imagePath: text("image_path"),
@@ -539,6 +666,7 @@ export const tcfAttempts = pgTable(
   "tcf_attempts",
   {
     id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").notNull().references(() => users.id),
     // set null (not cascade) so attempt history survives a set being re-imported/removed
     setId: uuid("set_id").references(() => tcfSets.id, { onDelete: "set null" }),
     // Denormalised for display after a set is gone
@@ -549,7 +677,10 @@ export const tcfAttempts = pgTable(
     perLevel: jsonb("per_level").$type<TcfPerLevel>(),
     answeredAt: timestamp("answered_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [index("tcf_attempts_set_id_idx").on(t.setId)],
+  (t) => [
+    index("tcf_attempts_set_id_idx").on(t.setId),
+    index("tcf_attempts_user_id_answered_at_idx").on(t.userId, t.answeredAt),
+  ],
 );
 
 export type TcfAttempt = typeof tcfAttempts.$inferSelect;
@@ -562,6 +693,7 @@ export const tcfQuestionAttempts = pgTable(
   "tcf_question_attempts",
   {
     id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").notNull().references(() => users.id),
     // cascade: re-importing a set wipes its per-question history — accepted
     // tradeoff (spec §2); whole-exam totals in tcf_attempts survive.
     questionId: uuid("question_id")
@@ -584,6 +716,7 @@ export const tcfQuestionAttempts = pgTable(
     index("tcf_qa_question_id_idx").on(t.questionId),
     index("tcf_qa_answered_at_idx").on(t.answeredAt),
     index("tcf_qa_exam_attempt_id_idx").on(t.examAttemptId),
+    index("tcf_qa_user_id_answered_at_idx").on(t.userId, t.answeredAt),
   ],
 );
 
@@ -620,17 +753,22 @@ export const speakingPrompts = pgTable(
 
 export type SpeakingPrompt = typeof speakingPrompts.$inferSelect;
 
-export const speakingScripts = pgTable("speaking_scripts", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  promptId: uuid("prompt_id")
-    .notNull()
-    .references(() => speakingPrompts.id, { onDelete: "cascade" }),
-  /** AI-generated reference script; user-editable */
-  content: text("content").notNull(),
-  /** speaking_profile value used at generation time */
-  profileSnapshot: text("profile_snapshot"),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-});
+export const speakingScripts = pgTable(
+  "speaking_scripts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").notNull().references(() => users.id),
+    promptId: uuid("prompt_id")
+      .notNull()
+      .references(() => speakingPrompts.id, { onDelete: "cascade" }),
+    /** AI-generated reference script; user-editable */
+    content: text("content").notNull(),
+    /** speaking_profile value used at generation time */
+    profileSnapshot: text("profile_snapshot"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("speaking_scripts_user_id_prompt_id_idx").on(t.userId, t.promptId)],
+);
 
 export type SpeakingScript = typeof speakingScripts.$inferSelect;
 
@@ -656,38 +794,48 @@ export type SessionScores = {
   overall: number;
 };
 
-export const speakingSessions = pgTable("speaking_sessions", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  promptId: uuid("prompt_id")
-    .notNull()
-    .references(() => speakingPrompts.id, { onDelete: "cascade" }),
-  mode: speakingModeEnum("mode").notNull(),
-  status: speakingSessionStatusEnum("status").notNull().default("active"),
-  /** End-of-session report (Phase 2: GPT content feedback) */
-  report: jsonb("report"),
-  scores: jsonb("scores").$type<SessionScores>(),
-  startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
-  completedAt: timestamp("completed_at", { withTimezone: true }),
-});
+export const speakingSessions = pgTable(
+  "speaking_sessions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").notNull().references(() => users.id),
+    promptId: uuid("prompt_id")
+      .notNull()
+      .references(() => speakingPrompts.id, { onDelete: "cascade" }),
+    mode: speakingModeEnum("mode").notNull(),
+    status: speakingSessionStatusEnum("status").notNull().default("active"),
+    /** End-of-session report (Phase 2: GPT content feedback) */
+    report: jsonb("report"),
+    scores: jsonb("scores").$type<SessionScores>(),
+    startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+  },
+  (t) => [index("speaking_sessions_user_id_started_at_idx").on(t.userId, t.startedAt)],
+);
 
 export type SpeakingSession = typeof speakingSessions.$inferSelect;
 
-export const speakingTurns = pgTable("speaking_turns", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  sessionId: uuid("session_id")
-    .notNull()
-    .references(() => speakingSessions.id, { onDelete: "cascade" }),
-  /** Script practice: sentence index. Simulation: dialogue turn order. */
-  orderIndex: integer("order_index").notNull(),
-  role: speakingRoleEnum("role").notNull(),
-  /** Examiner line, or user speech transcript from Azure */
-  text: text("text").notNull(),
-  /** Relative path, e.g. /media/speaking/<sessionId>/003.wav */
-  audioPath: text("audio_path"),
-  /** Azure word-level assessment — user turns only */
-  assessment: jsonb("assessment").$type<TurnAssessment>(),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-});
+export const speakingTurns = pgTable(
+  "speaking_turns",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").notNull().references(() => users.id),
+    sessionId: uuid("session_id")
+      .notNull()
+      .references(() => speakingSessions.id, { onDelete: "cascade" }),
+    /** Script practice: sentence index. Simulation: dialogue turn order. */
+    orderIndex: integer("order_index").notNull(),
+    role: speakingRoleEnum("role").notNull(),
+    /** Examiner line, or user speech transcript from Azure */
+    text: text("text").notNull(),
+    /** Relative path, e.g. /media/speaking/<sessionId>/003.wav */
+    audioPath: text("audio_path"),
+    /** Azure word-level assessment — user turns only */
+    assessment: jsonb("assessment").$type<TurnAssessment>(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("speaking_turns_user_id_session_id_idx").on(t.userId, t.sessionId)],
+);
 
 export type SpeakingTurn = typeof speakingTurns.$inferSelect;
 

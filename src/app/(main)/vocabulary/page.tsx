@@ -17,8 +17,8 @@ export default async function VocabularyPage() {
     <div className="px-8 py-8 max-w-5xl mx-auto">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-[30px] font-bold tracking-[-0.03em] mb-1">Vocabulary</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-[38px] font-bold tracking-[-0.035em] mb-1">Vocabulary</h1>
+          <p className="text-[15px] text-muted-foreground">
             Every word you looked up while reading or practising TCF.
           </p>
         </div>

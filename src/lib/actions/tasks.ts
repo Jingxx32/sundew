@@ -6,7 +6,17 @@ import { after } from "next/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { writingTasks, submissions, documents, errors, tcfQuestions, tcfSets, vocabularyAliases, vocabularyGaps } from "@/lib/db/schema";
+import {
+  writingTasks,
+  submissions,
+  documents,
+  errors,
+  tcfQuestions,
+  tcfSets,
+  userVocabularyAliases,
+  vocabularyAliases,
+  vocabularyGaps,
+} from "@/lib/db/schema";
 import { generateTask } from "@/lib/ai/task";
 import { generateFeedback, type FeedbackResult } from "@/lib/ai/feedback";
 import { countWords } from "@/lib/cefr";
@@ -16,6 +26,7 @@ import type { ErrorCategory } from "@/lib/taxonomy";
 import { ensureEntryForWord, norm } from "@/lib/vocabulary/helpers";
 import { upsertGap, gradeGap } from "@/lib/vocabulary/gaps";
 import { getProductionGapLemmas } from "@/lib/actions/vocab-gaps";
+import { requireUser } from "@/lib/auth/session";
 
 const ARCHIVE_PLACEHOLDER_TITLE = "(Targeted practice from your error archive)";
 const ARCHIVE_PLACEHOLDER_TYPE = "personal";
@@ -34,12 +45,13 @@ export async function generateWritingTask(
   vocabWords: string[] = [],
   opts?: GenerateTaskOptions,
 ): Promise<string> {
+  const user = await requireUser();
   const [doc, profile] = await Promise.all([
     documentId
       ? db
           .select()
           .from(documents)
-          .where(eq(documents.id, documentId))
+          .where(and(eq(documents.id, documentId), eq(documents.userId, user.id)))
           .limit(1)
           .then((r) => r[0] ?? null)
       : Promise.resolve(null),
@@ -82,6 +94,7 @@ export async function generateWritingTask(
   const id = randomUUID();
   await db.insert(writingTasks).values({
     id,
+    userId: user.id,
     documentId: documentId ?? null,
     promptEn: result.prompt_en,
     targetWords,
@@ -103,6 +116,7 @@ export async function practiceFromPattern(
   category: ErrorCategory,
   subcategory: string,
 ): Promise<string> {
+  await requireUser();
   const def = ERROR_TAXONOMY[category];
   if (!def) throw new Error("Unknown error category.");
   const hasSub = Object.prototype.hasOwnProperty.call(
@@ -126,6 +140,7 @@ export async function practiceFromPattern(
  * straight on the task stage. Powers the "Écrire maintenant" entry.
  */
 export async function quickWrite(): Promise<void> {
+  await requireUser();
   const taskId = await generateWritingTask(null, [], { source: "archive" });
   revalidatePath("/practice");
   redirect(`/practice?taskId=${taskId}`);
@@ -137,6 +152,7 @@ export async function quickWrite(): Promise<void> {
  * Returns the task id; the (client) caller navigates to the task stage.
  */
 export async function writeFromTcfPassage(questionId: string): Promise<string> {
+  const user = await requireUser();
   const row = await db
     .select({
       passage: tcfQuestions.passage,
@@ -164,6 +180,7 @@ export async function writeFromTcfPassage(questionId: string): Promise<string> {
   const id = randomUUID();
   await db.insert(writingTasks).values({
     id,
+    userId: user.id,
     documentId: null,
     promptEn: result.prompt_en,
     targetWords: result.target_words,
@@ -208,6 +225,7 @@ function repairSpan(
 
 /** Persist the feedback packet onto a submission and (re)insert its classified errors. */
 async function persistFeedback(
+  userId: string,
   submissionId: string,
   content: string,
   feedback: FeedbackResult,
@@ -221,7 +239,7 @@ async function persistFeedback(
       summaryEn: feedback.summary_en,
       feedbackStatus: "ready",
     })
-    .where(eq(submissions.id, submissionId));
+    .where(and(eq(submissions.id, submissionId), eq(submissions.userId, userId)));
 
   if (feedback.errors.length > 0) {
     await db.insert(errors).values(
@@ -229,6 +247,7 @@ async function persistFeedback(
         const span = repairSpan(content, err.original, err.span.start, err.span.end);
         return {
           id: randomUUID(),
+          userId,
           submissionId,
           spanStart: span.start,
           spanEnd: span.end,
@@ -255,8 +274,15 @@ async function persistFeedback(
       // Multi-word corrections are usually rephrasings, not a single learnable item.
       .filter((c) => c.length > 1 && c.split(/\s+/).length <= 3);
     for (const correction of vocabCorrections) {
-      const lemma = await ensureEntryForWord(correction);
-      if (lemma) await upsertGap({ lemma, gapType: "production", source: "feedback" });
+      const lemma = await ensureEntryForWord(userId, correction);
+      if (lemma) {
+        await upsertGap({
+          userId,
+          lemma,
+          gapType: "production",
+          source: "feedback",
+        });
+      }
     }
   } catch (err) {
     console.error("[feedback] vocab gap ingest failed:", err);
@@ -270,7 +296,7 @@ async function persistFeedback(
       .select({ targetLemmas: writingTasks.targetLemmas })
       .from(submissions)
       .innerJoin(writingTasks, eq(submissions.taskId, writingTasks.id))
-      .where(eq(submissions.id, submissionId))
+      .where(and(eq(submissions.id, submissionId), eq(submissions.userId, userId)))
       .limit(1)
       .then((r) => r[0] ?? null);
     const targetLemmas = (task?.targetLemmas as string[] | null) ?? [];
@@ -280,10 +306,22 @@ async function persistFeedback(
         .map((err) => norm(err.original));
       const normalizedContent = norm(content);
       for (const lemma of targetLemmas) {
-        const aliasRows = await db
-          .select({ surface: vocabularyAliases.surface })
-          .from(vocabularyAliases)
-          .where(eq(vocabularyAliases.lemma, lemma));
+        const [personalAliases, globalAliases] = await Promise.all([
+          db
+            .select({ surface: userVocabularyAliases.surface })
+            .from(userVocabularyAliases)
+            .where(
+              and(
+                eq(userVocabularyAliases.userId, userId),
+                eq(userVocabularyAliases.lemma, lemma),
+              ),
+            ),
+          db
+            .select({ surface: vocabularyAliases.surface })
+            .from(vocabularyAliases)
+            .where(eq(vocabularyAliases.lemma, lemma)),
+        ]);
+        const aliasRows = [...personalAliases, ...globalAliases];
         const candidates = [lemma, ...aliasRows.map((r) => r.surface)].map(norm);
         const used = candidates.some((c) => normalizedContent.includes(c));
         const flagged = candidates.some((c) => flaggedOriginals.some((o) => o.includes(c) || c.includes(o)));
@@ -292,10 +330,16 @@ async function persistFeedback(
           await db
             .select({ id: vocabularyGaps.id })
             .from(vocabularyGaps)
-            .where(and(eq(vocabularyGaps.lemma, lemma), eq(vocabularyGaps.gapType, "production")))
+            .where(
+              and(
+                eq(vocabularyGaps.userId, userId),
+                eq(vocabularyGaps.lemma, lemma),
+                eq(vocabularyGaps.gapType, "production"),
+              ),
+            )
             .limit(1)
         )[0];
-        if (gapRow) await gradeGap(gapRow.id, true);
+        if (gapRow) await gradeGap(userId, gapRow.id, true);
       }
     }
   } catch (err) {
@@ -304,6 +348,14 @@ async function persistFeedback(
 }
 
 export async function createSubmission(taskId: string, contentFr: string): Promise<void> {
+  const user = await requireUser();
+  const taskExists = await db
+    .select({ id: writingTasks.id })
+    .from(writingTasks)
+    .where(and(eq(writingTasks.id, taskId), eq(writingTasks.userId, user.id)))
+    .limit(1)
+    .then((rows) => rows[0] ?? null);
+  if (!taskExists) throw new Error("Task not found");
   // NFC-normalise so AI-returned character offsets line up with accented chars
   const normalised = contentFr.normalize("NFC");
   const id = randomUUID();
@@ -312,6 +364,7 @@ export async function createSubmission(taskId: string, contentFr: string): Promi
   // writing and the feedback page can show a "generating" state.
   await db.insert(submissions).values({
     id,
+    userId: user.id,
     taskId,
     contentFr: normalised,
     wordCount: countWords(normalised),
@@ -326,7 +379,7 @@ export async function createSubmission(taskId: string, contentFr: string): Promi
       const task = await db
         .select()
         .from(writingTasks)
-        .where(eq(writingTasks.id, taskId))
+        .where(and(eq(writingTasks.id, taskId), eq(writingTasks.userId, user.id)))
         .limit(1)
         .then((r) => r[0] ?? null);
       if (!task) throw new Error(`Task ${taskId} not found`);
@@ -338,13 +391,13 @@ export async function createSubmission(taskId: string, contentFr: string): Promi
         task.difficulty ?? "B1",
         normalised,
       );
-      await persistFeedback(id, normalised, feedback);
+      await persistFeedback(user.id, id, normalised, feedback);
     } catch (err) {
       console.error("Feedback generation failed:", err);
       await db
         .update(submissions)
         .set({ feedbackStatus: "failed" })
-        .where(eq(submissions.id, id));
+        .where(and(eq(submissions.id, id), eq(submissions.userId, user.id)));
     }
     revalidatePath(`/practice/${id}/feedback`);
   });
@@ -360,10 +413,11 @@ export async function createSubmission(taskId: string, contentFr: string): Promi
 export async function regenerateFeedback(
   submissionId: string,
 ): Promise<{ ok: boolean }> {
+  const user = await requireUser();
   const submission = await db
     .select()
     .from(submissions)
-    .where(eq(submissions.id, submissionId))
+    .where(and(eq(submissions.id, submissionId), eq(submissions.userId, user.id)))
     .limit(1)
     .then((r) => r[0] ?? null);
   if (!submission) return { ok: false };
@@ -371,7 +425,7 @@ export async function regenerateFeedback(
   const task = await db
     .select()
     .from(writingTasks)
-    .where(eq(writingTasks.id, submission.taskId))
+    .where(and(eq(writingTasks.id, submission.taskId), eq(writingTasks.userId, user.id)))
     .limit(1)
     .then((r) => r[0] ?? null);
   if (!task) return { ok: false };
@@ -384,8 +438,8 @@ export async function regenerateFeedback(
       task.difficulty ?? "B1",
       submission.contentFr,
     );
-    await db.delete(errors).where(eq(errors.submissionId, submissionId));
-    await persistFeedback(submissionId, submission.contentFr, feedback);
+    await db.delete(errors).where(and(eq(errors.submissionId, submissionId), eq(errors.userId, user.id)));
+    await persistFeedback(user.id, submissionId, submission.contentFr, feedback);
     revalidatePath(`/practice/${submissionId}/feedback`);
     return { ok: true };
   } catch (err) {
@@ -393,16 +447,17 @@ export async function regenerateFeedback(
     await db
       .update(submissions)
       .set({ feedbackStatus: "failed" })
-      .where(eq(submissions.id, submissionId));
+      .where(and(eq(submissions.id, submissionId), eq(submissions.userId, user.id)));
     return { ok: false };
   }
 }
 
 export async function getWritingTaskWithDocument(id: string) {
+  const user = await requireUser();
   const task = await db
     .select()
     .from(writingTasks)
-    .where(eq(writingTasks.id, id))
+    .where(and(eq(writingTasks.id, id), eq(writingTasks.userId, user.id)))
     .limit(1)
     .then((r) => r[0]);
   if (!task) return null;
@@ -410,7 +465,7 @@ export async function getWritingTaskWithDocument(id: string) {
     ? await db
         .select()
         .from(documents)
-        .where(eq(documents.id, task.documentId))
+        .where(and(eq(documents.id, task.documentId), eq(documents.userId, user.id)))
         .limit(1)
         .then((r) => r[0] ?? null)
     : null;
@@ -418,10 +473,11 @@ export async function getWritingTaskWithDocument(id: string) {
 }
 
 export async function getSubmissionWithFeedback(submissionId: string) {
+  const user = await requireUser();
   const submission = await db
     .select()
     .from(submissions)
-    .where(eq(submissions.id, submissionId))
+    .where(and(eq(submissions.id, submissionId), eq(submissions.userId, user.id)))
     .limit(1)
     .then((r) => r[0] ?? null);
   if (!submission) return null;
@@ -429,7 +485,7 @@ export async function getSubmissionWithFeedback(submissionId: string) {
   const task = await db
     .select()
     .from(writingTasks)
-    .where(eq(writingTasks.id, submission.taskId))
+    .where(and(eq(writingTasks.id, submission.taskId), eq(writingTasks.userId, user.id)))
     .limit(1)
     .then((r) => r[0] ?? null);
 
@@ -438,7 +494,7 @@ export async function getSubmissionWithFeedback(submissionId: string) {
       ? await db
           .select()
           .from(documents)
-          .where(eq(documents.id, task.documentId))
+          .where(and(eq(documents.id, task.documentId), eq(documents.userId, user.id)))
           .limit(1)
           .then((r) => r[0] ?? null)
       : null;
@@ -446,7 +502,7 @@ export async function getSubmissionWithFeedback(submissionId: string) {
   const errorList = await db
     .select()
     .from(errors)
-    .where(eq(errors.submissionId, submissionId));
+    .where(and(eq(errors.submissionId, submissionId), eq(errors.userId, user.id)));
 
   return { submission, task, doc, errors: errorList };
 }

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
+import { Bookmark, Loader2 } from "lucide-react";
 import { getVocabEntryDetail, enrichEntry } from "@/lib/actions/vocabulary";
 import type { VocabEntrySummary, VocabEntryDetail, OccurrenceLink } from "@/lib/vocabulary/types";
 import { CEFR_CHIP_CLASSES, type CefrLevel } from "@/lib/cefr";
@@ -106,20 +106,23 @@ export function VocabBrowser({
         <div className="flex flex-wrap gap-2 mb-4">
           {/* Text search */}
           <input
-            type="text"
+            type="search"
+            aria-label="Search your vocabulary"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search words…"
-            className="h-8 rounded-lg border border-border bg-surface px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/40"
+            className="h-9 rounded-lg border border-border bg-surface px-3 text-[15px] text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
           />
 
           {/* Level filters */}
           {CEFR_LEVELS.map((lvl) => (
             <button
               key={lvl}
+              type="button"
+              aria-pressed={levelFilter === lvl}
               onClick={() => setLevelFilter(levelFilter === lvl ? null : lvl)}
               className={cn(
-                "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset cursor-pointer transition-opacity",
+                "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset cursor-pointer transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2",
                 cefrClass(lvl),
                 levelFilter !== null && levelFilter !== lvl ? "opacity-40" : "opacity-100",
               )}
@@ -132,9 +135,11 @@ export function VocabBrowser({
           {POS_OPTIONS.map((p) => (
             <button
               key={p}
+              type="button"
+              aria-pressed={posFilter === p}
               onClick={() => setPosFilter(posFilter === p ? null : p)}
               className={cn(
-                "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset cursor-pointer transition-opacity",
+                "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset cursor-pointer transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2",
                 "bg-surface-muted text-muted-foreground ring-border/60",
                 posFilter !== null && posFilter !== p ? "opacity-40" : "opacity-100",
                 posFilter === p ? "bg-accent-soft text-accent ring-accent-soft-strong" : "",
@@ -146,9 +151,11 @@ export function VocabBrowser({
 
           {/* Saved only */}
           <button
+            type="button"
+            aria-pressed={savedOnly}
             onClick={() => setSavedOnly(!savedOnly)}
             className={cn(
-              "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset cursor-pointer",
+              "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2",
               savedOnly
                 ? "bg-accent-soft text-accent ring-accent-soft-strong"
                 : "bg-surface-muted text-muted-foreground ring-border/60",
@@ -169,9 +176,10 @@ export function VocabBrowser({
             filtered.map((entry) => (
               <button
                 key={entry.lemma}
+                type="button"
                 onClick={() => selectEntry(entry.lemma)}
                 className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-surface-muted/60 transition-colors",
+                  "w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-surface-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/40",
                   selectedLemma === entry.lemma ? "bg-accent-soft/40" : "",
                 )}
               >
@@ -181,11 +189,14 @@ export function VocabBrowser({
                       {entry.lemma}
                     </span>
                     {entry.saved && (
-                      <span className="text-[10px] text-accent font-medium">★</span>
+                      <span className="inline-flex text-accent" title="Saved">
+                        <Bookmark className="h-3 w-3" fill="currentColor" aria-hidden="true" />
+                        <span className="sr-only">Saved</span>
+                      </span>
                     )}
                   </div>
                   {entry.translation && (
-                    <p className="text-xs text-muted-foreground truncate">{entry.translation}</p>
+                    <p className="text-[13px] text-muted-foreground truncate">{entry.translation}</p>
                   )}
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
@@ -218,7 +229,7 @@ export function VocabBrowser({
       <div className="w-80 shrink-0">
         {!selectedLemma ? (
           <div className="rounded-xl border border-dashed border-border px-6 py-12 text-center">
-            <p className="text-sm text-muted-foreground">Select a word to see details.</p>
+            <p className="text-[15px] text-muted-foreground">Select a word to see details.</p>
           </div>
         ) : isPending ? (
           <div className="rounded-xl bg-surface shadow-card px-6 py-12 flex justify-center">
@@ -233,7 +244,7 @@ export function VocabBrowser({
           />
         ) : (
           <div className="rounded-xl bg-surface shadow-card px-6 py-8 text-center">
-            <p className="text-sm text-muted-foreground">Word not found.</p>
+            <p className="text-[15px] text-muted-foreground">Word not found.</p>
           </div>
         )}
       </div>

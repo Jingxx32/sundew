@@ -11,6 +11,7 @@ import { db } from "@/lib/db";
 import { documents, readingSessions } from "@/lib/db/schema";
 import { countWords, naiveLevelEstimate } from "@/lib/cefr";
 import { estimateCefrLevel } from "@/lib/ai/cefr-estimator";
+import { requireUser } from "@/lib/auth/session";
 
 const NewDocumentSchema = z.object({
   title: z.string().trim().min(1, "Title is required").max(200),
@@ -36,6 +37,7 @@ export async function createDocument(
   _prevState: CreateDocumentResult | null,
   formData: FormData,
 ): Promise<CreateDocumentResult> {
+  const user = await requireUser();
   const raw = {
     title: formData.get("title")?.toString() ?? "",
     source: formData.get("source")?.toString() ?? "",
@@ -66,6 +68,7 @@ export async function createDocument(
   // refine with the LLM estimate after the response is sent.
   await db.insert(documents).values({
     id,
+    userId: user.id,
     title: parsed.data.title,
     source: parsed.data.source || null,
     sourceUrl: parsed.data.sourceUrl || null,
@@ -79,7 +82,10 @@ export async function createDocument(
   after(async () => {
     try {
       const level = await estimateCefrLevel(content);
-      await db.update(documents).set({ estimatedLevel: level }).where(eq(documents.id, id));
+      await db
+        .update(documents)
+        .set({ estimatedLevel: level })
+        .where(and(eq(documents.id, id), eq(documents.userId, user.id)));
       revalidatePath("/library");
       revalidatePath(`/documents/${id}`);
     } catch (err) {
@@ -92,18 +98,21 @@ export async function createDocument(
 }
 
 export async function deleteDocument(id: string) {
-  await db.delete(documents).where(eq(documents.id, id));
+  const user = await requireUser();
+  await db.delete(documents).where(and(eq(documents.id, id), eq(documents.userId, user.id)));
   revalidatePath("/library");
 }
 
 export async function touchDocumentReadAt(id: string) {
+  const user = await requireUser();
   await db
     .update(documents)
     .set({ lastReadAt: new Date() })
-    .where(eq(documents.id, id));
+    .where(and(eq(documents.id, id), eq(documents.userId, user.id)));
 }
 
 export async function openDocument(id: string) {
+  await requireUser();
   await touchDocumentReadAt(id);
   redirect(`/documents/${id}`);
 }
@@ -116,7 +125,8 @@ export async function listDocuments(opts?: {
   type?: string;
   query?: string;
 }) {
-  const filters: SQL[] = [];
+  const user = await requireUser();
+  const filters: SQL[] = [eq(documents.userId, user.id)];
   if (opts?.type && opts.type !== "all") {
     filters.push(eq(documents.type, opts.type as "news" | "literature" | "personal" | "other"));
   }
@@ -133,27 +143,31 @@ export async function listDocuments(opts?: {
 }
 
 export async function getDocument(id: string) {
+  const user = await requireUser();
   return db
     .select()
     .from(documents)
-    .where(eq(documents.id, id))
+    .where(and(eq(documents.id, id), eq(documents.userId, user.id)))
     .limit(1)
     .then((r) => r[0] ?? null);
 }
 
 export async function getMostRecentDocument() {
+  const user = await requireUser();
   return db
     .select()
     .from(documents)
+    .where(eq(documents.userId, user.id))
     .orderBy(sql`${documents.lastReadAt} desc nulls last`, desc(documents.createdAt))
     .limit(1)
     .then((r) => r[0] ?? null);
 }
 
 export async function getDocumentSessionCount(id: string): Promise<number> {
+  const user = await requireUser();
   const result = await db
     .select({ count: count() })
     .from(readingSessions)
-    .where(eq(readingSessions.documentId, id));
+    .where(and(eq(readingSessions.documentId, id), eq(readingSessions.userId, user.id)));
   return result[0]?.count ?? 0;
 }

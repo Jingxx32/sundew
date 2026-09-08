@@ -1,10 +1,10 @@
-# Lumière
+# Sundew
 
 > **Read French. Write French. See your blind spots fade.**
 >
 > A personal training ground for output-driven French learning.
 
-Lumière is built around one belief: **language sticks when you produce it, not when you consume it**. Tools like NotebookLM are great at making French *easier to understand* — but in doing so they remove the very friction that drives real acquisition. Lumière flips that around.
+Sundew is built around one belief: **language sticks when you produce it, not when you consume it**. Tools like NotebookLM are great at making French *easier to understand* — but in doing so they remove the very friction that drives real acquisition. Sundew flips that around.
 
 The core loop:
 
@@ -27,29 +27,38 @@ Your trends and weak spots feed the next task
 | Phase | Scope | Status |
 |-------|-------|--------|
 | **MVP S1–S7** | Library + Reader, click-to-define lookup, writing tasks, **structured writing feedback**, errors archive, progress dashboard, learner profile | ✅ |
-| **v0.2 S8–S10** | Generic quiz engine, podcast cloze dictation (Whisper word timestamps), conjugation drills (LEFFF, deterministic), TCF listening/reading bank (~3200 questions, drill + exam) | ✅ |
+| **v0.2 S8–S10** | Generic quiz engine, podcast cloze dictation (Whisper word timestamps), conjugation drills (LEFFF, deterministic), TCF listening/reading practice (drill + exam; private content excluded) | ✅ |
 | **Speaking P1** | TCF Expression orale read-aloud + Azure pronunciation assessment (needs `AZURE_SPEECH_KEY`) | ✅ merged |
 | Next | TCF error loop (per-question attempts → smart re-drill → skill-tag profile), `/today` daily plan | in progress |
 
 ## Quick start
 
+Use the Node.js version pinned in `.nvmrc` (also used by CI). Use a separate
+development database; do not point setup or seed scripts at personal production data.
+
 ```bash
 # 1. install
-npm install
+nvm use
+npm ci
 
 # 2. point DATABASE_URL at a PostgreSQL database and apply migrations
 #    .env needs: DATABASE_URL, OPENAI_API_KEY (and AZURE_SPEECH_KEY/REGION for speaking)
 npm run db:init
 
-# 3. (optional) seed sample French texts + grammar rules
-npm run db:seed
-npm run db:seed-rules
+# 3. verify the source checkout (no database or API keys required)
+npm run typecheck
+npm run lint
+npm test
 
-# 5. run the dev server
+# 4. run the dev server
 npm run dev
 ```
 
 Open <http://localhost:3000> — you'll be redirected to **Library**.
+
+The existing seed scripts are development utilities, not public-demo seeds.
+Review their content and target database before use. The public demo is not yet
+released; deployment and production-container validation remain pending.
 
 ## Tech stack
 
@@ -77,7 +86,7 @@ src/
 ├── components/                 # Sidebar, lookup popover, ui/ primitives
 ├── hooks/
 └── lib/
-    ├── db/schema.ts            # ~23 tables, single source of truth
+    ├── db/schema.ts            # Database schema, single source of truth
     ├── actions/                # ALL db access (server actions, no API layer)
     ├── ai/                     # OpenAI wrappers (lookup, feedback, task, …)
     ├── speech/azure.ts         # Azure pronunciation assessment
@@ -91,8 +100,8 @@ docs/                           # PRDs, audits, superpowers/{specs,plans}
 
 ## The error taxonomy
 
-The single most important design decision in Lumière is the
-[`ERROR_TAXONOMY`](src/lib/taxonomy.ts) — a flat-but-categorised set of ~33
+The single most important design decision in Sundew is the
+[`ERROR_TAXONOMY`](src/lib/taxonomy.ts) — a flat-but-categorised set of
 error subcategories tuned for **A2-B1 learners**. It is:
 
 1. The schema the AI must conform to when emitting structured feedback
@@ -113,4 +122,12 @@ npm run db:seed       # Insert sample French documents
 
 ## License
 
-Personal project. Not yet open to external contributors.
+Copyright © 2026 Jingxuan Xu. All rights reserved. Source is available for
+portfolio and recruitment evaluation under [LICENSE](LICENSE); this is not an
+open-source license.
+
+Third-party dependencies and resources retain their own licenses. Private exam
+materials, recordings, and personal learning data are excluded from the public
+demo. Public demo content must be original or have confirmed permission for
+public use; access controls do not establish content permission. See the
+[content source register](docs/demo-content-sources.md) for review status.

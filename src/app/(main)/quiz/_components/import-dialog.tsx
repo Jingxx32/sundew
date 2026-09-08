@@ -26,7 +26,7 @@ import {
 } from "@/lib/actions/cloze";
 import type { ParsedQuiz } from "@/lib/ai/quiz-schema";
 import type { ClozePayload } from "@/lib/ai/cloze-schema";
-import { cn } from "@/lib/utils";
+import { FilterChip } from "@/components/ui/filter-chip";
 
 type Meta = {
   exam: string;
@@ -224,8 +224,8 @@ export function ImportQuizDialog() {
               </DialogTitle>
               <DialogDescription>
                 {mode === "pdf"
-                  ? "Upload an exam PDF. Lumière extracts the text, structures it into passages and questions with AI, and shows you a preview before anything is saved."
-                  : "Paste a direct mp3 link. Lumière transcribes it with word timestamps, blanks out useful words, and shows you a preview before anything is saved."}
+                  ? "Upload an exam PDF. Sundew extracts the text, structures it into passages and questions with AI, and shows you a preview before anything is saved."
+                  : "Paste a direct mp3 link. Sundew transcribes it with word timestamps, blanks out useful words, and shows you a preview before anything is saved."}
               </DialogDescription>
             </DialogHeader>
 
@@ -599,18 +599,13 @@ function SourceChip({
   onClick: () => void;
 }) {
   return (
-    <button
-      type="button"
+    <FilterChip
+      active={active}
       onClick={onClick}
-      className={cn(
-        "inline-flex items-center gap-1.5 px-3 h-8 rounded-full text-xs transition-colors",
-        active
-          ? "bg-foreground text-background font-medium"
-          : "bg-surface text-muted-foreground hover:text-foreground border border-border/60",
-      )}
+      className="inline-flex items-center gap-1.5"
     >
       {icon}
       {label}
-    </button>
+    </FilterChip>
   );
 }

@@ -38,7 +38,7 @@ the user isn't left correcting style in a follow-up commit (`fcecc9e` → `70a6a
 
 ## Project overview
 
-Lumière is an output-driven French learning app. The core loop: read French source material → AI generates a writing task anchored to it → user writes → AI gives structured, classified feedback → every error flows into a persistent learner profile that drives future tasks.
+Sundew is an output-driven French learning app. The core loop: read French source material → AI generates a writing task anchored to it → user writes → AI gives structured, classified feedback → every error flows into a persistent learner profile that drives future tasks.
 
 This is a personal app (single user, no auth). Current status: **MVP (S1–S7) and v0.2 (S8–S10) are shipped** — full writing-feedback loop, errors archive, progress dashboard, learner profile, generic quiz engine (podcast cloze dictation), conjugation drills, TCF listening/reading question bank (~3200 questions) with drill + exam modes, lemma-keyed vocabulary memory, and Speaking Phase 1 (read-aloud with Azure pronunciation assessment; needs `AZURE_SPEECH_KEY`). Next up: the TCF error loop — see `docs/superpowers/specs/2026-07-06-tcf-error-loop-design.md`. Audits live in `docs/audit-*.md` / `docs/*-audit-*.md`.
 
@@ -169,7 +169,9 @@ Question / Text / Options 三样都译
 TCF import/TTS pipeline scripts also live in `scripts/` (tracked; their input
 data and `scripts/.tcf-cache/` stay local — copyrighted exam content).
 
-There is no test suite yet.
+`npm test` runs the existing TypeScript unit tests. Before release, run
+`npm run typecheck`, `npm run lint`, and `npm test`; production smoke tests remain
+separate from these checks.
 
 ## Architecture
 

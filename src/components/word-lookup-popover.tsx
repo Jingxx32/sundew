@@ -113,8 +113,13 @@ function LoadingSkeleton({ word, onClose }: { word: string; onClose: () => void 
     <div className="p-4 space-y-3">
       <div className="flex items-start justify-between gap-2">
         <span className="text-base font-semibold">{word}</span>
-        <button onClick={onClose} className="text-subtle-foreground hover:text-foreground shrink-0">
-          <X className="h-4 w-4" />
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close word lookup"
+          className="shrink-0 rounded-md text-subtle-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+        >
+          <X className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
       <div className="space-y-2 animate-pulse">
@@ -179,8 +184,13 @@ function LookupCard({
           <Chip className={cn("ring-0 text-[10px] py-0", CEFR_CHIP_CLASSES[level])}>
             {level}
           </Chip>
-          <button onClick={onClose} className="text-subtle-foreground hover:text-foreground">
-            <X className="h-4 w-4" />
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close word lookup"
+            className="rounded-md text-subtle-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -200,7 +210,7 @@ function LookupCard({
         <button
           onClick={handleReexplain}
           disabled={isReexplaining}
-          className="mt-1 inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+          className="mt-1 inline-flex items-center gap-1 rounded-md text-[11px] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 disabled:opacity-50"
         >
           <RefreshCw className={cn("h-3 w-3", isReexplaining && "animate-spin")} />
           Re-explain in this sentence

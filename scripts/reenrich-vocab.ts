@@ -15,9 +15,9 @@ config({ path: ".env" });
 
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
-import { eq, isNotNull } from "drizzle-orm";
+import { and, eq, isNotNull } from "drizzle-orm";
 import * as schema from "../src/lib/db/schema";
-import { vocabularyLookups } from "../src/lib/db/schema";
+import { userVocabulary } from "../src/lib/db/schema";
 // NOTE: enrich (→ ai/client) instantiates the OpenAI SDK at module load and
 // reads OPENAI_API_KEY. ESM hoists static imports above the dotenv config()
 // calls above, so it must be imported lazily *inside* main() — after env is
@@ -34,11 +34,12 @@ async function main() {
 
   const rows = await db
     .select({
-      lemma: vocabularyLookups.lemma,
-      pos: vocabularyLookups.pos,
+      userId: userVocabulary.userId,
+      lemma: userVocabulary.lemma,
+      pos: userVocabulary.pos,
     })
-    .from(vocabularyLookups)
-    .where(isNotNull(vocabularyLookups.enrichedAt));
+    .from(userVocabulary)
+    .where(isNotNull(userVocabulary.enrichedAt));
 
   console.log(`Found ${rows.length} enriched row(s).`);
   if (dry) {
@@ -56,9 +57,11 @@ async function main() {
     try {
       const rich = await enrichVocab(row.lemma, row.pos);
       await db
-        .update(vocabularyLookups)
+        .update(userVocabulary)
         .set({ richEntry: rich, enrichedAt: new Date() })
-        .where(eq(vocabularyLookups.lemma, row.lemma));
+        .where(
+          and(eq(userVocabulary.userId, row.userId), eq(userVocabulary.lemma, row.lemma)),
+        );
       ok++;
       console.log(`  ✓ ${row.lemma}`);
     } catch (err) {

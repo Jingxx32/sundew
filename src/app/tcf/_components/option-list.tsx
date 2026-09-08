@@ -12,7 +12,7 @@ interface OptionListProps {
   /** image / spoken_options questions keep option text hidden until revealed — the audio is the question. */
   audioOnly: boolean;
   onChoose: (index: number) => void;
-  /** Per-option one-line rationale from the 速判 block, drill only. */
+  /** Per-option one-line rationale from the verdict block, for drills only. */
   why?: (string | null)[];
 }
 
@@ -38,7 +38,7 @@ export function OptionList({ options, chosen, answer, revealed, audioOnly, onCho
               aria-disabled={revealed}
               onClick={() => { if (!revealed) onChoose(index); }}
               className={cn(
-                "flex w-full items-center gap-2.5 rounded-lg border px-3.5 py-2.5 text-left text-sm transition-colors touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50",
+                "flex w-full items-center gap-2.5 rounded-lg border px-3.5 py-2.5 text-left text-[15px] transition-colors touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50",
                 revealed && isCorrect
                   ? "border-success/40 bg-success-soft text-success"
                   : wrong
@@ -78,7 +78,7 @@ export function OptionList({ options, chosen, answer, revealed, audioOnly, onCho
             </button>
             {/* Sits under its own option so the eye never leaves what it explains. */}
             {line && (
-              <p className={cn("mt-1 pl-8 pr-3 text-xs leading-relaxed", isCorrect ? "text-success" : "text-muted-foreground")}>
+              <p className={cn("mt-1 pl-8 pr-3 text-[13px] leading-relaxed", isCorrect ? "text-success" : "text-muted-foreground")}>
                 {line}
               </p>
             )}

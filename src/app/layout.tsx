@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
-import { Inter, Source_Serif_4, Source_Code_Pro } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Manrope, Source_Serif_4, Source_Code_Pro } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
 });
 
@@ -20,9 +20,17 @@ const sourceCodePro = Source_Code_Pro({
 });
 
 export const metadata: Metadata = {
-  title: "Lumière — French learning, output-first",
+  title: "Sundew — French learning, output-first",
   description:
     "Read French, write French, see your blind spots fade. A personal training ground for output-driven French learning.",
+  icons: {
+    icon: "/assets/sundew-logo-assets/sundew-app-icon-bold-512.png",
+    apple: "/assets/sundew-logo-assets/sundew-app-icon-bold-512.png",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#faf8f4",
 };
 
 export default function RootLayout({
@@ -33,7 +41,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${sourceSerif.variable} ${sourceCodePro.variable} h-full antialiased`}
+      className={`${manrope.variable} ${sourceSerif.variable} ${sourceCodePro.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-background text-foreground">
         {children}
