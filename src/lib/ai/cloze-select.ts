@@ -3,7 +3,7 @@
 
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { openai, MODELS } from "./client";
+import { getOpenAI, MODELS } from "./client";
 import type { WordTiming } from "./transcribe";
 import { buildLearnerProfile } from "@/lib/actions/learner-profile";
 
@@ -43,7 +43,7 @@ export async function selectBlanks(
 
   const numbered = words.map((w, i) => `${i}:${w.word}`).join(" ");
 
-  const completion = await openai.chat.completions.parse({
+  const completion = await getOpenAI().chat.completions.parse({
     model: MODELS.task,
     messages: [
       {

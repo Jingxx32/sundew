@@ -1,8 +1,20 @@
 import OpenAI from "openai";
 
-export const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let client: OpenAI | undefined;
+
+/**
+ * Create the SDK only when an AI action actually runs. Importing this module
+ * during `next build` must not require a production-only API key.
+ */
+export function getOpenAI(): OpenAI {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error("OPENAI_API_KEY is not configured.");
+  }
+
+  client ??= new OpenAI({ apiKey });
+  return client;
+}
 
 export const MODELS = {
   lookup: process.env.OPENAI_MODEL_LOOKUP ?? "gpt-4o-mini",

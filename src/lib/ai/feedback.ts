@@ -2,7 +2,7 @@ import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { CEFR_LEVELS } from "@/lib/cefr";
 import { ERROR_TAXONOMY, ALL_SUBCATEGORIES } from "@/lib/taxonomy";
-import { openai, MODELS } from "./client";
+import { getOpenAI, MODELS } from "./client";
 
 const CATEGORY_KEYS = Object.keys(ERROR_TAXONOMY) as [string, ...string[]];
 const SUBCATEGORY_KEYS = ALL_SUBCATEGORIES.map((s) => s.subcategory) as [string, ...string[]];
@@ -53,7 +53,7 @@ export async function generateFeedback(
     (s) => `${s.subcategory} (${s.category}: ${s.label})`,
   ).join(", ");
 
-  const completion = await openai.chat.completions.parse({
+  const completion = await getOpenAI().chat.completions.parse({
     model: MODELS.feedback,
     messages: [
       {

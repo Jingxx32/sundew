@@ -2,7 +2,7 @@
 // server actions in lib/actions, never directly from the client.
 
 import { toFile } from "openai";
-import { openai, MODELS } from "./client";
+import { getOpenAI, MODELS } from "./client";
 
 export type WordTiming = { word: string; start: number; end: number };
 
@@ -37,7 +37,7 @@ export async function transcribePodcast(
   }
 
   try {
-    const transcription = await openai.audio.transcriptions.create({
+    const transcription = await getOpenAI().audio.transcriptions.create({
       file: await toFile(buf, "episode.mp3"),
       model: MODELS.transcribe,
       language: "fr",

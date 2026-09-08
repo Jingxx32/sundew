@@ -1,5 +1,5 @@
 import type { SpeakingPrompt } from "@/lib/db/schema";
-import { openai, MODELS } from "./client";
+import { getOpenAI, MODELS } from "./client";
 
 const TASK_GUIDANCE: Record<number, string> = {
   1: `Tâche 1 (entretien dirigé, ~2 min): write first-person spoken answers to the personal questions in the prompt. Natural conversational French, complete sentences a B1 learner can memorize and deliver aloud.`,
@@ -11,7 +11,7 @@ export async function generateSpeakingScript(
   prompt: SpeakingPrompt,
   profile: string,
 ): Promise<string> {
-  const completion = await openai.chat.completions.create({
+  const completion = await getOpenAI().chat.completions.create({
     model: MODELS.speaking,
     temperature: 0.7,
     messages: [

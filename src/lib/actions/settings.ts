@@ -2,7 +2,7 @@
 
 import { and, eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { openai, MODELS } from "@/lib/ai/client";
+import { getOpenAI, MODELS } from "@/lib/ai/client";
 import { db } from "@/lib/db";
 import { userSettings } from "@/lib/db/schema";
 import type { CefrLevel } from "@/lib/cefr";
@@ -21,7 +21,7 @@ export async function testApiKey(): Promise<ApiKeyStatus> {
   }
 
   try {
-    await openai.models.list();
+    await getOpenAI().models.list();
     const maskedKey = key.slice(0, 7) + "·".repeat(16) + key.slice(-4);
     return { ok: true, maskedKey, models: MODELS };
   } catch (err) {
