@@ -33,7 +33,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          # App Service builds this source archive on its Linux host. Uploading
+          # GitHub's node_modules can leave broken executable links such as
+          # node_modules/.bin/next in the deployed package.
+          path: |
+            .
+            !node_modules
+            !.next
 
   deploy:
     runs-on: ubuntu-latest
@@ -62,4 +68,3 @@ jobs:
           app-name: 'sundew-french'
           slot-name: 'Production'
           package: .
-          
