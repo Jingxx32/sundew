@@ -1,6 +1,6 @@
 # Lumière — Sprint 1–3 PRD Audit
 
-**Audited against**: [docs/PRD.md](docs/PRD.md) (v0.1, frozen 2026-05-05)
+**Audited against**: [archived PRD v0.1](docs/archive/PRD-v0.1.md) (frozen 2026-05-05)
 **Scope**: Sprints 1, 2, and 3 only. Sprints 4–7 are explicitly out of scope for this audit.
 **Date**: 2026-05-15
 **Auditor stance**: requirements-only. Code quality, style, and performance are not assessed.
@@ -46,7 +46,7 @@ Lumière exists because every other AI study tool (NotebookLM, Claude, ChatGPT, 
 - **"IN THIS CONTEXT" framing** — the system prompt explicitly tells the model to explain *why this form / why this agreement in this sentence*, not a dictionary entry. Matches the differentiation argument in §7.2.2.
 - **Save to vocabulary** ([src/lib/actions/reading.ts:21](src/lib/actions/reading.ts:21)) — persists to `readingSessions.vocabularyLookedUp` (JSON array), deduped by lowercase word.
 - **This Session sidebar** ([src/app/documents/[id]/_components/session-sidebar.tsx](src/app/documents/[id]/_components/session-sidebar.tsx)) — live timer, count stat, list of saved words, and the "Task from these N words" CTA when ≥1 word saved. Matches §7.2.1.
-- **Reading progress tracking** — `IntersectionObserver` over `<p>` elements; only writes monotonic increases; persisted via [updateReadingProgress](src/lib/actions/reading.ts:56). Matches §7.2.1 "S2 — 阅读进度自动追踪".
+- **Reading progress tracking** — `IntersectionObserver` over `<p>` elements; only writes monotonic increases; persisted via [updateReadingProgress](src/lib/actions/reading.ts:56). Matches §7.2.1 “S2 — automatic reading-progress tracking”.
 - **Reading session lifecycle** — created on mount, duration flushed on unmount via cleanup effect.
 
 ### Sprint 3
@@ -55,7 +55,7 @@ Lumière exists because every other AI study tool (NotebookLM, Claude, ChatGPT, 
 - **Task generation Zod schema** ([src/lib/ai/task.ts](src/lib/ai/task.ts)) — `prompt_en`, `target_words`, `target_grammar`, `difficulty`, `min/max_word_count` exactly matches the §13.2 S3 spec and Appendix B.
 - **Reader → Practice handoff** ([src/app/documents/[id]/_components/reader-client.tsx:122](src/app/documents/[id]/_components/reader-client.tsx:122)) — top-bar "Generate Writing Task" button works (whole-doc path) and sidebar "Task from these N words" works (vocab-anchored path). Both routes covered.
 - **Task Stage / Practice page** ([src/app/practice/page.tsx](src/app/practice/page.tsx)) — task card displays "FROM <doc title>", English prompt, target words and grammar chips, level chip, word-count target. Matches §7.3.1.
-- **Writing form** ([src/app/practice/_components/writing-form.tsx](src/app/practice/_components/writing-form.tsx)) — large Source-Serif textarea, live word counter, "below minimum" warning that allows submission anyway (PRD: "未达到时按钮可点但有 warning"). Matches §7.3.1.
+- **Writing form** ([src/app/practice/_components/writing-form.tsx](src/app/practice/_components/writing-form.tsx)) — large Source-Serif textarea, live word counter, “below minimum” warning that still allows submission (PRD: “the button remains available below the minimum, with a warning”). Matches §7.3.1.
 - **Submit → submission row** ([src/lib/actions/tasks.ts:46](src/lib/actions/tasks.ts:46)) — writes `submissions` with `content_fr`, `word_count`, then redirects to the feedback route with a "Sprint 4 coming" placeholder. This is correct: per §13.2 S3 scope, only the loading/handoff to the feedback stage is required in S3, not the feedback itself.
 
 ---
@@ -65,7 +65,7 @@ Lumière exists because every other AI study tool (NotebookLM, Claude, ChatGPT, 
 ### D1 — Library search is title-only
 
 - **Feature**: Library search input.
-- **PRD requires**: §7.1.1 row 5: "**搜索** — 标题 + 内容全文搜索" (title + content full-text search).
+- **PRD requires**: §7.1.1 row 5: “**Search** — full-text search across titles and content.”
 - **Current implementation**: [src/lib/actions/documents.ts:108](src/lib/actions/documents.ts:108) applies only `like(documents.title, q)`. Pasting a phrase that appears in document body returns no results.
 - **Risk level**: **Medium**. The PRD primary user persona is someone working through self-curated long-form material (Le Monde articles, novel chapters); content search is a meaningful retrieval affordance for that workflow.
 - **Recommendation**: Add `or(like(documents.title, q), like(documents.content, q))`. For Postgres (per the in-progress migration), use `ILIKE` or `to_tsvector` for accent-insensitive matching.
@@ -73,7 +73,7 @@ Lumière exists because every other AI study tool (NotebookLM, Claude, ChatGPT, 
 ### D2 — Continue Reading "Generate Writing Task" button still disabled
 
 - **Feature**: Continue Reading hero card CTA.
-- **PRD requires**: §7.1.1 row 3 lists "双 CTA" (dual CTA) on the Continue Reading card. With S3 complete, both CTAs should be functional.
+- **PRD requires**: §7.1.1 row 3 lists “dual CTAs” on the Continue Reading card. With S3 complete, both CTAs should be functional.
 - **Current implementation**: [src/app/library/_components/continue-reading.tsx:69](src/app/library/_components/continue-reading.tsx:69) renders the button with `disabled title="Coming in S3"`. The Reader page wires up the same action, so the capability exists — just not exposed here.
 - **Risk level**: **Low** (UX gap, not data-correctness) but visible — every Library visit shows a stale "Coming in S3" tooltip.
 - **Recommendation**: Wire the button to a server action that calls `generateWritingTask(doc.id, [])` and redirects to `/practice?taskId=…`. Or extract the existing client handler in `ReaderShell` into a shared client component.
@@ -89,7 +89,7 @@ Lumière exists because every other AI study tool (NotebookLM, Claude, ChatGPT, 
 ### D4 — Session sidebar "Looked up" stat conflates looked-up vs saved
 
 - **Feature**: This Session sidebar stats row.
-- **PRD requires**: §7.2.1 — "显示阅读时长、**查询的词数**、收集的 vocab 列表" (reading duration, *number of words looked up*, vocab list).
+- **PRD requires**: §7.2.1 — “show reading duration, the **number of words looked up**, and the collected vocabulary list.”
 - **Current implementation**: [src/app/documents/[id]/_components/session-sidebar.tsx:39](src/app/documents/[id]/_components/session-sidebar.tsx:39) labels the second stat "Looked up" but renders `savedWords.length` — the count of words the user *chose to save*, not the count of lookups performed. A user who looks up 12 words and saves 3 will see "Looked up: 3".
 - **Risk level**: **Low**. Cosmetic, but mis-attributes user behaviour. Also relevant later for the §14.2 reverse-funnel metric.
 - **Recommendation**: Either (a) track lookup count separately in component state and display that, or (b) rename the stat to "Saved" to match the underlying data. (a) is closer to PRD intent.
@@ -97,7 +97,7 @@ Lumière exists because every other AI study tool (NotebookLM, Claude, ChatGPT, 
 ### D5 — OpenAI key "configure" is read-only (.env-driven)
 
 - **Feature**: Settings → OpenAI API key.
-- **PRD requires**: §7.5 (S2 row) — "OpenAI API key **配置** + 余额测试" (configuration + balance test).
+- **PRD requires**: §7.5 (S2 row) — “OpenAI API-key **configuration** and balance test.”
 - **Current implementation**: [src/app/settings/page.tsx](src/app/settings/page.tsx) shows status and a masked key, but the only way to configure is to edit `.env` and restart the dev server. The "test" calls `openai.models.list()`, which proves *validity* but not *balance/quota*.
 - **Risk level**: **Low** for v0.1 self-use (the author can edit `.env`), but it conflicts with the explicit S2 deliverable.
 - **Recommendation**: Decide whether you accept the deviation (mark it in PRD changelog — single-user tool, .env is fine) or add an in-app form that writes to a local config and a `/v1/usage` call for balance. For the trial-Azure timeline noted in your project memory, accepting the deviation is the lower-cost path; just record it explicitly.
@@ -105,9 +105,9 @@ Lumière exists because every other AI study tool (NotebookLM, Claude, ChatGPT, 
 ### D6 — Schema migrated from SQLite to Postgres without PRD changelog entry
 
 - **Feature**: Database engine.
-- **PRD requires**: §12.1 strong decision: "SQLite via `better-sqlite3` + Drizzle ORM ... 自用零运维；数据库就是一个文件，备份=复制". CLAUDE.md still describes SQLite (`better-sqlite3`, WAL mode, FK ON, sync `.run()`).
+- **PRD requires**: §12.1 strong decision: “SQLite via `better-sqlite3` + Drizzle ORM ... zero operations for personal use; the database is a file, so backup means copying it.” CLAUDE.md still describes SQLite (`better-sqlite3`, WAL mode, FK ON, sync `.run()`).
 - **Current implementation**: [src/lib/db/schema.ts:1](src/lib/db/schema.ts:1) uses `drizzle-orm/pg-core` (`pgTable`, `jsonb`, `timestamp`, `pgEnum`). This is consistent with your saved memory (Azure PG migration before S4) but the PRD §12.1 strong decision was not updated and the project's own CLAUDE.md still describes SQLite-only behaviour.
-- **Risk level**: **Medium** — not because PG is wrong, but because PRD §0 says "强决策必须遵守，改动需明确替换" and the changelog at §17 still only lists v0.1. CLAUDE.md describing nonexistent code is also a trap for future Claude sessions.
+- **Risk level**: **Medium** — not because PG is wrong, but because PRD §0 says “strong decisions must be followed; changes require an explicit replacement,” and the changelog at §17 still only lists v0.1. CLAUDE.md describing nonexistent code is also a trap for future Claude sessions.
 - **Recommendation**: Add a PRD changelog entry documenting the SQLite → Postgres switch with reason (Azure trial, multi-device, etc.) and update §12.1. Update [CLAUDE.md](CLAUDE.md) so "SQLite via better-sqlite3" and `.run()/.get()` sections reflect the new driver.
 
 ---
@@ -117,13 +117,13 @@ Lumière exists because every other AI study tool (NotebookLM, Claude, ChatGPT, 
 | # | Item | PRD location | Likely sprint | Notes |
 |---|---|---|---|---|
 | O1 | **NFC normalization** for selected text and (later) error spans | §15.1 mitigations | S2 (selection) → S4 (spans) | Not present anywhere in code. `selection.toString()` is used directly. Risk surfaces when users select words containing combined diacritics from copy-paste sources. Cheap to add now: `text.normalize("NFC")` in [word-lookup-popover.tsx:36](src/app/documents/[id]/_components/word-lookup-popover.tsx). |
-| O2 | **Local cache for repeated lookups** | §15.1 — "本地缓存重复查询" cost mitigation | S2 | No memoisation/caching of lookup results. Selecting the same word twice in one session pays the OpenAI cost twice. Per the PRD risk list, this was an explicit cost mitigation. |
-| O3 | **Document Reader header word count + reading-progress chip** | §7.2.1 row 2 ("标题、作者/来源、CEFR chip、字数、阅读进度") | S1 | Reader shows word count + level always, but progress chip only when `>0`. PRD lists progress as a header element — current implementation hides it on first visit. Minor. |
-| O4 | **Error-count chip in document rows** | §7.1.1 row 2 + §7.1.2 ("错误数 chip 是 '反向入口'") | Cannot show until S4 generates errors | [document-row.tsx:80](src/app/library/_components/document-row.tsx:80) hardcodes `errorCount = 0`. Reasonable for S1–S3 since the `errors` table is empty, but flag for S4: the count must aggregate `errors JOIN submissions JOIN writing_tasks JOIN documents`. |
-| O5 | **Visible error to user when lookup fails** | §15.1 risk: "OpenAI 批改质量不稳定" — by extension, lookup failures | S2 | [word-lookup-popover.tsx:64](src/app/documents/[id]/_components/word-lookup-popover.tsx) silently hides the popover on `catch`. The user has no signal that their selection triggered a failed request — they'll think nothing happened. |
-| O6 | **Reading-session duration not flushed on visibility loss / page close** | Implicit in §14.2 metric "用户花在阅读上的时间" | S2 | Duration is only sent on React unmount. Closing the tab or browser leaves `endedAt = NULL` and `durationSeconds = 0`. PRD doesn't specify, but the reverse-funnel metric depends on this being accurate. Use `visibilitychange` + `navigator.sendBeacon`. |
-| O7 | **`target_words` strict enforcement** | §7.3.3 ("写作任务必须来自以下三种来源之一") and Appendix B ("must be used") | S3 | Currently the AI is *asked* to use vocab via the system prompt ("use all of them if ≤5") but nothing checks the returned `target_words` is a subset of the user-supplied vocab. A model that ignores instructions could emit unrelated words. Validation gap, not a hard bug. |
-| O8 | **CEFR-level pinning in Settings** ("当前 CEFR 等级（手动设置 / AI 估算）") | §7.5 | S6 — not in current scope | Confirm: this is correctly deferred. Listed here only to make the deferral explicit. |
+| O2 | **Local cache for repeated lookups** | §15.1 — “locally cache repeated lookups” cost mitigation | S2 | No memoisation/caching of lookup results. Selecting the same word twice in one session pays the OpenAI cost twice. Per the PRD risk list, this was an explicit cost mitigation. |
+| O3 | **Document Reader header word count + reading-progress chip** | §7.2.1 row 2 (“title, author/source, CEFR chip, word count, reading progress”) | S1 | Reader shows word count + level always, but progress chip only when `>0`. PRD lists progress as a header element — current implementation hides it on first visit. Minor. |
+| O4 | **Error-count chip in document rows** | §7.1.1 row 2 + §7.1.2 (“the error-count chip is a reverse entry point”) | Cannot show until S4 generates errors | [document-row.tsx:80](src/app/library/_components/document-row.tsx:80) hardcodes `errorCount = 0`. Reasonable for S1–S3 since the `errors` table is empty, but flag for S4: the count must aggregate `errors JOIN submissions JOIN writing_tasks JOIN documents`. |
+| O5 | **Visible error to user when lookup fails** | §15.1 risk: “unstable OpenAI correction quality” — by extension, lookup failures | S2 | [word-lookup-popover.tsx:64](src/app/documents/[id]/_components/word-lookup-popover.tsx) silently hides the popover on `catch`. The user has no signal that their selection triggered a failed request — they'll think nothing happened. |
+| O6 | **Reading-session duration not flushed on visibility loss / page close** | Implicit in §14.2 metric “time the user spends reading” | S2 | Duration is only sent on React unmount. Closing the tab or browser leaves `endedAt = NULL` and `durationSeconds = 0`. PRD doesn't specify, but the reverse-funnel metric depends on this being accurate. Use `visibilitychange` + `navigator.sendBeacon`. |
+| O7 | **`target_words` strict enforcement** | §7.3.3 (“a writing task must come from one of the following three sources”) and Appendix B (“must be used”) | S3 | Currently the AI is *asked* to use vocab via the system prompt (“use all of them if ≤5”) but nothing checks the returned `target_words` is a subset of the user-supplied vocab. A model that ignores instructions could emit unrelated words. Validation gap, not a hard bug. |
+| O8 | **CEFR-level pinning in Settings** (“current CEFR level: manually set / AI-estimated”) | §7.5 | S6 — not in current scope | Confirm: this is correctly deferred. Listed here only to make the deferral explicit. |
 
 ---
 
@@ -169,7 +169,7 @@ Ordered by risk × cost-to-fix. The "M" / "L" tags match the deviation risk leve
 
 ### PRD NEEDS CLARIFICATION
 
-- **§7.5 "OpenAI API key 配置 + 余额测试"**: ambiguous what "余额测试" entails for v0.1 self-use. Live `/v1/usage` poll? One-time check? A simple "key is valid" call? The current implementation interprets it as the last; PRD intent is unclear.
-- **§7.1.2 "错误数 chip 是 '反向入口'"**: the chip should link to "Progress 页过滤到这个文档的所有错误（S6）". Confirm this is the intended deep link signature (`/progress?documentId=...`) before S6 work begins.
-- **§9.3 "外键级联"** lists submission→errors cascade and document→writing_tasks set-null, but does not say what happens to `reading_sessions` when a document is deleted. Current implementation cascades (data is destroyed). Confirm intent.
-- **§7.3.3 "基于本次会话收集的词"**: does the AI have permission to drop some collected words, or must `target_words` always equal the full collected list when ≤5? The current AI prompt says "use all of them if ≤5" but no validation enforces this. Pin down before learner-profile-driven generation in S7.
+- **§7.5 “OpenAI API-key configuration + balance test”**: it is ambiguous what “balance test” entails for v0.1 self-use. Live `/v1/usage` poll? One-time check? A simple “key is valid” call? The current implementation interprets it as the last; PRD intent is unclear.
+- **§7.1.2 “the error-count chip is a reverse entry point”**: the chip should link to “the Progress page filtered to all errors for this document (S6).” Confirm this is the intended deep-link signature (`/progress?documentId=...`) before S6 work begins.
+- **§9.3 “foreign-key cascades”** lists submission→errors cascade and document→writing_tasks set-null, but does not say what happens to `reading_sessions` when a document is deleted. Current implementation cascades (data is destroyed). Confirm intent.
+- **§7.3.3 “based on words collected during this session”**: does the AI have permission to drop some collected words, or must `target_words` always equal the full collected list when ≤5? The current AI prompt says “use all of them if ≤5” but no validation enforces this. Pin down before learner-profile-driven generation in S7.

@@ -8,6 +8,11 @@ import {
   explanationLocatorLabel,
 } from "./parse-explanation";
 
+const LEGACY_TRANSLATION = "\u5168\u6587\u7ffb\u8bd1";
+const LEGACY_PROMPT = "\u9898\u5e72";
+const LEGACY_ANSWER = "\u7b54\u6848\uff1aB";
+const LEGACY_NON_TRANSLATION_HEADING = "\u5173\u4e8e\u5168\u6587\u7ffb\u8bd1\u5bf9\u7167\u8868\u7684\u8bf4\u660e";
+
 const SAMPLE = `---
 test: 1
 skill: reading
@@ -15,17 +20,17 @@ question: 5
 written: 2026-08-13
 ---
 
-## 全文翻译
+## ${LEGACY_TRANSLATION}
 
 **Question** — What is Julien's favorite hobby?
 
 **Options** — A. Reading · B. Cycling · C. Painting · D. Cooking
 
-## 题干
+## ${LEGACY_PROMPT}
 
 Quel est le passe-temps préféré de Julien ?
 
-**答案：B**
+**${LEGACY_ANSWER}**
 `;
 
 test("parses the frontmatter locator", () => {
@@ -37,17 +42,17 @@ test("parses the frontmatter locator", () => {
 
 test("body starts after the frontmatter and keeps the whole explanation", () => {
   const p = parseExplanationFile(SAMPLE);
-  assert.ok(p.body.startsWith("## 全文翻译"));
-  assert.ok(p.body.includes("**答案：B**"));
+  assert.ok(p.body.startsWith(`## ${LEGACY_TRANSLATION}`));
+  assert.ok(p.body.includes(`**${LEGACY_ANSWER}**`));
   assert.ok(!p.body.includes("written:"));
 });
 
-test("extracts the 全文翻译 section, stopping at the next heading", () => {
+test("extracts the legacy translation section, stopping at the next heading", () => {
   const p = parseExplanationFile(SAMPLE);
   assert.ok(p.translationEn !== null);
   assert.ok(p.translationEn.startsWith("**Question**"));
   assert.ok(p.translationEn.includes("D. Cooking"));
-  assert.ok(!p.translationEn.includes("题干"));
+  assert.ok(!p.translationEn.includes(LEGACY_PROMPT));
 });
 
 test("translationEn is null when the section is absent", () => {
@@ -58,7 +63,7 @@ question: 30
 written: 2026-08-13
 ---
 
-## 题干
+## ${LEGACY_PROMPT}
 
 Rien à traduire.
 `;
@@ -66,7 +71,7 @@ Rien à traduire.
 });
 
 test("throws when frontmatter is missing", () => {
-  assert.throws(() => parseExplanationFile("## 题干\nfoo\n"), /frontmatter/i);
+  assert.throws(() => parseExplanationFile(`## ${LEGACY_PROMPT}\nfoo\n`), /frontmatter/i);
 });
 
 test("throws on an unknown skill", () => {
@@ -77,7 +82,7 @@ question: 5
 written: 2026-08-13
 ---
 
-## 题干
+## ${LEGACY_PROMPT}
 foo
 `;
   assert.throws(() => parseExplanationFile(raw), /skill/i);
@@ -90,7 +95,7 @@ skill: reading
 written: 2026-08-13
 ---
 
-## 题干
+## ${LEGACY_PROMPT}
 foo
 `;
   assert.throws(() => parseExplanationFile(raw), /question/i);
@@ -101,7 +106,7 @@ test("expectedFileName builds the CE/CO convention", () => {
   assert.equal(expectedFileName({ test: 13, skill: "listening", question: 30 }), "CO-T13-Q30.md");
 });
 
-test("keeps a subheading nested inside 全文翻译 instead of treating it as the section end", () => {
+test("keeps a subheading nested inside the legacy translation section instead of treating it as the section end", () => {
   const raw = `---
 test: 1
 skill: reading
@@ -109,7 +114,7 @@ question: 5
 written: 2026-08-13
 ---
 
-## 全文翻译
+## ${LEGACY_TRANSLATION}
 
 ### Question
 
@@ -119,7 +124,7 @@ What is Julien's favorite hobby?
 
 A. Reading · B. Cycling
 
-## 题干
+## ${LEGACY_PROMPT}
 
 Quel est le passe-temps préféré de Julien ?
 `;
@@ -129,11 +134,11 @@ Quel est le passe-temps préféré de Julien ?
   assert.ok(p.translationEn.includes("What is Julien's favorite hobby?"));
   assert.ok(p.translationEn.includes("### Options"));
   assert.ok(p.translationEn.includes("A. Reading"));
-  assert.ok(!p.translationEn.includes("题干"));
+  assert.ok(!p.translationEn.includes(LEGACY_PROMPT));
 });
 
 test("tolerates a leading blank line before the frontmatter", () => {
-  const raw = `\n---\ntest: 1\nskill: reading\nquestion: 5\nwritten: 2026-08-13\n---\n\n## 全文翻译\n\nSome text.\n`;
+  const raw = `\n---\ntest: 1\nskill: reading\nquestion: 5\nwritten: 2026-08-13\n---\n\n## ${LEGACY_TRANSLATION}\n\nSome text.\n`;
   const p = parseExplanationFile(raw);
   assert.equal(p.test, 1);
   assert.equal(p.skill, "reading");
@@ -141,7 +146,7 @@ test("tolerates a leading blank line before the frontmatter", () => {
 });
 
 test("strips a single pair of matching quotes from frontmatter scalars", () => {
-  const raw = `---\ntest: "1"\nskill: "reading"\nquestion: '5'\nwritten: 2026-08-13\n---\n\n## 题干\nfoo\n`;
+  const raw = `---\ntest: "1"\nskill: "reading"\nquestion: '5'\nwritten: 2026-08-13\n---\n\n## ${LEGACY_PROMPT}\nfoo\n`;
   const p = parseExplanationFile(raw);
   assert.equal(p.test, 1);
   assert.equal(p.skill, "reading");
@@ -156,11 +161,11 @@ question: 5
 written: 2026-08-13
 ---
 
-## 关于全文翻译对照表的说明
+## ${LEGACY_NON_TRANSLATION_HEADING}
 
 This is not the translation section.
 
-## 题干
+## ${LEGACY_PROMPT}
 
 foo
 `;
@@ -169,26 +174,26 @@ foo
 });
 
 test("parseExplanationBody returns a null locator when frontmatter is absent", () => {
-  const raw = "## 全文翻译\n\nSome text.\n\n## 题干\n\nfoo\n";
+  const raw = `## ${LEGACY_TRANSLATION}\n\nSome text.\n\n## ${LEGACY_PROMPT}\n\nfoo\n`;
   const p = parseExplanationBody(raw);
   assert.equal(p.locator, null);
-  assert.ok(p.body.startsWith("## 全文翻译"));
+  assert.ok(p.body.startsWith(`## ${LEGACY_TRANSLATION}`));
   assert.equal(p.translationEn, "Some text.");
 });
 
 test("parseExplanationBody returns the locator when frontmatter is present", () => {
   const p = parseExplanationBody(SAMPLE);
   assert.deepEqual(p.locator, { test: 1, skill: "reading", question: 5 });
-  assert.ok(p.body.startsWith("## 全文翻译"));
+  assert.ok(p.body.startsWith(`## ${LEGACY_TRANSLATION}`));
 });
 
 test("parseExplanationBody still rejects an invalid skill", () => {
-  const raw = `---\ntest: 1\nskill: speaking\nquestion: 5\n---\n\n## 题干\nfoo\n`;
+  const raw = `---\ntest: 1\nskill: speaking\nquestion: 5\n---\n\n## ${LEGACY_PROMPT}\nfoo\n`;
   assert.throws(() => parseExplanationBody(raw), /skill/i);
 });
 
 test("parseExplanationBody still rejects an incomplete locator", () => {
-  const raw = `---\ntest: 1\nskill: reading\n---\n\n## 题干\nfoo\n`;
+  const raw = `---\ntest: 1\nskill: reading\n---\n\n## ${LEGACY_PROMPT}\nfoo\n`;
   assert.throws(() => parseExplanationBody(raw), /question/i);
 });
 

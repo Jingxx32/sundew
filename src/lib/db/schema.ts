@@ -356,7 +356,7 @@ export type VocabularyOccurrence = typeof vocabularyOccurrences.$inferSelect;
 
 /* ------------------------------------------------------------------ */
 /*  vocabulary_gaps — per-(lemma, skill-dimension) knowledge gaps      */
-/*  Spec: docs/superpowers/specs/2026-08-31-vocab-gap-profile-design.md */
+/*  Historical design: docs/archive/specs/2026-08-31-vocab-gap-profile-design.md */
 /* ------------------------------------------------------------------ */
 
 export const vocabGapTypeEnum = pgEnum("vocab_gap_type", [

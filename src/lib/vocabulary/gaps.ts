@@ -1,7 +1,7 @@
 /**
  * Vocabulary gap engine — upsert rules and Leitner scheduling.
  * Plain server-side helpers (NOT Server Actions), mirroring helpers.ts.
- * Spec: docs/superpowers/specs/2026-08-31-vocab-gap-profile-design.md §2
+ * Historical design: docs/archive/specs/2026-08-31-vocab-gap-profile-design.md §2
  */
 
 import { and, eq } from "drizzle-orm";

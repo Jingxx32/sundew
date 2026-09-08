@@ -7,7 +7,7 @@
 > those links are visible **only** in the library.
 >
 > Related: `verb_schema_spec.md` (the rich entry schema this builds on),
-> `docs/TCF-Listening-Plan.md`, `docs/PRD-v0.2.md`.
+> `docs/archive/plans/TCF-Listening-Plan.md`, `docs/archive/PRD-v0.2.md`.
 > Designed cold-start executable — does not depend on chat context.
 
 ---

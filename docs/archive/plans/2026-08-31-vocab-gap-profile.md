@@ -21,7 +21,7 @@
 
 **Tech Stack:** Next.js(App Router, server actions)、Drizzle + postgres.js(Azure PostgreSQL)、Tailwind + cva。无测试套件——每个任务以 `npx tsc --noEmit && npm run lint` + 真实数据验证收尾。
 
-**Spec:** `docs/superpowers/specs/2026-08-31-vocab-gap-profile-design.md`
+**Historical spec:** `docs/archive/specs/2026-08-31-vocab-gap-profile-design.md`
 
 ## Global Constraints
 
@@ -49,7 +49,7 @@
 ```ts
 /* ------------------------------------------------------------------ */
 /*  vocabulary_gaps — per-(lemma, skill-dimension) knowledge gaps      */
-/*  Spec: docs/superpowers/specs/2026-08-31-vocab-gap-profile-design.md */
+/*  Historical spec: docs/archive/specs/2026-08-31-vocab-gap-profile-design.md */
 /* ------------------------------------------------------------------ */
 
 export const vocabGapTypeEnum = pgEnum("vocab_gap_type", [
@@ -132,7 +132,7 @@ git commit -m "feat(vocab): add the vocabulary_gaps table for the gap profile"
 /**
  * Vocabulary gap engine — upsert rules and Leitner scheduling.
  * Plain server-side helpers (NOT Server Actions), mirroring helpers.ts.
- * Spec: docs/superpowers/specs/2026-08-31-vocab-gap-profile-design.md §2
+ * Historical spec: docs/archive/specs/2026-08-31-vocab-gap-profile-design.md §2
  */
 
 import { and, eq } from "drizzle-orm";

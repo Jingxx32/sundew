@@ -8,7 +8,7 @@
 
 **Tech Stack:** TypeScript, Next.js 16 (App Router, React 19), drizzle-orm + postgres-js, tsx, `node:test`（内置，无需新增测试框架），react-markdown + remark-gfm。
 
-设计文档：`docs/superpowers/specs/2026-08-13-tcf-explanations-design.md`
+Historical design: `docs/archive/specs/2026-08-13-tcf-explanations-design.md`
 
 > **2026-08-25 修订（解耦 french-wiki / sundew）：** 本文档描述的"文件是真源、
 > 数据库是投影"已被推翻。讲解现在**只存在数据库里**，`POST /api/tcf/explanations`
@@ -188,7 +188,7 @@ Expected: FAIL — `Cannot find module './parse-explanation'`。
 /**
  * Parse one TCF explanation markdown file.
  *
- * Layout (see docs/superpowers/specs/2026-08-13-tcf-explanations-design.md §4):
+ * Layout (see docs/archive/specs/2026-08-13-tcf-explanations-design.md §4):
  *
  *   ---
  *   test: 1
@@ -571,7 +571,7 @@ import remarkGfm from "remark-gfm";
 
 /**
  * Renders one question's hand-written explanation (see
- * docs/superpowers/specs/2026-08-13-tcf-explanations-design.md).
+ * docs/archive/specs/2026-08-13-tcf-explanations-design.md).
  *
  * The markdown is authored by hand and contains conjugation tables, so GFM is
  * required — without remark-gfm a table renders as a row of pipes. Styling is
@@ -746,7 +746,7 @@ Expected: 不出现 Explication 面板，也不出现空框。
 
 - [ ] **Step 4: 确认重导可恢复的路径成立**
 
-不实际重导题库，只确认恢复命令存在且幂等（Task 2 Step 7 已验证）。在 `docs/superpowers/specs/2026-08-13-tcf-explanations-design.md` §5 之后确认已写明「题库重导后重跑 `npm run tcf:explain-sync`」。若缺失则补上并提交。
+Do not actually reimport the question bank. Only verify that the restoration command exists and is idempotent (already checked in Task 2 Step 7). Confirm that the restoration note follows §5 of `docs/archive/specs/2026-08-13-tcf-explanations-design.md`; add it if it is missing.
 
 - [ ] **Step 5: Commit（如有改动）**
 

@@ -8,7 +8,7 @@
 
 **Tech Stack:** Next.js App Router route handler、Drizzle ORM (postgres.js)、`node:test` + `npx tsx --test`
 
-设计文档：`docs/superpowers/specs/2026-08-18-tcf-explanation-write-endpoint-design.md`
+Historical design: `docs/archive/specs/2026-08-18-tcf-explanation-write-endpoint-design.md`
 
 > **2026-08-25 修订（解耦 french-wiki / sundew）：** 本文档描述的"文件是真源、
 > 数据库是投影"已被推翻。讲解现在**只存在数据库里**，`POST /api/tcf/explanations`
@@ -684,6 +684,6 @@ git commit -m "docs: record the TCF explanation write endpoint contract"
 
 ## 完成后
 
-`docs/superpowers/specs/2026-08-18-tcf-explanation-write-endpoint-design.md` 与本计划一并提交（若尚未提交）。
+Commit `docs/archive/specs/2026-08-18-tcf-explanation-write-endpoint-design.md` with this historical plan if it has not already been committed.
 
 不做的事（已在设计中排除）：不改 TCF 前端组件、不动 `scripts/sync-tcf-explanations.ts`、不加鉴权、不加 `revalidatePath`（drill 页 `await searchParams` 已是动态渲染，硬刷新即重查）。

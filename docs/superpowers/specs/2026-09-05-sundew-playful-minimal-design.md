@@ -20,7 +20,7 @@ It must not introduce a new product structure, a new mascot, generic AI
 visuals, or decoration that competes with study content.
 
 This specification supersedes the **visual** decisions in
-`2026-09-03-modern-minimal-ui-design.md`: the page background returns to warm
+`../../archive/specs/2026-09-03-modern-minimal-ui-design.md`: the page background returns to warm
 cream and French Blue returns as the primary interaction colour. The previous
 document remains useful as implementation history only.
 

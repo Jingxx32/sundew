@@ -30,7 +30,7 @@ const OPTION_RE = /^([A-D])[.)]?\s+(.*)$/;
 /** Normalise pdf-parse output into clean, trimmed lines. */
 function cleanLines(raw: string): string[] {
   const t = raw
-    .replace(/Tcfca\/tcf:闲鱼搜索魔女的手杖/g, "")
+    .replace(/Tcfca\/tcf:\u95f2\u9c7c\u641c\u7d22\u9b54\u5973\u7684\u624b\u6756/g, "")
     .replace(/--\s*\d+\s*of\s*\d+\s*--/g, "")
     .replace(/\t/g, " ")
     // collapse spaces around apostrophes: "l ' île" → "l'île"

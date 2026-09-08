@@ -44,7 +44,7 @@ After S5 the user can:
   (§7.1.2). S5 implements the `documentId` and `category` params; `window`
   is a no-op until S6 adds time bucketing.
 - Archive page must offer the *jump back to source sentence* affordance —
-  this is the §13.2 S5 bullet "点击错误跳回原句".
+  this is the §13.2 S5 requirement to “click an error to return to its original sentence.”
 - Spans on archived errors are NFC-normalised character offsets into
   `submission.contentFr` (already enforced in S4); archive code reuses
   the same slicing to avoid drift.

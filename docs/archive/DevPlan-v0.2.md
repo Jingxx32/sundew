@@ -1,6 +1,6 @@
 # Lumière — Development Plan v0.2 (Sprints 8–10)
 
-> Companion to `docs/PRD-v0.2.md`. This is the **How**: file-by-file build steps
+> Companion to `docs/archive/PRD-v0.2.md`. This is the **How**: file-by-file build steps
 > for the Quiz Engine, TCF import, Podcast Cloze Dictation, and Conjugation
 > Drills. Written to be executed cold — no conversation context required.
 
@@ -11,7 +11,7 @@
 1. **`AGENTS.md` rule still applies.** This is *not* the Next.js you know. Read
    the relevant guide under `node_modules/next/dist/docs/` before touching
    routing, server actions, or file conventions. Heed deprecation notices.
-2. **Honour `docs/PRD-v0.2.md` strong decisions D-0…D-9.** They are listed
+2. **Honour the strong decisions D-0…D-9 in `docs/archive/PRD-v0.2.md`.** They are listed
    inline where relevant below.
 3. **Architecture conventions (from `CLAUDE.md`)** — do not deviate:
    - All DB access goes through `"use server"` actions in `src/lib/actions/`.
@@ -151,13 +151,13 @@ deleteQuizSet(setId): Promise<void>
 ### Step 9 — UI: import dialog (`src/app/quiz/_components/import-dialog.tsx`)
 - Follow `add-document-dialog.tsx` pattern (`useActionState`, `Dialog`).
 - Fields: file (PDF), `exam` (default "TCF"), `section` (default "reading"),
-  `number`, `title`, `source` — **manual** (待定-2 recommended default).
+  `number`, `title`, `source` — **manual** (open decision D-2; recommended default).
 - Step A: submit file → call `importQuizFromPdf`.
   - On `error:"scanned"` → reveal a `<Textarea>` for manual paste, then parse
     the pasted text (add a `parseQuizFromPastedText` action or reuse with a text
     branch).
 - Step B: render the **parsed preview** (passages + questions + marked correct
-  option + explanation) for visual check (待定-1: whole-preview + confirm).
+  option + explanation) for visual check (open decision D-1: full preview, then confirm).
 - Step C: **Confirm** → `confirmQuizImport` → close + revalidate.
 
 ### Step 10 — Nav

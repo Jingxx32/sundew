@@ -8,7 +8,7 @@ import { stripVerdictSection } from "@/lib/tcf/parse-explanation";
 
 /**
  * Renders one question's hand-written explanation (see
- * docs/superpowers/specs/2026-08-13-tcf-explanations-design.md).
+ * docs/architecture/tcf.md).
  *
  * The markdown is authored by hand and contains conjugation tables, so GFM is
  * required — without remark-gfm a table renders as a row of pipes. Styling is

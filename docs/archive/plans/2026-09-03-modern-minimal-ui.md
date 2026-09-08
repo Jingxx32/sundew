@@ -8,7 +8,7 @@
 
 **Tech Stack:** Next.js 16.2.4(App Router)、Tailwind CSS 4.2.4、React、`cva` + `cn`、Radix UI(dialog)、lucide-react、next/font(Inter / Source Serif 4 / Source Code Pro)。
 
-**Spec:** `docs/superpowers/specs/2026-09-03-modern-minimal-ui-design.md`
+**Historical spec:** `docs/archive/specs/2026-09-03-modern-minimal-ui-design.md`
 
 ## Global Constraints
 

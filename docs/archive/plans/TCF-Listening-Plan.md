@@ -3,7 +3,7 @@
 > 这是 Lumière 里 **TCF 听力 (Compréhension orale)** 功能的施工图，由一系列设计讨论沉淀而来。
 > 设计为"冷启动可执行"——不依赖聊天上下文。咱俩按这份文档一步步推进。
 >
-> 关联文档：`docs/PRD-v0.2.md`、`docs/DevPlan-v0.2.md`。设计全貌见记忆 `practice-ia-blueprint.md`。
+> Historical related documents: `docs/archive/PRD-v0.2.md` and `docs/archive/DevPlan-v0.2.md`. The full original design is in the `practice-ia-blueprint.md` memory.
 
 ---
 

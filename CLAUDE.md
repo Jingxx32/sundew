@@ -7,11 +7,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Working preferences (from past sessions — follow these)
 
 - **Git commits: NO `Co-Authored-By: Claude` or `Generated with Claude Code` trailers.** The user explicitly asked for this twice (2026-06-20). This overrides the default commit-trailer behavior. Plain conventional-commit messages only.
-- **Plan first, code on "开始".** When the user says 构思 / brainstorm / 探讨 / 审计 / "先不要动手" / "先不着急", do NOT modify code or run mutating commands until they explicitly say 开始/做吧. Pausing for confirmation before spending API credits (TTS, batch enrichment) is expected.
+- **Plan first; write code only after an explicit go-ahead.** When the user asks to brainstorm, discuss, audit, or hold off on implementation, do NOT modify code or run mutating commands until they explicitly authorize it. Pausing for confirmation before spending API credits (TTS, batch enrichment) is expected.
 - **Estimate API costs proactively.** The user is cost-sensitive (OpenAI tokens, Azure free tier). Before proposing any batch AI operation (TTS generation, bulk enrichment, image→text), state a rough cost estimate up front instead of waiting to be asked.
 - **Dev server is usually already running.** The user typically has `npm run dev` on :3000 open in their own browser. Check for an existing server before starting a preview one, and don't insist on opening pages the user says they already have open.
 - **Verification** (no test suite): `npx tsc --noEmit && npm run lint`, plus exercising the changed page in the browser.
-- Respond in Chinese (中文) unless the user writes in English.
+- Respond in the language used by the user unless they ask otherwise.
 
 ### Avoiding rework (added 2026-08-18 — the user's top complaint)
 
@@ -59,112 +59,84 @@ npm run db:reenrich  # Re-run vocab enrichment for already-enriched entries
 npm run tcf:explain-export  # Back up every TCF explanation to data/tcf-explanations/
 ```
 
-### 写入单题 TCF 讲解
+### Write a TCF explanation for one question
 
-日常逐题写讲解走 dev-only 端点（需 `npm run dev` 开着）：
+For everyday, per-question explanation authoring, use the development-only endpoint (with `npm run dev` running):
 
 ```bash
 curl -X POST localhost:3000/api/tcf/explanations --data-binary @CE-T1-Q5.md
 curl -X POST "localhost:3000/api/tcf/explanations?test=1&skill=listening&q=3" --data-binary @-
 ```
 
-正文是原始 markdown。定位取自 frontmatter（`test` / `skill` / `question`），
-缺失时取 URL 的 `?test=&skill=&q=`；两者不一致会被拒绝。生成讲解时必须满足：
+The body is raw Markdown. Its locator comes from the frontmatter (`test` / `skill` / `question`), or from the URL's `?test=&skill=&q=` when frontmatter is absent; conflicting locators are rejected. An explanation must meet these requirements:
 
-- `skill` 只能是字面的 `reading` / `listening`
-- `test` 是试卷号：listening 1–42，reading 1–39
-- `question` 是该套试卷内的序号（1–39），不是全局题号
-- 英文翻译放在标题**文字恰好是 `Translation`** 的段落下（`#` 到 `######` 任意级别
-  都认，大小写不敏感；2026-09-04 前写的 `全文翻译` 同样认），否则 `translation_en` 为 null
-- 不要输出对话式口头禅（如「说 next。」），会原样渲染到页面上
-- 不要把整篇内容包在代码围栏里，首行必须是 `---` 或正文本身
-- 正文上限 256KB
-- 想让答题后出现「判定条 + 每个选项一行错因」，就写一个 `## Verdict` 小节（旧稿的
-  `## 速判` 同样认），放在正文最前面。格式固定：`- Key: <一句话解题眼>`，然后
-  `- A ✅ …` 到 `- D ❌ …` 每个选项一行（按字母绑定下标，可乱序、可缺）。这一节会被解析进
-  `explanation_meta` 并由 UI 渲染，**渲染正文时会自动剥掉**，不会重复显示。
-  不写这节也能正常入库，只是没有判定条。
+- `skill` must be exactly `reading` or `listening`.
+- `test` is the test number: 1–42 for listening and 1–39 for reading.
+- `question` is its ordinal within that test (1–39), not a global question number.
+- Put the English translation below a heading whose text is exactly `Translation`. Any heading level from `#` to `######` is accepted case-insensitively; the legacy Chinese heading remains supported for pre-2026-09-04 material. Otherwise, `translation_en` is null.
+- Do not add conversational filler such as “say next”; it is rendered verbatim in the page.
+- Do not wrap the entire body in a code fence. Its first line must be `---` or body text.
+- The body is limited to 256 KB.
+- To show a verdict bar and one reason per option after an answer, put a `## Verdict` section at the beginning. The legacy Chinese verdict heading remains supported. Use `- Key: <the decisive text plus a brief reason>`, followed by one `- A ✅ …` through `- D ❌ …` line per option. Lines bind by letter and may be reordered or omitted. This section is parsed into `explanation_meta`, rendered by the UI, and automatically removed from the rendered prose to avoid duplication. Omitting it is valid but leaves out the verdict bar.
 
-#### 讲解正文规范（2026-09-04 起）
+#### Explanation-body standard (from 2026-09-04)
 
-讲解**一律用英文写**，重心是读懂原文——大多数题只要把原文读懂，选项自然就定了，
-所以选项逻辑压缩到 Verdict 那几行，正文篇幅留给语言本身。模板：
+Write explanations **only in English**. Prioritize understanding the original text: for most questions, the answer follows naturally once the text is understood. Keep option logic in the Verdict lines and reserve the prose for the language itself. Template:
 
 ```markdown
 ## Verdict
-- Key: <决定答案的那句原文 + 半句为什么>
-- A ❌ <一行> … - D ✅ <一行>
+- Key: <the decisive original sentence + a brief reason>
+- A ❌ <one line> … - D ✅ <one line>
 
 ## Translation
-Question / Text / Options 三样都译
+Translate the question, text, and options.
 
 ## Line by line
-逐句：Vocabulary / Grammar / Tense / Register（空板块省略）
+For each line: Vocabulary / Grammar / Tense / Register (omit empty sections).
 
-## Takeaway   ← 可选，一行封顶
+## Takeaway   ← optional; one line maximum
 ## Pattern
 **Answer: D**
 ```
 
-- **不再写 `## 选项` 那种选项表格**，它和 Verdict 逐行重复（2026-09-04 废除）。
-- 逐句精讲里不写「→ 排除 A/C」；只在真正决定答案的那一句下允许一行标记。
-- 词汇是纯英文 gloss（不再中英双语），每词一行，默认 0–1 个例句。
-- 语法点只写本句实际用到的 1–2 条；已讲过的规则一句话引用，不重开表格。
-- `## Takeaway` 只在真有跨题规律时才写（例：正确答案常是原文的归纳而非原文的词），
-  一行封顶，没有就整节省略。
-- **Verdict 的 `- A ❌ …` 各行是纯文本渲染的**（`option-list.tsx` 把它们当字符串
-  直接印在选项下面），里面写 `*斜体*` 或 `` `code` `` 会原样印出星号和反引号。
-  markdown 标记只在 `## Translation` 及以下的正文里有效。
-- 2026-09-04 之前的中文讲解不回改，parser 中英两套标题都认。
+- Do **not** write an option table headed `## Options`; it duplicates Verdict line by line and was retired on 2026-09-04.
+- Do not write “→ eliminate A/C” in line-by-line explanations. One such marker is allowed only under the decisive sentence.
+- Vocabulary entries are English-only glosses, one word per line, with zero or one example sentence by default.
+- Cover only the one or two grammar points actually used in that sentence. Refer to rules already covered in one sentence rather than reopening a table.
+- Write `## Takeaway` only for a real cross-question pattern (for example, the correct answer is often a summary rather than a verbatim phrase). Limit it to one line; otherwise omit the section.
+- **The `- A ❌ …` Verdict lines render as plain text**: `option-list.tsx` prints their strings directly below their options. `*italic*` and `` `code` `` markers will display literally. Markdown is effective only in the prose from `## Translation` onward.
+- Do not retroactively rewrite pre-2026-09-04 Chinese explanations; the parser recognizes both English and legacy Chinese headings.
 
-#### 听力题的差异（2026-09-04 起）
+#### Listening-question differences (from 2026-09-04)
 
-听力的失败点比阅读多一层：不是没读懂，而是**没听出来**（连诵、省音、缩合、同音撞车、
-数字与专名）。所以模板在阅读的基础上加一个声音层，`## Pattern` 换成 `## Listen again`：
+Listening adds a failure mode beyond reading: the learner may understand the text on sight but **not hear it** because of liaison, elision, contractions, homophones, numbers, or proper names. Add an audio layer to the reading template by replacing `## Pattern` with `## Listen again`:
 
 ```markdown
-## Verdict            ← 同阅读；错因优先写「原文出现过这个词但不是答案」这类听力陷阱
+## Verdict            ← as in reading; prioritize listening traps such as “the word appears, but it is not the answer”
 
-## Transcript         ← 听力独有。不是引用，是重排（下面是编的示例，不是真题）
+## Transcript         ← listening-only. This is a restructured transcript, not a quote (the example below is invented, not an exam question)
 - **A:** Tu es encore au bureau ?
 - **B:** Oui, je termine un dossier.
 - **A:** *On avait dit qu'on partait à six heures.*
-  - ↳ qu'on partait 连成一坨「kɔ̃-par-tè」，容易听丢整个 qu'on
+  - ↳ The phrase runs together; it is easy to miss the whole *qu'on*.
 
-## Translation        ← 同阅读：Question / Text / Options 三样都译
-## Line by line       ← 同阅读
-## Listen again       ← 一行：回去重听哪一句、听什么
+## Translation        ← as in reading: translate the question, text, and options
+## Line by line       ← as in reading
+## Listen again       ← one line: which sentence to replay and what to listen for
 **Answer: D**
 ```
 
-- **`## Transcript` 必须重排**：库里的 transcript 是 OCR 出来的连体字，句子粘连
-  （`…problèmes.Et donc…` 这种）、没有说话人、问题句直接糊在正文末尾（1279 道 dialogue
-  里只有 183 道有 `Question:` 标记）。断说话人、断句、补标点是这一节的主要价值。
-- **写了 `## Transcript`，页面内置的「Transcription」面板就会自动隐藏**（drill 和
-  exam 都是），重排版取代原始 OCR，不会同一段对话显示两遍。所以这一节要么不写，
-  要写就得完整——它是那道题唯一的原文。判定靠 `hasTranscriptSection()`，
-  `## Propositions` 不触发（那两个题型的 transcript 只是一句问题，没有重复）。
-- **`↳` 旁注必须写成嵌套列表项**（上面那样，父项下缩进两格的 `- ↳ …`）。用空格
-  缩进的续行不行——4 空格在 markdown 里是代码块。
-- **`## Translation` 里的对话每轮之间要空一个 `>` 行**，否则 blockquote 里的连续行
-  会被 markdown 合成一个段落，六轮对话挤成一坨。
-- **标注密度**：决定答案那句必标；其余句只在「会听成另一个词」时才标（同音撞车、
-  缩合后认不出、数字/专名）。单纯的常规联诵不标。**一题上限 3 行 ↳**。
-- **`↳` 写通用提示，不写具体音标或连读判断**（2026-09-04 批量生产起）：写讲解的人
-  没有实际听音频核对，"dö-ba-guèt 这种音标级判断" 无法验证，错了也发现不了。改写
-  「语速快、数字紧跟名词容易被当成一个词」这类不依赖具体发音判断的通用提示。
-  Q1–Q4/Q10（T1）是逐题人工核对下写的，保留原样不回改；这条规则管后续所有讲解。
-- 题型变体：`dialogue` 走完整模板；`spoken_options`（音频只是一句问句，负荷在四个
-  选项上）和 `image`（没有可重排的原文）把 `## Transcript` 换成 `## Propositions`，
-  逐个选项写「这句在说什么 + 听感」，image 题再带一句各自对应什么画面。
+- **`## Transcript` must be restructured**. The stored transcript is raw OCR: sentences run together (for example, `…problèmes.Et donc…`), speakers are missing, and the question may be fused onto the final body line. Only 183 of 1,279 dialogue questions have a `Question:` marker. Identifying speakers, sentence boundaries, and punctuation is this section's main value.
+- **Writing `## Transcript` automatically hides the page's built-in “Transcription” panel**, in both drill and exam modes. The restructured version replaces the raw OCR so a dialogue is not shown twice. Either omit the section or make it complete: it becomes the question's only source text. `hasTranscriptSection()` makes this determination; `## Propositions` does not trigger it because those two question types have only a one-sentence transcript without duplication.
+- **Write `↳` annotations as nested list items**, with a two-space-indented `- ↳ …` below the parent as shown above. A space-indented continuation will not work: four spaces make a Markdown code block.
+- **Leave a blank `>` line between dialogue turns in `## Translation`**. Without it, Markdown merges consecutive blockquote lines into one paragraph.
+- **Annotation density:** always annotate the decisive sentence; annotate other sentences only when they can be heard as another word (homophones, unrecognizable contractions, numbers, or names). Do not mark ordinary liaison. **Limit each question to three `↳` lines.**
+- **Use `↳` for general listening guidance, not a precise phonetic or liaison judgment.** Explanation authors do not verify the audio, so phoneme-level claims are not reliable. Use guidance independent of an exact pronunciation, such as “at high speed, a number immediately before a noun can sound like one word.” T1 Q1–Q4/Q10 were manually checked and remain unchanged; this rule governs all later explanations.
+- Question variants: `dialogue` uses the full template. For `spoken_options` (the audio is only one question, with the load in the four options) and `image` (no source text to restructure), replace `## Transcript` with `## Propositions`; describe what each option says and how it sounds, and add the corresponding visual meaning for image questions.
 
-讲解**只存在数据库里**，端点是唯一入口，不再往仓库外的目录双写一份。代价要记住：
-重新导入某套试卷会 delete+insert 题目并擦掉 explanation 列，写错 locator 也会覆盖
-旧讲解，两种情况都不可撤销。所以——
+Explanations **exist only in the database**. The endpoint is the sole entry point; do not maintain another copy in a directory outside the repository. Reimporting a test deletes and reinserts questions, erasing explanation columns; an incorrect locator can also overwrite an existing explanation. Neither is reversible. Therefore:
 
-- **重导试卷前先 `npm run tcf:explain-export`**，把库里所有讲解导成 markdown
-  存到 `data/tcf-explanations/`（已 gitignore）。那是备份，不是真源；
-  恢复靠把导出的文件重新 POST 回端点。
+- **Before reimporting a test, run `npm run tcf:explain-export`** to export every database explanation as Markdown into `data/tcf-explanations/` (already gitignored). This is a backup, not the source of truth; restore by POSTing the exported files to the endpoint.
 
 TCF import/TTS pipeline scripts also live in `scripts/` (tracked; their input
 data and `scripts/.tcf-cache/` stay local — copyrighted exam content).

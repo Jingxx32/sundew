@@ -4,7 +4,7 @@
 
 **Goal:** A2–B1 grammar reference library (~68 points): curated outline in git → content drafted by the user in an external AI tool (prompt: `docs/grammar-notes-prompt.md`), imported into DB as `draft` → user verifies point-by-point while reading (`/grammar` list + `/grammar/[slug]` detail with inline edit + "Mark as verified").
 
-**Architecture:** Spec: `docs/superpowers/specs/2026-07-10-grammar-reference-design.md` (see its 2026-07-11 revision note). New `grammar_points` table (uuid PK + timestamptz convention); outline file `src/lib/grammar-outline.ts` is the single authoritative source of the point list; an import script (mirrors `seed-rules.ts`) parses the user's markdown notes and fills missing slugs — **no OpenAI API calls anywhere in this plan**; pages follow the existing "async server component → `lib/actions` server actions → Drizzle" flow, no API routes.
+**Architecture:** Historical spec: `docs/archive/specs/2026-07-10-grammar-reference-design.md` (see its 2026-07-11 revision note). New `grammar_points` table (uuid PK + timestamptz convention); outline file `src/lib/grammar-outline.ts` is the single authoritative source of the point list; an import script (mirrors `seed-rules.ts`) parses the user's markdown notes and fills missing slugs — **no OpenAI API calls anywhere in this plan**; pages follow the existing "async server component → `lib/actions` server actions → Drizzle" flow, no API routes.
 
 **Tech Stack:** Next.js 16 App Router, React 19, Drizzle + postgres.js, Tailwind v4 semantic tokens, lucide-react.
 
@@ -224,7 +224,7 @@ Expected: `68 entries, 68 unique slugs` (taxonomy keys are already compile-check
 
 ### Task 2b: `common_mistakes` column (2026-07-11 format revision)
 
-> Added after Tasks 1–2 were committed: the note format gains a structured **Common mistakes** block (✗ wrong → ✓ right + reason), rendered with the same visual language as error cards. See the spec's 笔记结构 decision row.
+> Added after Tasks 1–2 were committed: the note format gains a structured **Common mistakes** block (✗ wrong → ✓ right + reason), rendered with the same visual language as error cards. See the spec's “note structure” decision row.
 
 **Files:**
 - Modify: `src/lib/db/schema.ts` — add to `grammarPoints` after `examples`:
@@ -919,5 +919,5 @@ Expected: `{ n: 68, thin: 0 }`
 ## Self-review notes
 
 - **Spec coverage:** §3.1 table → Task 1; §3.2 outline → Task 2; §4 pipeline (idempotent, `--limit`, model env var) → Task 3; §5.1 list (grouping, chips, progress, search) → Task 6; §5.2 detail (markdown body, serif examples, errors block, edit, verify) → Tasks 5+7; §5.3 actions → Task 4; §6 boundaries respected (no `rules` change, no API route); §7 verification path → Tasks 3/7/8 verify steps; §8 exclusions in Global Constraints.
-- **Spec deviation (deliberate):** outline lands at 68 points (spec said "约 60–80") and Markdown is the constrained markdown-lite dialect rendered by a purpose-built component (spec said "Markdown" — full markdown would need a new dependency; the AI prompt enforces the dialect, and the editor labels it).
+- **Spec deviation (deliberate):** outline lands at 68 points (the spec said “approximately 60–80”) and Markdown is the constrained markdown-lite dialect rendered by a purpose-built component (the spec said “Markdown” — full Markdown would need a new dependency; the AI prompt enforces the dialect, and the editor labels it).
 - **Type consistency:** `examples`/`taxonomySubcategories` are `notNull` jsonb in schema and typed non-optional in `GrammarPoint`; script always inserts both; actions/components consume them without null-guards — consistent. `RecentGrammarError.createdAt` is `Date` (naive timestamp column on the legacy `errors` table — fine).

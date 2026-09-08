@@ -8,7 +8,7 @@
 
 **Tech Stack:** Next.js 16.2.4 (App Router) · Drizzle + postgres-js · OpenAI SDK · `microsoft-cognitiveservices-speech-sdk`（新增依赖）· Tailwind 4 语义 token
 
-**Spec:** `docs/superpowers/specs/2026-07-03-tcf-speaking-practice-design.md`
+**Historical spec:** `docs/archive/specs/2026-07-03-tcf-speaking-practice-design.md`
 
 ## Global Constraints
 

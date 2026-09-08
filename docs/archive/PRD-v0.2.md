@@ -6,8 +6,8 @@
 | **文档版本** | v0.2（增补于 v0.1，不替换；v0.1 的强决策仍然有效） |
 | **文档状态** | 起草，待评审后冻结 — 变更走文末变更日志 |
 | **最后更新** | 2026-05-22 |
-| **前置阅读** | `docs/PRD.md`（v0.1 宪法），尤其 §5 产品原则、§8 错误分类法、§9 数据模型、§12 技术架构 |
-| **配套开发计划** | `docs/DevPlan-v0.2.md`（Sprint 8–10） |
+| **Historical prerequisite** | `docs/archive/PRD-v0.1.md` (v0.1 constitution), especially §§5, 8, 9, and 12 |
+| **Historical companion plan** | `docs/archive/DevPlan-v0.2.md` (Sprints 8–10) |
 | **目标读者** | 产品作者本人；后续将用 Fable 模型执行开发 |
 
 ---
@@ -310,7 +310,7 @@ OPENAI_MODEL_TRANSCRIBE   # 默认 whisper-1（或 gpt-4o-transcribe）
 | **S9.5** | 听写来源增强 | RSS 选集（可选） | S9 |
 | **S10** | 动词变位训练 | 错误档案驱动 drill、确定性变位源 | S8、错误档案 |
 
-详细逐步实施见 `docs/DevPlan-v0.2.md`。
+See `docs/archive/DevPlan-v0.2.md` for detailed historical implementation steps.
 
 ---
 

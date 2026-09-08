@@ -58,7 +58,7 @@ function getLevel(n: number): ParsedQuestion["level"] {
 }
 
 function hasCJK(s: string): boolean {
-  return /[一-鿿㐀-䶿＀-￯⺀-⻿]/.test(s);
+  return /[\u4E00-\u9FFF\u3400-\u4DBF\uFF00-\uFFEF\u2E80-\u2EFF]/.test(s);
 }
 
 function isPageMarker(s: string): boolean {
@@ -124,7 +124,7 @@ export function parseQuestions(rawText: string): ParsedQuestion[] {
       const raw = block[i];
       const t = raw.trim();
       if (!t || hasCJK(t) || isPageMarker(t)) { i++; continue; }
-      if (isOptionLine(t) || t === "不正确") break;
+      if (isOptionLine(t) || t === "\u4e0d\u6b63\u786e") break;
       instructionLines.push(t);
       i++;
     }
@@ -133,7 +133,7 @@ export function parseQuestions(rawText: string): ParsedQuestion[] {
     const type = detectType(questionText);
 
     // --- Find the legacy separator ---
-    const notCorrectIdx = block.findIndex((l) => l.trim() === "不正确");
+    const notCorrectIdx = block.findIndex((l) => l.trim() === "\u4e0d\u6b63\u786e");
     const before = notCorrectIdx >= 0 ? block.slice(0, notCorrectIdx) : block;
     const after = notCorrectIdx >= 0 ? block.slice(notCorrectIdx + 1) : [];
 
@@ -152,7 +152,7 @@ export function parseQuestions(rawText: string): ParsedQuestion[] {
         if (!t) return false;
         if (hasCJK(t)) return false;
         if (/^[–—-]\s*$/.test(t)) return false;
-        if (/正确答案|答案\s*[A-D]/i.test(t)) return false;
+        if (/\u6b63\u786e\u7b54\u6848|\u7b54\u6848\s*[A-D]/i.test(t)) return false;
         return true;
       });
       const transcript = transcriptLines.length > 0 ? transcriptLines.join("\n").trim() : null;

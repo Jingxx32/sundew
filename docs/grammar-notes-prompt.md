@@ -1,19 +1,19 @@
-# 语法笔记生成 Prompt(外部 AI 工具用)
+# Grammar Notes Generation Prompt (for External AI Tools)
 
-> **状态：未实施（2026-08-25 核对）。** `scripts/import-grammar-points.ts` 与
-> `npm run grammar:import` 都不存在，下面提到的入库步骤目前没有任何代码支撑。
-> 这份 prompt 仍可用来生成笔记，但"存好后由脚本入库"那一步要先把导入器写出来。
+> **Status: not implemented (verified 2026-08-25).** Neither `scripts/import-grammar-points.ts` nor
+> `npm run grammar:import` exists, so the database-import step described below has no supporting code yet.
+> This prompt can still generate notes, but the importer must be written before saved notes can be loaded into the database.
 
-> 用法:共 8 个批次。每次把下面的 **MASTER PROMPT** 完整复制到任意 AI 工具(ChatGPT / Gemini / DeepSeek / Claude 网页版等),再把对应批次的知识点清单贴在 prompt 末尾,一起发送。
+> Usage: there are eight batches. For each batch, copy the complete **MASTER PROMPT** below into an AI tool (ChatGPT, Gemini, DeepSeek, Claude web, etc.), append that batch's grammar-point list, and send both together.
 >
-> - 把 AI 的输出**原样**保存:Obsidian 里一批一个 `.md` 文件,或 Notion 里一批一个页面。**不要改动格式**(`## slug` 标题、`**Summary:**` 等标记会被导入脚本解析)。
-> - 输出如果被截断,回复"continue"让它续写,把两段拼接保存。
-> - 建议用较强的模型——这些笔记就是你以后的语法教材,质量值得。
-> - 8 批都存好后,告诉 Claude 文件在哪(Obsidian 文件夹路径或 Notion 页面),由 `npm run grammar:import` 解析入库。格式细节与解析器规则同步维护在本文件 + 实施计划 Task 3。
+> - Save the AI output **verbatim**: one `.md` file per batch in Obsidian, or one page per batch in Notion. **Do not change the format**: the importer parses markers such as the `## slug` heading and `**Summary:**`.
+> - If output is truncated, reply “continue”, join the two parts, and save them together.
+> - Use a capable model if possible. These notes will become your grammar textbook, so quality is worthwhile.
+> - After saving all eight batches, tell Claude where the files are (an Obsidian folder path or Notion page). `npm run grammar:import` will parse them into the database. Format details and parser rules are maintained together in this file and implementation-plan Task 3.
 
 ---
 
-## MASTER PROMPT(每批都以这段开头)
+## MASTER PROMPT (start every batch with this text)
 
 ```text
 You are an experienced teacher of French as a foreign language (FLE) writing a grammar reference for an English-speaking learner at CEFR A2–B1 level.
@@ -57,7 +57,7 @@ Grammar points for this batch:
 
 ---
 
-## Batch 1 — Nouns & Articles(7 条)
+## Batch 1 — Nouns & Articles (7 points)
 
 ```text
 - slug: noun-gender-patterns | name: Noun gender and typical endings | level: A2
@@ -69,7 +69,7 @@ Grammar points for this batch:
 - slug: article-omission | name: When to omit the article (professions, quantities, fixed expressions) | level: B1
 ```
 
-## Batch 2 — Adjectives & Agreement(6 条)
+## Batch 2 — Adjectives & Agreement (6 points)
 
 ```text
 - slug: adjective-agreement | name: Adjective gender and number agreement | level: A2
@@ -80,7 +80,7 @@ Grammar points for this batch:
 - slug: indefinite-adjectives | name: Indefinite adjectives (chaque, quelques, plusieurs, tout) | level: B1
 ```
 
-## Batch 3 — Pronouns(12 条,输出较长,可拆两次发送)
+## Batch 3 — Pronouns (12 points; long output, may be sent in two parts)
 
 ```text
 - slug: subject-pronouns-and-on | name: Subject pronouns and 'on' | level: A2
@@ -97,7 +97,7 @@ Grammar points for this batch:
 - slug: indefinite-pronouns | name: Indefinite pronouns (quelqu'un, personne, rien, chacun) | level: B1
 ```
 
-## Batch 4 — Verb Tenses(14 条,输出较长,建议拆两次发送:前 7 条 + 后 7 条)
+## Batch 4 — Verb Tenses (14 points; long output, preferably split into the first 7 and final 7 points)
 
 ```text
 - slug: present-tense-regular | name: Present tense: regular -er / -ir / -re verbs | level: A2
@@ -116,7 +116,7 @@ Grammar points for this batch:
 - slug: depuis-pendant-il-y-a | name: Time markers with tenses (depuis, pendant, il y a) | level: B1
 ```
 
-## Batch 5 — Moods(8 条)
+## Batch 5 — Moods (8 points)
 
 ```text
 - slug: imperative | name: The imperative | level: A2
@@ -129,7 +129,7 @@ Grammar points for this batch:
 - slug: infinitive-constructions | name: Infinitive constructions (verb + infinitive, avant de, pour…) | level: B1
 ```
 
-## Batch 6 — Negation & Questions(7 条)
+## Batch 6 — Negation & Questions (7 points)
 
 ```text
 - slug: basic-negation | name: Basic negation (ne… pas) | level: A2
@@ -141,7 +141,7 @@ Grammar points for this batch:
 - slug: inversion-questions | name: Questions with inversion | level: B1
 ```
 
-## Batch 7 — Prepositions(6 条)
+## Batch 7 — Prepositions (6 points)
 
 ```text
 - slug: prepositions-of-place | name: Prepositions of place (dans, sur, sous, devant, chez…) | level: A2
@@ -152,7 +152,7 @@ Grammar points for this batch:
 - slug: a-vs-de-before-infinitive | name: à vs de before an infinitive | level: B1
 ```
 
-## Batch 8 — Sentence Structure & Discourse(8 条)
+## Batch 8 — Sentence Structure & Discourse (8 points)
 
 ```text
 - slug: word-order-basics | name: Basic word order (SVO, pronoun placement) | level: A2

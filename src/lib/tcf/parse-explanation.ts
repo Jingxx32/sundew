@@ -1,7 +1,7 @@
 /**
  * Parse one TCF explanation markdown file.
  *
- * Layout (see docs/superpowers/specs/2026-08-13-tcf-explanations-design.md §4):
+ * Layout (see docs/architecture/tcf.md):
  *
  *   ---
  *   test: 1
@@ -15,8 +15,8 @@
  *   ## Line by line
  *   …
  *
- * Explanations written before 2026-09-04 use Chinese headings (`## 全文翻译`,
- * `## 速判`, `- 眼:`); both spellings are accepted so the older half of the
+ * Explanations written before 2026-09-04 use legacy Chinese headings; both
+ * spellings are accepted so the older half of the
  * corpus keeps its verdict bar and its `translation_en`.
  *
  * Pure: no IO, no DB. `written` is informational and deliberately not returned.
@@ -49,12 +49,12 @@ export interface ParsedExplanationBody {
 
 const FRONTMATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
 /** Accepted spellings per section — English is current, Chinese is the pre-2026-09-04 form. */
-const TRANSLATION_HEADINGS = ["Translation", "全文翻译"] as const;
-const VERDICT_HEADINGS = ["Verdict", "速判"] as const;
+const TRANSLATION_HEADINGS = ["Translation", "\u5168\u6587\u7ffb\u8bd1"] as const;
+const VERDICT_HEADINGS = ["Verdict", "\u901f\u5224"] as const;
 /** Listening only, and English-only — no listening explanation predates the English headings. */
 const TRANSCRIPT_HEADINGS = ["Transcript"] as const;
-/** `- Key: …` / legacy `- 眼: …` — the one line naming what decides the answer. */
-const KEY_POINT_LINE = /^[-*]\s*(?:Key|眼)\s*[:：]\s*(.+)$/i;
+/** `- Key: …` / legacy equivalent — the one line naming what decides the answer. */
+const KEY_POINT_LINE = /^[-*]\s*(?:Key|\u773c)\s*[:\uFF1A]\s*(.+)$/i;
 /** `- B ❌ …` — one option's verdict. The ✅/❌ mark is decorative; position is what binds. */
 const OPTION_LINE = /^[-*]\s*([A-D])\s*(?:[✅❌]\s*)?(.+)$/;
 
