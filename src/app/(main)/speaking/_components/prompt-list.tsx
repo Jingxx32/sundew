@@ -1,11 +1,14 @@
 import Link from "next/link";
-import { Mic } from "lucide-react";
+import { ArrowRight, Mic } from "lucide-react";
 import type { PromptWithStats } from "@/lib/actions/speaking";
 
 const TASK_LABELS: Record<number, { title: string; hint: string }> = {
   1: { title: "Tâche 1 — Entretien dirigé", hint: "Questions about yourself · ~2 min · no prep" },
-  2: { title: "Tâche 2 — Interaction", hint: "You ask the questions · ~5 min · 2 min prep" },
-  3: { title: "Tâche 3 — Point de vue", hint: "Defend an opinion · ~4.5 min · no prep" },
+  2: {
+    title: "Tâche 2 — Interaction",
+    hint: "You ask the questions · 3 min 30 exchange · 2 min prep",
+  },
+  3: { title: "Tâche 3 — Point de vue", hint: "Defend an opinion · 4 min 30 · no prep" },
 };
 
 export function PromptList({ prompts }: { prompts: PromptWithStats[] }) {
@@ -35,7 +38,7 @@ export function PromptList({ prompts }: { prompts: PromptWithStats[] }) {
                 <li key={p.id}>
                   <Link
                     href={`/speaking/${p.id}/script`}
-                    className="flex items-center gap-4 rounded-xl border border-transparent bg-surface shadow-card px-5 py-4 hover:border-accent/50 transition-colors"
+                    className="group flex items-center gap-4 rounded-xl border border-border/80 bg-surface px-5 py-4 shadow-card transition-colors hover:border-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
                   >
                     <span className="flex-1 text-sm leading-snug">{p.prompt}</span>
                     <span className="flex items-center gap-3 shrink-0 text-xs text-muted-foreground">
@@ -48,6 +51,11 @@ export function PromptList({ prompts }: { prompts: PromptWithStats[] }) {
                       {p.bestScore !== null && (
                         <span className="font-mono text-accent">{p.bestScore}</span>
                       )}
+                      <span className="sr-only">Open script practice</span>
+                      <ArrowRight
+                        className="h-4 w-4 text-subtle-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-accent"
+                        aria-hidden="true"
+                      />
                     </span>
                   </Link>
                 </li>
