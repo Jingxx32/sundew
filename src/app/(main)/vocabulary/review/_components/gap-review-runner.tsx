@@ -1,13 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { Check, Volume2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { gradeGapReview, setGapStatus, type GapReviewCard } from "@/lib/actions/vocab-gaps";
-
-const norm = (s: string) => s.toLowerCase().normalize("NFC").trim();
 
 const TYPE_LABEL: Record<GapReviewCard["gapType"], string> = {
   recognition: "Inconnu",
@@ -43,7 +41,8 @@ export function GapReviewRunner({ initialCards }: { initialCards: GapReviewCard[
   const [chosen, setChosen] = useState<number | null>(null);
   const [inputValue, setInputValue] = useState("");
   const [answered, setAnswered] = useState<{ correct: boolean } | null>(null);
-  const [pendingCorrect, setPendingCorrect] = useState<boolean | null>(null);
+  const [pendingAnswer, setPendingAnswer] = useState<string | null>(null);
+  const requestKey = useRef<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(false);
   const [summary, setSummary] = useState({ right: 0, wrong: 0, promoted: 0 });
@@ -66,17 +65,18 @@ export function GapReviewRunner({ initialCards }: { initialCards: GapReviewCard[
   }, [index, ttsSupported]);
 
   const grade = useCallback(
-    async (correct: boolean) => {
+    async (answer: string) => {
       if (!card || saving || answered) return;
       setSaving(true);
       setSaveError(false);
-      setPendingCorrect(correct);
+      setPendingAnswer(answer);
+      requestKey.current ??= `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
       try {
-        const result = await gradeGapReview(card.gapId, correct);
-        setAnswered({ correct });
+        const result = await gradeGapReview(card.gapId, answer, requestKey.current);
+        setAnswered({ correct: result.correct });
         setSummary((s) => ({
-          right: s.right + (correct ? 1 : 0),
-          wrong: s.wrong + (correct ? 0 : 1),
+          right: s.right + (result.correct ? 1 : 0),
+          wrong: s.wrong + (result.correct ? 0 : 1),
           promoted: s.promoted + (result.status === "mastered" ? 1 : 0),
         }));
       } catch {
@@ -91,13 +91,12 @@ export function GapReviewRunner({ initialCards }: { initialCards: GapReviewCard[
   function choose(i: number) {
     if (answered || saving || !card) return;
     setChosen(i);
-    grade(i === card.answerIndex);
+    grade(card.choices[i]);
   }
 
   function submitProduction() {
     if (answered || saving || !card || !inputValue.trim()) return;
-    const val = norm(inputValue);
-    grade(val === norm(card.lemma) || val === norm(card.surface));
+    grade(inputValue);
   }
 
   function next() {
@@ -110,7 +109,8 @@ export function GapReviewRunner({ initialCards }: { initialCards: GapReviewCard[
     setInputValue("");
     setAnswered(null);
     setSaveError(false);
-    setPendingCorrect(null);
+    setPendingAnswer(null);
+    requestKey.current = null;
   }
 
   async function markStatus(status: "mastered" | "dismissed") {
@@ -279,7 +279,7 @@ export function GapReviewRunner({ initialCards }: { initialCards: GapReviewCard[
             <span>Échec de l&rsquo;enregistrement.</span>
             <button
               type="button"
-              onClick={() => pendingCorrect !== null && grade(pendingCorrect)}
+              onClick={() => pendingAnswer !== null && grade(pendingAnswer)}
               className="font-medium underline"
             >
               Réessayer

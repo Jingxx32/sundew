@@ -35,7 +35,11 @@ export async function assessPronunciation(
   pronConfig.applyTo(recognizer);
 
   const result = await new Promise<sdk.SpeechRecognitionResult>((resolve, reject) => {
-    recognizer.recognizeOnceAsync(resolve, reject);
+    const timeout = setTimeout(() => reject(new Error("Speech recognition timed out")), 45_000);
+    recognizer.recognizeOnceAsync(
+      (value) => { clearTimeout(timeout); resolve(value); },
+      (error) => { clearTimeout(timeout); reject(error); },
+    );
   }).finally(() => recognizer.close());
 
   if (result.reason !== sdk.ResultReason.RecognizedSpeech) {

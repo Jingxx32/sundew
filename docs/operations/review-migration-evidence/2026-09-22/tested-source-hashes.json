@@ -1,0 +1,16 @@
+{
+  "scripts/review-db-rehearsal.mts": "2b63c8b9c53456c2c01dfe80ee9a783ea689092e6f1e5de1cfb1a19305245dcb",
+  "scripts/review-rehearsal/actions.mts": "d60bc4ed080f50a36e54f34acdcb29ff180ac9b5db620e9a6eae98593ab090d1",
+  "scripts/review-rehearsal/fixtures.mts": "dea52d1b159a172e493a58496bcb4090b7b28fbca427255b42dace0cd70a2521",
+  "scripts/review-rehearsal/migration-worker.mts": "18d14077ca225552523acf6f5f2e1ba0ad01870d83863327a249426121b00af5",
+  "scripts/review-rehearsal/safety.mts": "b0f35727a749b5c5295d43aa6f02779aebb74351d94563c01016599646ab5635",
+  "scripts/review-rehearsal/safety.test.mts": "0307616e68716c636294a94e17b65507ee070574c6bf2eec37dc5119f358b763",
+  "src/lib/db/schema.ts": "4c713e19acf3556505454beb058cf40beaf6a984d076d9ee590c186c053bd09e",
+  "src/lib/actions/quiz.ts": "570ba96dcc9be300ff7b25bd7dfd0c20d0aecf14d91dab6d85b43105b24ca9dc",
+  "src/lib/actions/tcf.ts": "167f237fd957a2dadcc4df2dc89f8b973ddb9a0c16aaf347942e2f593c171e3f",
+  "src/lib/actions/vocab-gaps.ts": "48a68c67a492c1a851412fd9d1984744a3b475b877e75080310a8382c845f3bc",
+  "src/lib/actions/errors.ts": "27b4ecac70debfbc9e7f5a30c5f68de7f36e8a98af9436f9481db42611d28c67",
+  "src/lib/actions/conjugation.ts": "b9bd6d8d0d55e54d0a9ef98358c9cfe6d7f25efcb187f97eb7f8043f6337959d",
+  "src/lib/vocabulary/gaps.ts": "bfa571a3cce8978b083de7f7d6bd911d714815889cea091a43ece9af83afd45d",
+  "src/app/(main)/conjugation/_components/drill-card.tsx": "3ee33ce7fd4804b0198ffe5b42c4963528be19dc99b6a6a7100a83300a6feeef"
+}

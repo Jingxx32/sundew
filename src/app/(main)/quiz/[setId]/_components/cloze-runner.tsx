@@ -49,6 +49,8 @@ export function ClozeRunner({
   const [transcriptOpen, setTranscriptOpen] = useState(false);
   const [saving, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const requestKey = useRef<string | null>(null);
 
   if (!passage) return null;
 
@@ -82,16 +84,17 @@ export function ClozeRunner({
   }
 
   function handleSubmit() {
-    const score = blanks.filter(gradeBlank).length;
-    const total = blanks.length;
-    setResult({ score, total });
-
+    if (saving || answeredCount === 0) return;
+    requestKey.current ??= `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+    setSaveError(null);
     startTransition(async () => {
       try {
-        await submitQuizAttempt({ setId, score, total });
+        const attempt = await submitQuizAttempt({ setId, requestKey: requestKey.current!, answers: blanks.map((question) => ({ questionId: question.id, answer: answers[question.id] ?? "" })) });
+        setResult({ score: attempt.score, total: attempt.total });
         setSaved(true);
       } catch {
         setSaved(false);
+        setSaveError("The attempt was not saved. Please retry.");
       }
     });
   }
@@ -222,8 +225,8 @@ export function ClozeRunner({
           <p className="text-sm text-muted-foreground">
             {answeredCount}/{blanks.length} filled
           </p>
-          <Button onClick={handleSubmit} disabled={answeredCount === 0}>
-            Check answers
+          <Button onClick={handleSubmit} disabled={answeredCount === 0 || saving}>
+            {saving ? "Saving…" : saveError ? "Retry saving" : "Check answers"}
           </Button>
         </div>
       ) : (
@@ -240,6 +243,7 @@ export function ClozeRunner({
           </p>
         </div>
       )}
+      {saveError && <p role="alert" className="text-sm text-danger">{saveError}</p>}
     </div>
   );
 }

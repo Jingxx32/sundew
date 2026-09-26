@@ -53,6 +53,7 @@ tsconfig.tsbuildinfo
 
 # speaking practice recordings
 public/media/speaking/
+.private-media/
 
 # Personal portfolio/CV material — not part of the app
 RESUME.md

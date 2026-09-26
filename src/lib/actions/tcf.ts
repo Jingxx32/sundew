@@ -1,5 +1,9 @@
 "use server";
 
+import { syncReviewTarget } from "@/lib/review/service";
+import { reviewDataEnabled, lockReviewOwner } from "@/lib/review/adapters";
+
+import { createHash } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import {
@@ -12,13 +16,15 @@ import {
   vocabularyOccurrences,
 } from "@/lib/db/schema";
 import type { TcfPerLevel, TcfAttempt, TcfExplanationMeta } from "@/lib/db/schema";
-import { eq, and, asc, desc, inArray, isNotNull } from "drizzle-orm";
+import { eq, and, asc, desc, inArray, isNotNull, or } from "drizzle-orm";
 import {
   deriveTcfLearningSummary,
+  isTcfReviewDue,
   type TcfLearningAttempt,
   type TcfQuestionLearningSummary,
 } from "@/lib/tcf/learning";
 import { requireUser } from "@/lib/auth/session";
+import { gradeExamAnswers } from "@/lib/tcf/exam-grading";
 
 export type TcfLevel = (typeof tcfLevelEnum.enumValues)[number];
 
@@ -336,37 +342,60 @@ export async function recordTcfExamAttempt(input: {
   perLevel: TcfPerLevel;
   /** Per-question detail; unanswered questions are simply absent. */
   answers?: TcfExamAnswer[];
+  requestKey?: string;
 }): Promise<void> {
   const user = await requireUser();
-  const total = Math.max(0, Math.round(input.total));
-  const score = Math.min(total, Math.max(0, Math.round(input.score)));
+  if (!input.setId || !Array.isArray(input.answers) || input.answers.length > 100) throw new Error("Invalid exam answers");
+  if (input.requestKey && !/^[a-zA-Z0-9-]{8,100}$/.test(input.requestKey)) throw new Error("Invalid request key");
+  const [set] = await db.select({ id: tcfSets.id, skill: tcfSets.skill, testNumber: tcfSets.testNumber })
+    .from(tcfSets).where(eq(tcfSets.id, input.setId)).limit(1);
+  if (!set || set.skill !== input.skill || set.testNumber !== input.testNumber) throw new Error("Invalid exam set");
+  const questions = await db.select({ id: tcfQuestions.id, answer: tcfQuestions.answer,
+    options: tcfQuestions.options, level: tcfQuestions.level }).from(tcfQuestions)
+    .where(eq(tcfQuestions.setId, set.id));
+  const { graded, total, score, perLevel } = gradeExamAnswers(questions, input.answers);
+  const requestHash = createHash("sha256").update(JSON.stringify({ setId: set.id,
+    answers: graded.map(({ questionId, chosen }) => ({ questionId, chosen })).sort((a, b) => a.questionId.localeCompare(b.questionId)) })).digest("hex");
   await db.transaction(async (tx) => {
+    if (reviewDataEnabled()) await lockReviewOwner(tx,user.id);
     const [attempt] = await tx
       .insert(tcfAttempts)
       .values({
         userId: user.id,
-        setId: input.setId,
-        skill: input.skill,
-        testNumber: input.testNumber,
+        setId: set.id,
+        skill: set.skill,
+        testNumber: set.testNumber,
         score,
         total,
-        perLevel: input.perLevel,
+        perLevel,
+        requestKey: input.requestKey ?? null,
+        requestHash,
       })
+      .onConflictDoNothing({ target: [tcfAttempts.userId, tcfAttempts.requestKey] })
       .returning({ id: tcfAttempts.id });
-    if (input.answers && input.answers.length > 0) {
+    if (!attempt) {
+      const [existing] = await tx.select({ requestHash: tcfAttempts.requestHash }).from(tcfAttempts)
+        .where(and(eq(tcfAttempts.userId, user.id), eq(tcfAttempts.requestKey, input.requestKey!))).limit(1);
+      if (!existing || existing.requestHash !== requestHash) throw new Error("Request key was reused with different exam answers");
+      return;
+    }
+    if (graded.length > 0) {
       await tx.insert(tcfQuestionAttempts).values(
-        input.answers.map((a) => ({
+        graded.map((a) => ({
           userId: user.id,
           questionId: a.questionId,
           mode: "exam" as const,
           examAttemptId: attempt.id,
           chosen: a.chosen,
           correct: a.correct,
+          gradeVersion: 1,
         })),
       );
     }
+    if (reviewDataEnabled()) for (const answer of graded) await syncReviewTarget(tx,user.id,"tcf",answer.questionId);
   });
   revalidatePath("/progress");
+  revalidatePath("/today");
 }
 
 /** Drill write-through: one row per answered question. Fire-and-forget from
@@ -378,24 +407,43 @@ export async function recordTcfQuestionAttempt(input: {
   correct?: boolean;
   uncertain?: boolean;
   mode?: "drill" | "review";
+  requestKey?: string;
 }): Promise<void> {
   const user = await requireUser();
-  if (!Number.isFinite(input.chosen)) throw new Error("Réponse invalide.");
-  const chosen = Math.max(0, Math.round(input.chosen));
+  if (input.requestKey && !/^[a-zA-Z0-9-]{8,100}$/.test(input.requestKey)) throw new Error("Invalid request key");
+  if (!Number.isInteger(input.chosen)) throw new Error("Réponse invalide.");
+  const chosen = input.chosen;
   const [question] = await db
-    .select({ answer: tcfQuestions.answer })
+    .select({ answer: tcfQuestions.answer, options: tcfQuestions.options })
     .from(tcfQuestions)
     .where(eq(tcfQuestions.id, input.questionId))
     .limit(1);
   if (!question) throw new Error("Question TCF introuvable.");
+  if (chosen < 0 || chosen >= question.options.length) throw new Error("Invalid choice");
+  const mode = input.mode ?? "drill";
+  const requestHash = createHash("sha256").update(JSON.stringify({ questionId: input.questionId, chosen,
+    uncertain: input.uncertain === true, mode })).digest("hex");
 
-  await db.insert(tcfQuestionAttempts).values({
+  await db.transaction(async tx => {
+    if (reviewDataEnabled()) await lockReviewOwner(tx,user.id);
+  const [inserted] = await tx.insert(tcfQuestionAttempts).values({
     userId: user.id,
     questionId: input.questionId,
-    mode: input.mode ?? "drill",
+    mode,
     chosen,
     correct: chosen === question.answer,
     uncertain: input.uncertain ?? false,
+    gradeVersion: 1,
+    requestKey: input.requestKey ?? null,
+    requestHash,
+  }).onConflictDoNothing({ target: [tcfQuestionAttempts.userId, tcfQuestionAttempts.requestKey] })
+    .returning({ id: tcfQuestionAttempts.id });
+  if (!inserted) {
+    const [existing] = await tx.select({ requestHash: tcfQuestionAttempts.requestHash })
+      .from(tcfQuestionAttempts).where(and(eq(tcfQuestionAttempts.userId, user.id), eq(tcfQuestionAttempts.requestKey, input.requestKey!))).limit(1);
+    if (!existing || existing.requestHash !== requestHash) throw new Error("Request key was reused with different answers");
+  }
+    if (reviewDataEnabled()) await syncReviewTarget(tx,user.id,"tcf",input.questionId);
   });
   revalidateTcfLearningPaths();
 }
@@ -411,9 +459,12 @@ function assertUuid(id: string, label: string): void {
 export async function deleteTcfQuestionAttempt(attemptId: string): Promise<void> {
   const user = await requireUser();
   assertUuid(attemptId, "Identifiant de tentative");
-  await db
-    .delete(tcfQuestionAttempts)
-    .where(and(eq(tcfQuestionAttempts.id, attemptId), eq(tcfQuestionAttempts.userId, user.id)));
+  await db.transaction(async tx => {
+    if (reviewDataEnabled()) await lockReviewOwner(tx,user.id);
+    const removed = await tx.delete(tcfQuestionAttempts)
+      .where(and(eq(tcfQuestionAttempts.id,attemptId),eq(tcfQuestionAttempts.userId,user.id))).returning();
+    if (reviewDataEnabled() && removed[0]) await syncReviewTarget(tx,user.id,"tcf",removed[0].questionId);
+  });
   revalidateTcfLearningPaths();
 }
 
@@ -422,9 +473,11 @@ export async function deleteTcfQuestionAttempt(attemptId: string): Promise<void>
 export async function resetTcfQuestionLearningHistory(questionId: string): Promise<void> {
   const user = await requireUser();
   assertUuid(questionId, "Identifiant de question");
-  await db
-    .delete(tcfQuestionAttempts)
-    .where(and(eq(tcfQuestionAttempts.questionId, questionId), eq(tcfQuestionAttempts.userId, user.id)));
+  await db.transaction(async tx => {
+    if (reviewDataEnabled()) await lockReviewOwner(tx,user.id);
+    await tx.delete(tcfQuestionAttempts).where(and(eq(tcfQuestionAttempts.questionId,questionId),eq(tcfQuestionAttempts.userId,user.id)));
+    if (reviewDataEnabled()) await syncReviewTarget(tx,user.id,"tcf",questionId);
+  });
   revalidateTcfLearningPaths();
 }
 
@@ -433,6 +486,8 @@ function revalidateTcfLearningPaths(): void {
   revalidatePath("/tcf/drill");
   revalidatePath("/tcf/review");
   revalidatePath("/progress");
+  revalidatePath("/review");
+  revalidatePath("/today");
 }
 
 /** Learning facts intentionally exclude mock-exam attempts. This keeps the
@@ -463,7 +518,8 @@ export async function getTcfQuestionLearning(
       and(
         eq(tcfQuestionAttempts.userId, user.id),
         inArray(tcfQuestionAttempts.questionId, ids),
-        inArray(tcfQuestionAttempts.mode, ["drill", "review"]),
+        or(inArray(tcfQuestionAttempts.mode, ["drill", "review"]),
+          and(eq(tcfQuestionAttempts.mode, "exam"), eq(tcfQuestionAttempts.gradeVersion, 1))),
       ),
     );
 
@@ -504,7 +560,7 @@ export async function getTcfQuestionHistory(questionId: string): Promise<TcfQues
 }
 
 function schedulingRank(summary: TcfQuestionLearningSummary, now: Date): number {
-  if (summary.needsReview && summary.nextReviewAt && summary.nextReviewAt <= now) return 0;
+  if (isTcfReviewDue(summary, now)) return 0;
   if (summary.status === "unseen") return 1;
   if (summary.status === "in_progress") return 2;
   return 3;
@@ -544,7 +600,7 @@ export async function getTcfScheduledDrillQuestions(
   const now = new Date();
   const eligible = questions.filter((question) => {
     const summary = summaryById.get(question.id);
-    return kind !== "review" || Boolean(summary?.needsReview && summary.nextReviewAt && summary.nextReviewAt <= now);
+    return kind !== "review" || Boolean(summary && isTcfReviewDue(summary, now));
   });
   const ordered = eligible
     .map((question, position) => ({
@@ -562,7 +618,7 @@ export async function getTcfScheduledDrillQuestions(
       if (rankDifference !== 0) return rankDifference;
       const gapBoost = Number(gapQuestionIds.has(b.question.id)) - Number(gapQuestionIds.has(a.question.id));
       if (kind !== "all" && gapBoost !== 0) return gapBoost;
-      if (a.summary.needsReview && b.summary.needsReview) {
+      if (isTcfReviewDue(a.summary, now) && isTcfReviewDue(b.summary, now)) {
         return (a.summary.lastAnsweredAt?.getTime() ?? 0) - (b.summary.lastAnsweredAt?.getTime() ?? 0);
       }
       return a.position - b.position;
@@ -576,7 +632,10 @@ export async function getTcfReviewCount(
   level?: TcfLevel,
 ): Promise<number> {
   await requireUser();
-  if (level) return (await getTcfQuestionLearning(skill, level)).filter((summary) => summary.needsReview).length;
+  if (level) {
+    const now = new Date();
+    return (await getTcfQuestionLearning(skill, level)).filter((summary) => isTcfReviewDue(summary, now)).length;
+  }
   const levels: TcfLevel[] = ["A1", "A2", "B1", "B2", "C1", "C2"];
   const counts = await Promise.all(levels.map((currentLevel) => getTcfReviewCount(skill, currentLevel)));
   return counts.reduce((total, count) => total + count, 0);

@@ -1,0 +1,373 @@
+{
+  "marker": "b74dacc5-77bd-4b80-8338-fc50214732e1",
+  "fixtureVersion": 1,
+  "startedAt": "2026-09-22T18:51:19.965Z",
+  "host": "127.0.0.1",
+  "port": "55439",
+  "database": "sundew_review_test_m1verified",
+  "databaseRole": "sundew_review_test",
+  "boundaryStubs": [
+    "authentication identity (not middleware)",
+    "Next cache invalidation",
+    "AI provider",
+    "unused PDF/import/lookup"
+  ],
+  "productionDatabaseAccess": false,
+  "postgresVersion": "PostgreSQL 18.4 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit",
+  "commit": "78be440182d88cbe75ac90e266f3d3c4ea89fcfc",
+  "trackedDiffSha256": "60f8128113fc291422994ed1a119bd5a72ce36b8febccca682ee29a578c9eecf",
+  "untrackedFiles": [
+    "docs/operations/review-migration-rehearsal.md",
+    "docs/operations/speaking-pilot.md",
+    "docs/product/review-session-spec.md",
+    "docs/product/review-state-spec.md",
+    "docs/product/sundew-review-study-plan.md",
+    "docs/product/sundew-v2-plan.md",
+    "docs/product/sundew-v2-stage1-plan.md",
+    "docs/product/sundew-v2-stage2-plan.md",
+    "drizzle/0026_funny_grey_gargoyle.sql",
+    "drizzle/0027_silly_bulldozer.sql",
+    "drizzle/0028_purple_wong.sql",
+    "drizzle/0029_late_dazzler.sql",
+    "drizzle/0030_green_sue_storm.sql",
+    "drizzle/0031_funny_sage.sql",
+    "drizzle/0032_light_the_executioner.sql",
+    "drizzle/0033_naive_rafael_vega.sql",
+    "drizzle/0034_unknown_king_cobra.sql",
+    "drizzle/meta/0026_snapshot.json",
+    "drizzle/meta/0027_snapshot.json",
+    "drizzle/meta/0028_snapshot.json",
+    "drizzle/meta/0029_snapshot.json",
+    "drizzle/meta/0030_snapshot.json",
+    "drizzle/meta/0031_snapshot.json",
+    "drizzle/meta/0032_snapshot.json",
+    "drizzle/meta/0033_snapshot.json",
+    "drizzle/meta/0034_snapshot.json",
+    "scripts/cleanup-speaking-recordings.ts",
+    "scripts/review-db-rehearsal.mts",
+    "scripts/review-rehearsal/actions.mts",
+    "scripts/review-rehearsal/fixtures.mts",
+    "scripts/review-rehearsal/migration-worker.mts",
+    "scripts/review-rehearsal/safety.mts",
+    "scripts/review-rehearsal/safety.test.mts",
+    "src/app/(main)/review/page.tsx",
+    "src/app/(main)/speaking/_components/feedback-workbench.tsx",
+    "src/app/(main)/speaking/_components/simulation-workbench.tsx",
+    "src/app/(main)/speaking/_components/start-practice.tsx",
+    "src/app/(main)/speaking/sessions/[sessionId]/feedback/page.tsx",
+    "src/app/(main)/speaking/sessions/[sessionId]/page.tsx",
+    "src/app/(main)/speaking/task-2/page.tsx",
+    "src/app/(main)/training/page.tsx",
+    "src/app/api/speaking/follow-ups/[followUpId]/route.ts",
+    "src/app/api/speaking/recordings/[assetId]/route.ts",
+    "src/app/api/speaking/sessions/[sessionId]/turns/route.ts",
+    "src/lib/actions/review.ts",
+    "src/lib/actions/speaking-simulation.ts",
+    "src/lib/date/time-zone.test.ts",
+    "src/lib/date/time-zone.ts",
+    "src/lib/navigation.ts",
+    "src/lib/quiz/grading.test.ts",
+    "src/lib/quiz/grading.ts",
+    "src/lib/speaking/audio.test.ts",
+    "src/lib/speaking/audio.ts",
+    "src/lib/speaking/feedback.test.ts",
+    "src/lib/speaking/feedback.ts",
+    "src/lib/speaking/operations.ts",
+    "src/lib/speaking/scenario.ts",
+    "src/lib/speaking/voice.ts",
+    "src/lib/storage/speaking-recordings.ts",
+    "src/lib/tcf/exam-grading.test.ts",
+    "src/lib/tcf/exam-grading.ts",
+    "src/lib/today/recommendation.test.ts",
+    "src/lib/today/recommendation.ts"
+  ],
+  "migrations": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1778885607241,
+      "tag": "0000_flashy_onslaught",
+      "breakpoints": true,
+      "sha256": "22594a637b839af9efa036e2cb5e142a4b01c2d59a8c3965a8de5cae1bf2459e"
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1778887892514,
+      "tag": "0001_soft_callisto",
+      "breakpoints": true,
+      "sha256": "2b93b1d9a2ca9d94b103a509bd21e9925c53f04d6020554d13779e390f4748f2"
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1778896689124,
+      "tag": "0002_fair_cannonball",
+      "breakpoints": true,
+      "sha256": "2362b1c5d449f5d2aa948c689287ed81ba9ebe707d5dd54c3442b36e9a3f926f"
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1778898219762,
+      "tag": "0003_youthful_mindworm",
+      "breakpoints": true,
+      "sha256": "a5a79921b79d9cccfdbc78b9af11e5c26256a73159d2f10398bd1a55e15f73e0"
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1779289200491,
+      "tag": "0004_furry_havok",
+      "breakpoints": true,
+      "sha256": "e70fbffc41914f04b18d758a1233f287db701516c0f9fec2940b275c1a86f4fa"
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1781067841533,
+      "tag": "0005_common_greymalkin",
+      "breakpoints": true,
+      "sha256": "6005ad0d6d1140a443133dbb97c30a41507b8c0f093497fede8badb5ac9e3356"
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1781118058376,
+      "tag": "0006_absent_the_order",
+      "breakpoints": true,
+      "sha256": "8b328c76faaf3bcec8f44caea4f741d12937bfe2190ce1830d70b0f9fb5345c8"
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1781152820326,
+      "tag": "0007_keen_moondragon",
+      "breakpoints": true,
+      "sha256": "79e0e894f8b6db1282978049aea18db7791180923191c16400072c4e3844562c"
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1781331019954,
+      "tag": "0008_outstanding_ted_forrester",
+      "breakpoints": true,
+      "sha256": "e8e8d83059efd0c0c755aa4fa5ca5a11ffb0b23195cd7865b467c605e5df7e17"
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1781331100000,
+      "tag": "0009_vocab_lemma_keyed",
+      "breakpoints": true,
+      "sha256": "44c3bdb1765835b9c7287dbadab24b394d335d1a80358efdb07742a2c4cb9f63"
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1783123158818,
+      "tag": "0010_robust_tiger_shark",
+      "breakpoints": true,
+      "sha256": "b4f3c0c56f37a7e556be70bcf217150940dbe5490d5057ac417878516a54fe79"
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1783168837892,
+      "tag": "0011_cuddly_phalanx",
+      "breakpoints": true,
+      "sha256": "75be60f652d58bb989ecb7707b921c795aacb38fca9a097566bafb2fd1e17c04"
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1783188827057,
+      "tag": "0012_cool_klaw",
+      "breakpoints": true,
+      "sha256": "6dafe87a9a9a584277eaec5d2c051d727ec01b9c4960045e6ba5e8595ca48dbe"
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1783189352916,
+      "tag": "0013_faithful_tombstone",
+      "breakpoints": true,
+      "sha256": "0b80ea585e2d430d26eb74a8d5739952fa5c57e5d9d9ce4c198a7b9084166318"
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1783189805126,
+      "tag": "0014_neat_ink",
+      "breakpoints": true,
+      "sha256": "10b712c0674cba1b66f0272b665d6fce405f7f89df5e82f6d1fa2d1f469774c4"
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1783666428618,
+      "tag": "0015_safe_unus",
+      "breakpoints": true,
+      "sha256": "781c242303baad16ccc9a5e4254f5feade9553888ad3302e81434324c6391dbf"
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1783738037078,
+      "tag": "0016_sturdy_black_tom",
+      "breakpoints": true,
+      "sha256": "0fabb59cbcbccbd1929451d02216d91edbcd174081256b690e7e42159fe57140"
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1787105970082,
+      "tag": "0017_motionless_sage",
+      "breakpoints": true,
+      "sha256": "6609ef9af0f7983a3896708673d6d20ac57520b1d3f9782dc6d91dd008a95082"
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1787686162912,
+      "tag": "0018_smart_gertrude_yorkes",
+      "breakpoints": true,
+      "sha256": "3e2389436cdfc870ed3ab8883d0f9f2f55d9ec930223d0b2f8bd9414b6908e43"
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1788212205636,
+      "tag": "0019_closed_paper_doll",
+      "breakpoints": true,
+      "sha256": "41edd5ce1a1de2d5a134d8138722f351de68d2b116fd79aaafc0eba396dd47c8"
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1788218128724,
+      "tag": "0020_vengeful_khan",
+      "breakpoints": true,
+      "sha256": "993f4e6a28f2dbf55489e3c6027fc77404b491b39cd0b55b68f981ae0b66ef08"
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1788841948218,
+      "tag": "0021_majestic_supernaut",
+      "breakpoints": true,
+      "sha256": "6eeb6ad43ab569e1f9b2ef84b5d22191b89110adfa0389958ddbd76ce591ff37"
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1788842516279,
+      "tag": "0022_minor_namorita",
+      "breakpoints": true,
+      "sha256": "bc05295951d3b69432dde7da14b2685f2754a46b4c2c395f0a7858f96e44403c"
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1788843646222,
+      "tag": "0023_round_dormammu",
+      "breakpoints": true,
+      "sha256": "df5e78eb50c119f6251eac6e7a772104592605fd8d6a9f66687ba552efcf7f3a"
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1788844443443,
+      "tag": "0024_public_the_call",
+      "breakpoints": true,
+      "sha256": "9be0f76b4487800d91117e22e068ef18833c2717b8d160eca01d56a5da88f18a"
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1788844722504,
+      "tag": "0025_dear_ironclad",
+      "breakpoints": true,
+      "sha256": "65d97571282097c3238cc0026a5987069b6ed7eaca932ac96bfe915e0573ecc1"
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1789756128535,
+      "tag": "0026_funny_grey_gargoyle",
+      "breakpoints": true,
+      "sha256": "6bbf20b872796faa4b2c66a718f3fcefc708f77c6353752b2159bb3affa3305b"
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1789757336480,
+      "tag": "0027_silly_bulldozer",
+      "breakpoints": true,
+      "sha256": "23339a7bdfb071d02bf412996834369f88e0da0f9022cd8740a064b6d925081a"
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1789757461619,
+      "tag": "0028_purple_wong",
+      "breakpoints": true,
+      "sha256": "dc839af6a511fb426dd90cdb2b734398254de2f8ac34aaee1e3e052042dee946"
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1789764390797,
+      "tag": "0029_late_dazzler",
+      "breakpoints": true,
+      "sha256": "2b1869ea48116fe98ce4e4b336938712df87152c63e2a67f994c91ce9222f5e7"
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1789764467814,
+      "tag": "0030_green_sue_storm",
+      "breakpoints": true,
+      "sha256": "55b9de9c7cdbb1722aedde1e12da442fe512ae81b5c9eacef2f25145c311cfdb"
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1789764578301,
+      "tag": "0031_funny_sage",
+      "breakpoints": true,
+      "sha256": "7cac6533def4ba2adfb0891415e7dc277e793af44cffcf1d3ffeaf95f3da172f"
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1789764690002,
+      "tag": "0032_light_the_executioner",
+      "breakpoints": true,
+      "sha256": "faa33392abd5e4ed93a5760cd6e68ec2456c79035ece194ea9ed6dedb0f5231e"
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1790102633984,
+      "tag": "0033_naive_rafael_vega",
+      "breakpoints": true,
+      "sha256": "c8891d684204f421b772ba02cb6711ac5e240875f71834b2bc5038e2f4904d35"
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1790102835320,
+      "tag": "0034_unknown_king_cobra",
+      "breakpoints": true,
+      "sha256": "d8fad73cb878bd219dcc65b6cc170b8a8dcb00b575bce5b7408caccd4ad633a4"
+    }
+  ],
+  "baselineDataSha256": "adc7fc27bb06e01c2fe0700eebc228cae3f06d7c317106ca1a52535d0f24f003",
+  "baselineSchemaSha256": "69c1f1040c548625e4f239a79130d2ec09ffb7128bb6e29cfbbcbbefbdfcd0bd",
+  "fixtureOwnerIds": [
+    "10000000-0000-4000-8000-000000000001",
+    "10000000-0000-4000-8000-000000000002"
+  ],
+  "finishedAt": "2026-09-22T18:51:23.819Z"
+}

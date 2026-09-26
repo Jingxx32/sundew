@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { downsampleTo16k, encodeWavPcm16 } from "@/lib/audio/wav-encoder";
 
 /**
@@ -16,6 +16,13 @@ export function useWavRecorder() {
   const streamRef = useRef<MediaStream | null>(null);
   const processorRef = useRef<ScriptProcessorNode | null>(null);
   const chunksRef = useRef<Float32Array[]>([]);
+  const sampleCountRef = useRef(0);
+
+  useEffect(() => () => {
+    processorRef.current?.disconnect();
+    streamRef.current?.getTracks().forEach((track) => track.stop());
+    void ctxRef.current?.close();
+  }, []);
 
   const start = useCallback(async () => {
     setError(null);
@@ -27,8 +34,16 @@ export function useWavRecorder() {
       const source = ctx.createMediaStreamSource(stream);
       const processor = ctx.createScriptProcessor(4096, 1, 1);
       chunksRef.current = [];
+      sampleCountRef.current = 0;
       processor.onaudioprocess = (e) => {
-        chunksRef.current.push(new Float32Array(e.inputBuffer.getChannelData(0)));
+        const input = e.inputBuffer.getChannelData(0);
+        const remaining = Math.max(0, ctx.sampleRate * 30 - sampleCountRef.current);
+        if (remaining > 0) {
+          const chunk = new Float32Array(input.subarray(0, Math.min(input.length, remaining)));
+          chunksRef.current.push(chunk);
+          sampleCountRef.current += chunk.length;
+        }
+        if (remaining <= input.length) setError("30-second recording limit reached. Stop and send this turn.");
       };
       source.connect(processor);
       processor.connect(ctx.destination); // required for onaudioprocess to fire
@@ -54,6 +69,8 @@ export function useWavRecorder() {
     const sampleRate = ctx.sampleRate;
     await ctx.close();
     ctxRef.current = null;
+    streamRef.current = null;
+    processorRef.current = null;
     setIsRecording(false);
 
     const total = chunksRef.current.reduce((n, c) => n + c.length, 0);

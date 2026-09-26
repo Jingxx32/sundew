@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Headphones, BookOpenText, RotateCcw } from "lucide-react";
+import { Headphones, BookOpenText, Mic, RotateCcw } from "lucide-react";
 import {
   getTcfLevelSummaries,
   getTcfProgressOverview,
@@ -40,6 +40,10 @@ export default async function TcfPage({
         <h1 className="text-[38px] font-bold tracking-[-0.035em]">TCF Canada</h1>
       </div>
       <p className="text-sm text-muted-foreground mb-6">{meta.title} — par niveau CECR</p>
+
+      <Link href="/speaking/task-2" className="mb-6 flex items-center gap-3 rounded-xl border border-border bg-surface px-5 py-4 text-sm font-medium text-accent hover:border-accent/40">
+        <Mic className="h-4 w-4" aria-hidden="true" /> Expression orale · Tâche 2 practice
+      </Link>
 
       <Link
         href={`/tcf/review?skill=${skill}`}

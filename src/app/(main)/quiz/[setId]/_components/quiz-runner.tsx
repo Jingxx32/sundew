@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useRef, useState, useTransition } from "react";
 import { Check, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,8 @@ export function QuizRunner({
   );
   const [saving, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const requestKey = useRef<string | null>(null);
 
   const questions = useMemo(
     () => passages.flatMap((p) => p.questions),
@@ -46,18 +48,17 @@ export function QuizRunner({
   const submitted = result !== null;
 
   function handleSubmit() {
-    const score = gradable.filter(
-      (q) => answers[q.id] === Number(q.answer),
-    ).length;
-    const total = gradable.length;
-    setResult({ score, total });
-
+    if (saving || !allAnswered) return;
+    requestKey.current ??= `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+    setSaveError(null);
     startTransition(async () => {
       try {
-        await submitQuizAttempt({ setId, score, total });
+        const attempt = await submitQuizAttempt({ setId, requestKey: requestKey.current!, answers: gradable.map((question) => ({ questionId: question.id, answer: answers[question.id] })) });
+        setResult({ score: attempt.score, total: attempt.total });
         setSaved(true);
       } catch {
         setSaved(false);
+        setSaveError("The attempt was not saved. Please retry.");
       }
     });
   }
@@ -93,8 +94,8 @@ export function QuizRunner({
               ? "All questions answered — ready to check."
               : `${Object.keys(answers).length}/${gradable.length} answered`}
           </p>
-          <Button onClick={handleSubmit} disabled={!allAnswered}>
-            Check answers
+          <Button onClick={handleSubmit} disabled={!allAnswered || gradable.length === 0 || saving}>
+            {saving ? "Saving…" : saveError ? "Retry saving" : "Check answers"}
           </Button>
         </div>
       ) : (
@@ -111,6 +112,7 @@ export function QuizRunner({
           </p>
         </div>
       )}
+      {saveError && <p role="alert" className="text-sm text-danger">{saveError}</p>}
     </div>
   );
 }

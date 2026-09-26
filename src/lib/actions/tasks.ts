@@ -339,7 +339,11 @@ async function persistFeedback(
             )
             .limit(1)
         )[0];
-        if (gapRow) await gradeGap(userId, gapRow.id, true);
+        if (gapRow) await gradeGap(userId, gapRow.id, true, {
+          answer: lemma,
+          gradingMethod: "writing_feedback",
+          requestKey: `feedback-${submissionId}-${gapRow.id}`,
+        });
       }
     }
   } catch (err) {
@@ -370,6 +374,8 @@ export async function createSubmission(taskId: string, contentFr: string): Promi
     wordCount: countWords(normalised),
     feedbackStatus: "pending",
   });
+  revalidatePath("/today");
+  revalidatePath("/progress");
 
   // Generate feedback after the response is sent, so submit returns in ~1s
   // instead of blocking on the 20-40s AI call. The feedback page polls until

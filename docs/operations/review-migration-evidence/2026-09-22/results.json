@@ -1,0 +1,189 @@
+[
+  {
+    "id": "empty-migration-rerun",
+    "expected": "Complete journal through 0032 applies to empty DB; rerun changes no data or ledger",
+    "status": "passed",
+    "actual": "Complete journal through 0032 applies to empty DB; rerun changes no data or ledger",
+    "elapsedMs": 121
+  },
+  {
+    "id": "baseline-dump-restore",
+    "expected": "Restore actual pg_dump into a second DB and compare baseline data and ledger",
+    "status": "passed",
+    "actual": "Restore actual pg_dump into a second DB and compare baseline data and ledger",
+    "elapsedMs": 176
+  },
+  {
+    "id": "populated-migration-rerun",
+    "expected": "0029–0032 preserve all old fields and timestamps; new logs are empty; rerun is unchanged",
+    "status": "passed",
+    "actual": "0029–0032 preserve all old fields and timestamps; new logs are empty; rerun is unchanged",
+    "elapsedMs": 24
+  },
+  {
+    "id": "migration-failure-rollback",
+    "expected": "Failure after pending DDL leaves baseline schema and ledger; unmodified retry succeeds",
+    "status": "passed",
+    "actual": "Failure after pending DDL leaves baseline schema and ledger; unmodified retry succeeds",
+    "elapsedMs": 9
+  },
+  {
+    "id": "migration-connection-termination",
+    "expected": "Terminate a blocked migrator; inspect rollback and retry successfully",
+    "status": "passed",
+    "actual": "Terminate a blocked migrator; inspect rollback and retry successfully",
+    "elapsedMs": 365
+  },
+  {
+    "id": "hardening-rejects-invalid-history",
+    "expected": "New ownership constraints refuse invalid history without partial DDL; repair is explicit",
+    "status": "passed",
+    "actual": "New ownership constraints refuse invalid history without partial DDL; repair is explicit",
+    "elapsedMs": 31
+  },
+  {
+    "id": "additive-ownership-hardening",
+    "expected": "Latest additive constraints apply and rerun on both empty and populated databases without changing history",
+    "status": "passed",
+    "actual": "Latest additive constraints apply and rerun on both empty and populated databases without changing history",
+    "elapsedMs": 52
+  },
+  {
+    "id": "quiz-retry",
+    "expected": "Concurrent and sequential retries save one parent and two item answers",
+    "status": "passed",
+    "actual": "Concurrent and sequential retries save one parent and two item answers",
+    "elapsedMs": 59
+  },
+  {
+    "id": "cloze-grading",
+    "expected": "Cloze grading uses saved per-question answer and rejects malformed selection",
+    "status": "passed",
+    "actual": "Cloze grading uses saved per-question answer and rejects malformed selection",
+    "elapsedMs": 11
+  },
+  {
+    "id": "committed-answer-lost-receipt",
+    "expected": "A failure after commit retries to the same answer without duplicate records",
+    "status": "passed",
+    "actual": "A failure after commit retries to the same answer without duplicate records",
+    "elapsedMs": 4
+  },
+  {
+    "id": "tcf-retry-grading",
+    "expected": "Two concurrent forged verdicts are graded server-side and deduplicated",
+    "status": "passed",
+    "actual": "Two concurrent forged verdicts are graded server-side and deduplicated",
+    "elapsedMs": 29
+  },
+  {
+    "id": "tcf-exam-retry",
+    "expected": "Exam score and child rows are server graded and saved once",
+    "status": "passed",
+    "actual": "Exam score and child rows are server graded and saved once",
+    "elapsedMs": 27
+  },
+  {
+    "id": "vocabulary-retry",
+    "expected": "Concurrent reviews log once and increment Leitner once; exact replay works when no longer due",
+    "status": "passed",
+    "actual": "Concurrent reviews log once and increment Leitner once; exact replay works when no longer due",
+    "elapsedMs": 29
+  },
+  {
+    "id": "conjugation-retry",
+    "expected": "Concurrent retries save one server-graded conjugation answer; changed payload is rejected",
+    "status": "passed",
+    "actual": "Concurrent retries save one server-graded conjugation answer; changed payload is rejected",
+    "elapsedMs": 29
+  },
+  {
+    "id": "action-ownership",
+    "expected": "Actual actions reject foreign resources and unauthenticated calls",
+    "status": "passed",
+    "actual": "Actual actions reject foreign resources and unauthenticated calls",
+    "elapsedMs": 3
+  },
+  {
+    "id": "vocabulary-atomic-failure",
+    "expected": "A forced log-insert failure rolls back the preceding box update",
+    "status": "passed",
+    "actual": "A forced log-insert failure rolls back the preceding box update",
+    "elapsedMs": 7
+  },
+  {
+    "id": "writing-save-before-ai",
+    "expected": "Failed AI leaves one saved response; same-key retry makes no extra provider call",
+    "status": "passed",
+    "actual": "Failed AI leaves one saved response; same-key retry makes no extra provider call",
+    "elapsedMs": 30
+  },
+  {
+    "id": "writing-stale-worker-success",
+    "expected": "An older provider result cannot overwrite a newer feedback generation",
+    "status": "passed",
+    "actual": "An older provider result cannot overwrite a newer feedback generation",
+    "elapsedMs": 6
+  },
+  {
+    "id": "writing-stale-worker-failure",
+    "expected": "An older provider result cannot overwrite a newer feedback generation",
+    "status": "passed",
+    "actual": "An older provider result cannot overwrite a newer feedback generation",
+    "elapsedMs": 5
+  },
+  {
+    "id": "owner-fk-quiz-set",
+    "expected": "Database rejects a cross-owner parent/child link with foreign-key violation",
+    "status": "passed",
+    "actual": "Database rejects a cross-owner parent/child link with foreign-key violation",
+    "elapsedMs": 3
+  },
+  {
+    "id": "owner-fk-quiz",
+    "expected": "Database rejects a cross-owner parent/child link with foreign-key violation",
+    "status": "passed",
+    "actual": "Database rejects a cross-owner parent/child link with foreign-key violation",
+    "elapsedMs": 1
+  },
+  {
+    "id": "owner-fk-vocabulary",
+    "expected": "Database rejects a cross-owner parent/child link with foreign-key violation",
+    "status": "passed",
+    "actual": "Database rejects a cross-owner parent/child link with foreign-key violation",
+    "elapsedMs": 1
+  },
+  {
+    "id": "owner-fk-writing",
+    "expected": "Database rejects a cross-owner parent/child link with foreign-key violation",
+    "status": "passed",
+    "actual": "Database rejects a cross-owner parent/child link with foreign-key violation",
+    "elapsedMs": 1
+  },
+  {
+    "id": "owner-fk-tcf",
+    "expected": "Database rejects a cross-owner parent/child link with foreign-key violation",
+    "status": "passed",
+    "actual": "Database rejects a cross-owner parent/child link with foreign-key violation",
+    "elapsedMs": 1
+  },
+  {
+    "id": "ownership-fk-delete-compatibility",
+    "expected": "Deleting an exam retains its item history and owner; deleting a writing source cascades its responses",
+    "status": "passed",
+    "actual": "Deleting an exam retains its item history and owner; deleting a writing source cascades its responses",
+    "elapsedMs": 1
+  },
+  {
+    "id": "review-backfill",
+    "expected": "review-backfill",
+    "status": "not_run",
+    "actual": "M2 schema/worker not implemented; no invented backfill claim"
+  },
+  {
+    "id": "browser-authentication-and-offline",
+    "expected": "browser-authentication-and-offline",
+    "status": "not_run",
+    "actual": "Framework authentication/network/UI are outside this database harness"
+  }
+]

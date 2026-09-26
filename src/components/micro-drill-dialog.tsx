@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
+import { useState, useTransition, useEffect, useRef } from "react";
 import { Check } from "lucide-react";
 import {
   Dialog,
@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/input";
-import { createMicroDrill, getMicroDrillsForError, type MicroDrillView } from "@/lib/actions/errors";
+import { createMicroDrill, getMicroDrillsForError, retryMicroDrillFeedback, type MicroDrillView } from "@/lib/actions/errors";
 import type { MicroDrillFeedback } from "@/lib/ai/micro-drill";
 
 type Props = {
@@ -25,6 +25,8 @@ export function MicroDrillDialog({ errorId, microDrill, original, correction }: 
   const [open, setOpen] = useState(false);
   const [response, setResponse] = useState("");
   const [feedback, setFeedback] = useState<MicroDrillFeedback | null>(null);
+  const [currentAttempt, setCurrentAttempt] = useState<MicroDrillView | null>(null);
+  const requestKey = useRef<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [priorAttempts, setPriorAttempts] = useState<MicroDrillView[]>([]);
   const [isPending, startTransition] = useTransition();
@@ -43,24 +45,29 @@ export function MicroDrillDialog({ errorId, microDrill, original, correction }: 
       return;
     }
     setErrorMsg(null);
+    requestKey.current ??= `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
     startTransition(async () => {
       try {
-        const result = await createMicroDrill(errorId, response);
-        setFeedback(result);
-        // Prepend the new attempt to the list so it shows on a New Attempt reset
-        setPriorAttempts((prev) => [
-          {
-            id: crypto.randomUUID(),
-            errorId,
-            promptText: microDrill,
-            responseFr: response,
-            feedbackJson: result,
-            createdAt: new Date(),
-          },
-          ...prev,
-        ]);
+        const result = await createMicroDrill(errorId, response, requestKey.current!);
+        setCurrentAttempt(result);
+        setFeedback(result.feedbackJson);
+        setPriorAttempts((prev) => [result, ...prev.filter((item) => item.id !== result.id)]);
       } catch (err) {
         setErrorMsg(err instanceof Error ? err.message : "Something went wrong.");
+      }
+    });
+  }
+
+  function handleRetryFeedback() {
+    if (!currentAttempt) return;
+    startTransition(async () => {
+      try {
+        const result = await retryMicroDrillFeedback(currentAttempt.id);
+        setCurrentAttempt(result);
+        setFeedback(result.feedbackJson);
+        setPriorAttempts((prev) => prev.map((item) => item.id === result.id ? result : item));
+      } catch (err) {
+        setErrorMsg(err instanceof Error ? err.message : "Feedback is unavailable.");
       }
     });
   }
@@ -68,7 +75,9 @@ export function MicroDrillDialog({ errorId, microDrill, original, correction }: 
   function handleNewAttempt() {
     setResponse("");
     setFeedback(null);
+    setCurrentAttempt(null);
     setErrorMsg(null);
+    requestKey.current = null;
   }
 
   function handleOpenChange(next: boolean) {
@@ -77,7 +86,9 @@ export function MicroDrillDialog({ errorId, microDrill, original, correction }: 
       // Reset form state when dialog closes
       setResponse("");
       setFeedback(null);
+      setCurrentAttempt(null);
       setErrorMsg(null);
+      requestKey.current = null;
     }
   }
 
@@ -135,6 +146,13 @@ export function MicroDrillDialog({ errorId, microDrill, original, correction }: 
                       {fb.comments[0]}
                     </p>
                   )}
+                  {!fb && <p className="text-muted-foreground">Response saved · feedback {attempt.feedbackStatus}</p>}
+                  {!fb && <button type="button" onClick={() => {
+                    setCurrentAttempt(attempt);
+                    setResponse(attempt.responseFr);
+                    setFeedback(null);
+                    setErrorMsg(null);
+                  }} className="font-medium text-accent hover:underline">Open saved response</button>}
                 </div>
               );
             })}
@@ -180,6 +198,11 @@ export function MicroDrillDialog({ errorId, microDrill, original, correction }: 
               </div>
             )}
           </div>
+        ) : currentAttempt ? (
+          <div className="rounded-lg border border-border bg-surface-muted p-3 text-sm">
+            <p>Your response was saved. Feedback is {currentAttempt.feedbackStatus}.</p>
+            {errorMsg && <p role="alert" className="mt-2 text-danger">{errorMsg}</p>}
+          </div>
         ) : (
           /* Response textarea */
           <div className="space-y-2">
@@ -199,6 +222,10 @@ export function MicroDrillDialog({ errorId, microDrill, original, correction }: 
           {feedback ? (
             <Button variant="outline" size="sm" onClick={handleNewAttempt}>
               New attempt
+            </Button>
+          ) : currentAttempt ? (
+            <Button size="sm" onClick={handleRetryFeedback} disabled={isPending || currentAttempt.feedbackStatus === "ready"}>
+              {isPending ? "Checking…" : "Retry feedback"}
             </Button>
           ) : (
             <>

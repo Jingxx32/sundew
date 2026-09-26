@@ -4,9 +4,12 @@
  * Historical design: docs/archive/specs/2026-08-31-vocab-gap-profile-design.md §2
  */
 
+import { createHash } from "node:crypto";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { vocabularyGaps, type VocabGapType, type VocabGapStatus } from "@/lib/db/schema";
+import { vocabularyGaps, vocabularyReviewAttempts, type VocabGapType, type VocabGapStatus } from "@/lib/db/schema";
+import { syncReviewTarget } from "@/lib/review/service";
+import { lockReviewOwner, reviewDataEnabled } from "@/lib/review/adapters";
 import type { Dbx } from "./helpers";
 
 /** Days until next review for box 1..5. Box 5 answered correctly → mastered. */
@@ -73,20 +76,44 @@ export async function gradeGap(
   userId: string,
   gapId: string,
   correct: boolean,
-): Promise<{ box: number; status: VocabGapStatus }> {
+  details?: { answer: string | null; gradingMethod: "objective" | "writing_feedback"; requestKey?: string },
+): Promise<{ box: number; status: VocabGapStatus; correct: boolean }> {
+  return db.transaction(tx => gradeGapInTransaction(tx,userId,gapId,correct,details));
+}
+
+export async function gradeGapInTransaction(
+  tx: Dbx, userId: string, gapId: string, correct: boolean,
+  details?: { answer: string | null; gradingMethod: "objective" | "writing_feedback"; requestKey?: string; practiceOnly?: boolean },
+): Promise<{ box: number; status: VocabGapStatus; correct: boolean }> {
+  if (reviewDataEnabled()) await lockReviewOwner(tx,userId);
+  const requestHash = details?.requestKey ? createHash("sha256")
+    .update(JSON.stringify({ gapId, answer: details.answer, gradingMethod: details.gradingMethod })).digest("hex") : null;
   const row = (
-    await db
+    await tx
       .select()
       .from(vocabularyGaps)
       .where(and(eq(vocabularyGaps.id, gapId), eq(vocabularyGaps.userId, userId)))
       .limit(1)
+      .for("update")
   )[0];
   if (!row) throw new Error(`gap ${gapId} not found`);
+  if (details?.requestKey) {
+    const [existing] = await tx.select().from(vocabularyReviewAttempts).where(and(
+      eq(vocabularyReviewAttempts.userId, userId), eq(vocabularyReviewAttempts.requestKey, details.requestKey),
+    )).limit(1);
+    if (existing) {
+      if (existing.requestHash !== requestHash) throw new Error("Request key was reused with a different answer");
+      return { box: existing.boxAfter, status: existing.statusAfter, correct: existing.correct };
+    }
+  }
+  if (!details?.practiceOnly && details?.gradingMethod === "objective" && (row.status !== "active" || row.dueAt > new Date())) {
+    throw new Error("Review card is no longer due");
+  }
 
   let box: number;
   let status: VocabGapStatus;
   let dueAt: Date;
-  if (correct) {
+  if (details?.practiceOnly) { box=row.box; status=row.status; dueAt=row.dueAt; } else if (correct) {
     if (row.box >= 5) {
       box = 5;
       status = "mastered";
@@ -101,9 +128,15 @@ export async function gradeGap(
     status = "active";
     dueAt = days(1);
   }
-  await db
+  await tx
     .update(vocabularyGaps)
     .set({ box, status, dueAt, lastReviewedAt: new Date() })
     .where(and(eq(vocabularyGaps.id, gapId), eq(vocabularyGaps.userId, userId)));
-  return { box, status };
+  await tx.insert(vocabularyReviewAttempts).values({
+    userId, gapId, answer: details?.answer ?? null, correct,
+    gradingMethod: details?.practiceOnly ? "practice_only" : details?.gradingMethod ?? "writing_feedback", boxBefore: row.box,
+    boxAfter: box, statusAfter: status, requestKey: details?.requestKey ?? null, requestHash,
+  });
+  if (reviewDataEnabled()) await syncReviewTarget(tx,userId,"vocabulary",gapId);
+  return { box, status, correct };
 }

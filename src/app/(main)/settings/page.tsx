@@ -6,10 +6,12 @@ import { TestApiKeyButton } from "./_components/test-api-key-button";
 import { CefrLevelPicker } from "./_components/cefr-level-picker";
 import { SpeakingProfileEditor } from "./_components/speaking-profile-editor";
 import { StudyGoalEditor } from "./_components/study-goal-editor";
+import { requireUser } from "@/lib/auth/session";
 
 export default async function SettingsPage() {
+  const user = await requireUser();
   const [status, cefrLevel, speakingProfile, studyGoal] = await Promise.all([
-    testApiKey(),
+    user.role === "admin" ? testApiKey() : Promise.resolve(null),
     getCefrLevel(),
     getSpeakingProfile(),
     getStudyGoal(),
@@ -24,7 +26,7 @@ export default async function SettingsPage() {
         Configuration for AI features and your learner profile.
       </p>
 
-      <section className="rounded-2xl bg-surface shadow-card p-6 space-y-5">
+      {status && <section className="rounded-2xl bg-surface shadow-card p-6 space-y-5">
         <div className="flex items-center gap-2">
           <KeyRound className="h-4 w-4 text-muted-foreground" />
           <h2 className="font-medium text-sm">OpenAI API Key</h2>
@@ -79,9 +81,9 @@ export default async function SettingsPage() {
             View usage on OpenAI
           </a>
         </div>
-      </section>
+      </section>}
 
-      <section className="rounded-2xl bg-surface shadow-card p-6 space-y-5 mt-6">
+      <section className={`rounded-2xl bg-surface shadow-card p-6 space-y-5 ${status ? "mt-6" : ""}`}>
         <div className="flex items-center gap-2">
           <GraduationCap className="h-4 w-4 text-muted-foreground" />
           <h2 className="font-medium text-sm">Your CEFR Level</h2>
@@ -96,10 +98,10 @@ export default async function SettingsPage() {
       <section className="rounded-2xl bg-surface shadow-card p-6 space-y-5 mt-6">
         <div className="flex items-center gap-2">
           <Target className="h-4 w-4 text-muted-foreground" />
-          <h2 className="font-medium text-sm">Study Goal — TCF Canada</h2>
+          <h2 className="font-medium text-sm">Study goal</h2>
         </div>
         <p className="text-xs text-muted-foreground">
-          Where you&apos;re headed: target CLB level and (when booked) your exam date.
+          Choose daily French practice or TCF preparation. Exam details remain optional.
         </p>
         <StudyGoalEditor initial={studyGoal} />
       </section>

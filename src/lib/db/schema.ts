@@ -1,4 +1,6 @@
-import { pgEnum, pgTable, text, integer, timestamp, jsonb, boolean, uuid, uniqueIndex, unique, index, primaryKey, foreignKey } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, text, integer, timestamp, jsonb, boolean, uuid, uniqueIndex, unique, index, primaryKey, foreignKey, check, type AnyPgColumn } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import type { ReviewSnapshot } from "../review/types";
 // Type-only imports (erased at build — they do NOT pull the OpenAI SDK into the
 // schema module, so drizzle-kit stays unaffected).
 import type { FeedbackResult } from "../ai/feedback";
@@ -182,6 +184,7 @@ export const errors = pgTable(
     index("errors_user_id_idx").on(t.userId),
     index("errors_category_subcategory_idx").on(t.category, t.subcategory),
     index("errors_created_at_idx").on(t.createdAt),
+    unique("errors_user_id_id_key").on(t.userId, t.id),
   ],
 );
 
@@ -212,6 +215,7 @@ export const microDrills = pgTable(
   {
     id: text("id").primaryKey(),
     userId: uuid("user_id").notNull().references(() => users.id),
+    runItemId: uuid("run_item_id").unique().references((): AnyPgColumn => practiceRunItems.id, { onDelete: "set null" }),
     errorId: text("error_id")
       .notNull()
       .references(() => errors.id, { onDelete: "cascade" }),
@@ -221,11 +225,18 @@ export const microDrills = pgTable(
     responseFr: text("response_fr").notNull(),
     /** Light AI feedback packet — see MicroDrillFeedbackSchema. */
     feedbackJson: jsonb("feedback_json").$type<MicroDrillFeedback>(),
+    feedbackStatus: text("feedback_status").notNull().default("ready"),
+    feedbackAttempts: integer("feedback_attempts").notNull().default(0),
+    feedbackLeaseUntil: timestamp("feedback_lease_until", { withTimezone: true }),
+    requestKey: text("request_key"),
+    requestHash: text("request_hash"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (t) => [
     index("micro_drills_error_id_idx").on(t.errorId),
     index("micro_drills_user_id_idx").on(t.userId),
+    uniqueIndex("micro_drills_user_request_key").on(t.userId, t.requestKey),
+    foreignKey({ columns: [t.userId, t.errorId], foreignColumns: [errors.userId, errors.id], name: "micro_drills_user_error_fk" }).onDelete("cascade"),
   ],
 );
 export type MicroDrill = typeof microDrills.$inferSelect;
@@ -388,6 +399,7 @@ export const vocabularyGaps = pgTable(
   },
   (t) => [
     unique("vocab_gaps_user_lemma_type_key").on(t.userId, t.lemma, t.gapType),
+    unique("vocab_gaps_user_id_id_key").on(t.userId, t.id),
     foreignKey({
       columns: [t.userId, t.lemma],
       foreignColumns: [userVocabulary.userId, userVocabulary.lemma],
@@ -400,6 +412,27 @@ export const vocabularyGaps = pgTable(
 export type VocabularyGap = typeof vocabularyGaps.$inferSelect;
 export type VocabGapType = (typeof vocabGapTypeEnum.enumValues)[number];
 export type VocabGapStatus = (typeof vocabGapStatusEnum.enumValues)[number];
+
+export const vocabularyReviewAttempts = pgTable("vocabulary_review_attempts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id),
+    runItemId: uuid("run_item_id").unique().references((): AnyPgColumn => practiceRunItems.id, { onDelete: "set null" }),
+  gapId: uuid("gap_id").notNull().references(() => vocabularyGaps.id, { onDelete: "cascade" }),
+  answer: text("answer"),
+  correct: boolean("correct").notNull(),
+  gradingMethod: text("grading_method").notNull(),
+  boxBefore: integer("box_before").notNull(),
+  boxAfter: integer("box_after").notNull(),
+  statusAfter: vocabGapStatusEnum("status_after").notNull(),
+  requestKey: text("request_key"),
+  requestHash: text("request_hash"),
+  policyVersion: integer("policy_version").notNull().default(1),
+  answeredAt: timestamp("answered_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  index("vocab_review_attempts_user_gap_time").on(t.userId, t.gapId, t.answeredAt),
+  uniqueIndex("vocab_review_attempts_user_request_key").on(t.userId, t.requestKey),
+  foreignKey({ columns: [t.userId, t.gapId], foreignColumns: [vocabularyGaps.userId, vocabularyGaps.id], name: "vocab_review_attempts_user_gap_fk" }).onDelete("cascade"),
+]);
 
 /* ------------------------------------------------------------------ */
 /*  Quiz engine — shared substrate for TCF / dictation / conjugation   */
@@ -441,7 +474,7 @@ export const quizSets = pgTable(
     source: text("source"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
-  (t) => [index("quiz_sets_user_id_created_at_idx").on(t.userId, t.createdAt)],
+  (t) => [index("quiz_sets_user_id_created_at_idx").on(t.userId, t.createdAt), unique("quiz_sets_user_id_id_key").on(t.userId, t.id)],
 );
 
 export type QuizSet = typeof quizSets.$inferSelect;
@@ -523,15 +556,37 @@ export const quizAttempts = pgTable(
       .references(() => quizSets.id, { onDelete: "cascade" }),
     score: integer("score").notNull(),
     total: integer("total").notNull(),
+    requestKey: text("request_key"),
+    requestHash: text("request_hash"),
     answeredAt: timestamp("answered_at").notNull().defaultNow(),
   },
   (t) => [
     index("quiz_attempts_set_id_idx").on(t.setId),
     index("quiz_attempts_user_id_answered_at_idx").on(t.userId, t.answeredAt),
+    uniqueIndex("quiz_attempts_user_request_key").on(t.userId, t.requestKey),
+    unique("quiz_attempts_user_id_id_key").on(t.userId, t.id),
+    foreignKey({ columns: [t.userId, t.setId], foreignColumns: [quizSets.userId, quizSets.id], name: "quiz_attempts_user_set_fk" }).onDelete("cascade"),
   ],
 );
 
 export type QuizAttempt = typeof quizAttempts.$inferSelect;
+
+export const quizQuestionAttempts = pgTable("quiz_question_attempts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id),
+    runItemId: uuid("run_item_id").unique().references((): AnyPgColumn => practiceRunItems.id, { onDelete: "set null" }),
+  attemptId: text("attempt_id").references(() => quizAttempts.id, { onDelete: "cascade" }),
+  questionId: text("question_id").notNull().references(() => quizQuestions.id, { onDelete: "cascade" }),
+  answer: jsonb("answer").notNull().$type<string | number>(),
+  correct: boolean("correct").notNull(),
+  uncertain: boolean("uncertain").notNull().default(false),
+  graderVersion: integer("grader_version").notNull().default(1),
+  answeredAt: timestamp("answered_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  uniqueIndex("quiz_question_attempts_attempt_question").on(t.attemptId, t.questionId),
+  index("quiz_question_attempts_user_question_time").on(t.userId, t.questionId, t.answeredAt),
+  foreignKey({ columns: [t.userId, t.attemptId], foreignColumns: [quizAttempts.userId, quizAttempts.id], name: "quiz_question_attempts_user_attempt_fk" }).onDelete("cascade"),
+]);
 
 /* ------------------------------------------------------------------ */
 /*  conjugation_attempts — drill history; the answer key itself is     */
@@ -544,6 +599,7 @@ export const conjugationAttempts = pgTable(
   {
     id: text("id").primaryKey(),
     userId: uuid("user_id").notNull().references(() => users.id),
+    runItemId: uuid("run_item_id").unique().references((): AnyPgColumn => practiceRunItems.id, { onDelete: "set null" }),
     /** Display infinitive, e.g. "se lever" */
     verb: text("verb").notNull(),
     /** One of the 6 drill tenses, e.g. "passé composé" */
@@ -555,11 +611,14 @@ export const conjugationAttempts = pgTable(
     /** Canonical correct form snapshotted at answer time */
     expected: text("expected").notNull(),
     correct: boolean("correct").notNull(),
+    requestKey: text("request_key"),
+    requestHash: text("request_hash"),
     answeredAt: timestamp("answered_at").notNull().defaultNow(),
   },
   (t) => [
     index("conjugation_attempts_verb_tense_idx").on(t.verb, t.tense),
     index("conjugation_attempts_user_id_answered_at_idx").on(t.userId, t.answeredAt),
+    uniqueIndex("conjugation_attempts_user_request_key").on(t.userId, t.requestKey),
   ],
 );
 
@@ -675,11 +734,15 @@ export const tcfAttempts = pgTable(
     score: integer("score").notNull(),
     total: integer("total").notNull(),
     perLevel: jsonb("per_level").$type<TcfPerLevel>(),
+    requestKey: text("request_key"),
+    requestHash: text("request_hash"),
     answeredAt: timestamp("answered_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
     index("tcf_attempts_set_id_idx").on(t.setId),
     index("tcf_attempts_user_id_answered_at_idx").on(t.userId, t.answeredAt),
+    uniqueIndex("tcf_attempts_user_request_key").on(t.userId, t.requestKey),
+    unique("tcf_attempts_user_id_id_key").on(t.userId, t.id),
   ],
 );
 
@@ -694,6 +757,7 @@ export const tcfQuestionAttempts = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     userId: uuid("user_id").notNull().references(() => users.id),
+    runItemId: uuid("run_item_id").unique().references((): AnyPgColumn => practiceRunItems.id, { onDelete: "set null" }),
     // cascade: re-importing a set wipes its per-question history — accepted
     // tradeoff (spec §2); whole-exam totals in tcf_attempts survive.
     questionId: uuid("question_id")
@@ -710,6 +774,9 @@ export const tcfQuestionAttempts = pgTable(
     correct: boolean("correct").notNull(),
     /** A correct guess still counts for accuracy, but is scheduled like a wrong answer. */
     uncertain: boolean("uncertain").notNull().default(false),
+    gradeVersion: integer("grade_version"),
+    requestKey: text("request_key"),
+    requestHash: text("request_hash"),
     answeredAt: timestamp("answered_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
@@ -717,6 +784,10 @@ export const tcfQuestionAttempts = pgTable(
     index("tcf_qa_answered_at_idx").on(t.answeredAt),
     index("tcf_qa_exam_attempt_id_idx").on(t.examAttemptId),
     index("tcf_qa_user_id_answered_at_idx").on(t.userId, t.answeredAt),
+    uniqueIndex("tcf_qa_user_request_key").on(t.userId, t.requestKey),
+    // Existing examAttemptId FK sets only that nullable column to null on deletion.
+    // Keep the owner intact while checking parent ownership whenever an exam is linked.
+    foreignKey({ columns: [t.userId, t.examAttemptId], foreignColumns: [tcfAttempts.userId, tcfAttempts.id], name: "tcf_qa_user_exam_fk" }),
   ],
 );
 
@@ -800,8 +871,7 @@ export const speakingSessions = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     userId: uuid("user_id").notNull().references(() => users.id),
     promptId: uuid("prompt_id")
-      .notNull()
-      .references(() => speakingPrompts.id, { onDelete: "cascade" }),
+      .references(() => speakingPrompts.id, { onDelete: "set null" }),
     mode: speakingModeEnum("mode").notNull(),
     status: speakingSessionStatusEnum("status").notNull().default("active"),
     /** End-of-session report (Phase 2: GPT content feedback) */
@@ -830,14 +900,108 @@ export const speakingTurns = pgTable(
     text: text("text").notNull(),
     /** Relative path, e.g. /media/speaking/<sessionId>/003.wav */
     audioPath: text("audio_path"),
+    /** Nullable for historical/script retries; unique within new simulations. */
+    requestKey: uuid("request_key"),
     /** Azure word-level assessment — user turns only */
     assessment: jsonb("assessment").$type<TurnAssessment>(),
+    transcriptionDisputedAt: timestamp("transcription_disputed_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [index("speaking_turns_user_id_session_id_idx").on(t.userId, t.sessionId)],
+  (t) => [
+    index("speaking_turns_user_id_session_id_idx").on(t.userId, t.sessionId),
+    uniqueIndex("speaking_turns_session_request_key_idx").on(t.sessionId, t.requestKey),
+  ],
 );
 
 export type SpeakingTurn = typeof speakingTurns.$inferSelect;
+
+/** A simulation's state is separate from legacy sentence practice. */
+export const speakingSimulations = pgTable("speaking_simulations", {
+  sessionId: uuid("session_id").primaryKey().references(() => speakingSessions.id, { onDelete: "cascade" }),
+  userId: uuid("user_id").notNull().references(() => users.id),
+  startRequestKey: uuid("start_request_key").notNull(),
+  scenarioVersion: integer("scenario_version").notNull(),
+  scenarioSnapshot: jsonb("scenario_snapshot").notNull().$type<{ title: string; instruction: string }>(),
+  phase: text("phase").notNull().default("preparing"),
+  revision: integer("revision").notNull().default(0),
+  preparationEndsAt: timestamp("preparation_ends_at", { withTimezone: true }).notNull(),
+  conversationStartedAt: timestamp("conversation_started_at", { withTimezone: true }),
+  conversationEndsAt: timestamp("conversation_ends_at", { withTimezone: true }),
+  finishedAt: timestamp("finished_at", { withTimezone: true }),
+  finishReason: text("finish_reason"),
+  excludedWaitMs: integer("excluded_wait_ms").notNull().default(0),
+}, (t) => [
+  index("speaking_simulations_user_id_idx").on(t.userId),
+  uniqueIndex("speaking_simulations_user_start_key_idx").on(t.userId, t.startRequestKey),
+]);
+
+export const speakingAssets = pgTable("speaking_assets", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id),
+  sessionId: uuid("session_id").notNull().references(() => speakingSessions.id, { onDelete: "cascade" }),
+  turnId: uuid("turn_id").references(() => speakingTurns.id, { onDelete: "set null" }),
+  objectKey: text("object_key").notNull().unique(),
+  mimeType: text("mime_type").notNull(),
+  byteLength: integer("byte_length").notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [index("speaking_assets_user_session_idx").on(t.userId, t.sessionId)]);
+
+export type SpeakingPracticeFeedback = {
+  summary: string;
+  strengths: { text: string; turnId: string; quote: string }[];
+  issues: { id: string; category: string; explanation: string; turnId: string; quote: string; example: string; drillId: string | null }[];
+  limitations: string[];
+};
+
+export const speakingAssessments = pgTable("speaking_assessments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id),
+  sessionId: uuid("session_id").notNull().references(() => speakingSessions.id, { onDelete: "cascade" }),
+  transcriptRevision: integer("transcript_revision").notNull(),
+  rubricVersion: integer("rubric_version").notNull().default(1),
+  status: text("status").notNull().default("pending"),
+  result: jsonb("result").$type<SpeakingPracticeFeedback>(),
+  failure: text("failure"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  completedAt: timestamp("completed_at", { withTimezone: true }),
+}, (t) => [uniqueIndex("speaking_assessments_session_revision_idx").on(t.sessionId, t.transcriptRevision)]);
+
+export const speakingFollowUps = pgTable("speaking_follow_ups", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id),
+  assessmentId: uuid("assessment_id").notNull().references(() => speakingAssessments.id, { onDelete: "cascade" }),
+  issueId: text("issue_id").notNull(),
+  drillId: text("drill_id").notNull(),
+  prompt: text("prompt").notNull(),
+  transcript: text("transcript"),
+  audioPath: text("audio_path"),
+  feedback: text("feedback"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  index("speaking_follow_ups_assessment_idx").on(t.assessmentId),
+  uniqueIndex("speaking_follow_ups_issue_idx").on(t.assessmentId, t.issueId),
+]);
+
+export const speakingOperations = pgTable("speaking_operations", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id),
+  /** Retained after session deletion so deleting history cannot reset spending. */
+  sessionId: uuid("session_id").references(() => speakingSessions.id, { onDelete: "set null" }),
+  kind: text("kind").notNull(),
+  requestKey: uuid("request_key").notNull(),
+  requestHash: text("request_hash"),
+  status: text("status").notNull().default("reserved"),
+  reservedCents: integer("reserved_cents").notNull(),
+  actualCents: integer("actual_cents"),
+  usage: jsonb("usage").$type<{ audioSeconds?: number; chatInputTokens?: number; chatOutputTokens?: number; speechCharacters?: number; latencyMs?: number }>(),
+  leaseExpiresAt: timestamp("lease_expires_at", { withTimezone: true }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  uniqueIndex("speaking_operations_request_idx").on(t.sessionId, t.kind, t.requestKey),
+  index("speaking_operations_user_created_idx").on(t.userId, t.createdAt),
+]);
 
 /* ------------------------------------------------------------------ */
 /*  grammar_points — A2–B1 grammar reference library                   */
@@ -871,3 +1035,94 @@ export const grammarPoints = pgTable(
 );
 
 export type GrammarPoint = typeof grammarPoints.$inferSelect;
+
+export const reviewSourceEnum = pgEnum("review_source", ["tcf", "quiz", "writing", "vocabulary", "conjugation"]);
+export const reviewManagementEnum = pgEnum("review_management", ["active", "paused", "archived"]);
+export const reviewLearningEnum = pgEnum("review_learning", ["needs_practice", "consolidating", "stable"]);
+export const reviewAvailabilityEnum = pgEnum("review_availability", ["ready", "feedback_pending", "disputed", "source_missing", "unsupported"]);
+
+export const reviewItems = pgTable("review_items", {
+  id: uuid("id").primaryKey().defaultRandom(), userId: uuid("user_id").notNull().references(() => users.id),
+  source: reviewSourceEnum("source").notNull(), sourceKey: text("source_key").notNull(),
+  // Concrete deletion edges ensure private content is revoked even on a cascading source delete.
+  tcfQuestionId: uuid("tcf_question_id").references(() => tcfQuestions.id, { onDelete: "cascade" }),
+  quizQuestionId: text("quiz_question_id").references(() => quizQuestions.id, { onDelete: "cascade" }),
+  errorId: text("error_id").references(() => errors.id, { onDelete: "cascade" }),
+  gapId: uuid("gap_id").references(() => vocabularyGaps.id, { onDelete: "cascade" }),
+  title: text("title").notNull(), skill: text("skill").notNull(), href: text("href").notNull(),
+  management: reviewManagementEnum("management").notNull().default("active"), pauseUntil: timestamp("pause_until", { withTimezone: true }),
+  note: text("note").notNull().default(""), disputedAt: timestamp("disputed_at", { withTimezone: true }), disputeReason: text("dispute_reason"),
+  availability: reviewAvailabilityEnum("availability").notNull().default("ready"),
+  learningState: reviewLearningEnum("learning_state").notNull().default("needs_practice"),
+  dueAt: timestamp("due_at", { withTimezone: true }), eligibleAfter: timestamp("eligible_after", { withTimezone: true }),
+  successCount: integer("success_count").notNull().default(0), policyVersion: integer("policy_version").notNull().default(1),
+  revision: integer("revision").notNull().default(0), contentHash: text("content_hash").notNull(),
+  firstObservedAt: timestamp("first_observed_at", { withTimezone: true }).notNull(),
+  lastObservedAt: timestamp("last_observed_at", { withTimezone: true }).notNull(),
+}, t => [unique("review_items_owner_source").on(t.userId, t.source, t.sourceKey), unique("review_items_owner_id").on(t.userId,t.id),
+  index("review_items_due").on(t.userId,t.management,t.availability,t.dueAt,t.id),
+  index("review_items_recent").on(t.userId,t.lastObservedAt,t.id),
+  check("review_note_bound", sql`length(${t.note}) <= 2000`),
+  foreignKey({ columns: [t.userId,t.errorId], foreignColumns: [errors.userId,errors.id], name: "review_items_owner_error" }).onDelete("cascade"),
+  foreignKey({ columns: [t.userId,t.gapId], foreignColumns: [vocabularyGaps.userId,vocabularyGaps.id], name: "review_items_owner_gap" }).onDelete("cascade"),
+]);
+export type ReviewItem = typeof reviewItems.$inferSelect;
+
+export const reviewEvidence = pgTable("review_evidence", {
+  id: uuid("id").primaryKey().defaultRandom(), userId: uuid("user_id").notNull(), itemId: uuid("item_id").notNull(),
+  attemptId: text("attempt_id").notNull(), attemptType: text("attempt_type").notNull(),
+  answeredAt: timestamp("answered_at", { withTimezone: true }).notNull(), correct: boolean("correct"), uncertain: boolean("uncertain").notNull().default(false),
+  valid: boolean("valid").notNull(), independent: boolean("independent").notNull().default(false), permitted: boolean("permitted").notNull().default(true),
+  revealedAt: timestamp("revealed_at", { withTimezone: true }), provenance: text("provenance").notNull(),
+}, t => [unique("review_evidence_once").on(t.userId,t.itemId,t.attemptType,t.attemptId),
+  foreignKey({ columns: [t.userId,t.itemId], foreignColumns: [reviewItems.userId,reviewItems.id], name: "review_evidence_owner_item" }).onDelete("cascade"),
+  index("review_evidence_history").on(t.userId,t.itemId,t.answeredAt),
+]);
+export const reviewChanges = pgTable("review_item_changes", {
+  id: uuid("id").primaryKey().defaultRandom(), userId: uuid("user_id").notNull(), itemId: uuid("item_id").notNull(),
+  command: text("command").notNull(), requestKey: text("request_key").notNull(), requestHash: text("request_hash").notNull(),
+  revision: integer("revision").notNull(), createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, t => [unique("review_changes_request").on(t.userId,t.requestKey),
+  foreignKey({ columns: [t.userId,t.itemId], foreignColumns: [reviewItems.userId,reviewItems.id], name: "review_changes_owner_item" }).onDelete("cascade")]);
+export const reviewBackfillJobs = pgTable("review_backfill_jobs", {
+  id: uuid("id").primaryKey().defaultRandom(), userId: uuid("user_id").notNull().references(() => users.id),
+  source: reviewSourceEnum("source").notNull(), cursor: text("cursor").notNull().default(""),
+  cutoff: timestamp("cutoff", { withTimezone: true }).notNull().defaultNow(), fingerprint: text("fingerprint").notNull(),
+  processed: integer("processed").notNull().default(0), unresolved: integer("unresolved").notNull().default(0),
+  status: text("status", { enum: ["running","completed"] }).notNull().default("running"),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const practiceRuns = pgTable("practice_runs", {
+  id: uuid("id").primaryKey().defaultRandom(), userId: uuid("user_id").notNull().references(() => users.id),
+  state: text("state", { enum: ["active","paused","completed","cancelled"] }).notNull().default("active"),
+  revision: integer("revision").notNull().default(0), count: integer("count").notNull(),
+  requestKey: text("request_key").notNull(), requestHash: text("request_hash").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  completedAt: timestamp("completed_at", { withTimezone: true }),
+}, t => [unique("practice_runs_owner_id").on(t.userId,t.id), unique("practice_runs_request").on(t.userId,t.requestKey),
+  check("practice_run_count", sql`${t.count} between 1 and 20`)]);
+export const practiceRunItems = pgTable("practice_run_items", {
+  id: uuid("id").primaryKey().defaultRandom(), userId: uuid("user_id").notNull(), runId: uuid("run_id").notNull(),
+  // Scrubbing trigger clears private data before deletion of the source item.
+  reviewItemId: uuid("review_item_id").references(() => reviewItems.id, { onDelete: "set null" }),
+  position: integer("position").notNull(), snapshot: jsonb("snapshot").$type<ReviewSnapshot>(),
+  state: text("state", { enum: ["pending","saved","blocked"] }).notNull().default("pending"),
+  draft: jsonb("draft").$type<string | number | null>(), draftRevision: integer("draft_revision").notNull().default(0),
+  revealedAt: timestamp("revealed_at", { withTimezone: true }),
+  attemptType: text("attempt_type"), attemptId: text("attempt_id"),
+  correct: boolean("correct"), uncertain: boolean("uncertain").notNull().default(false),
+  submittedAt: timestamp("submitted_at", { withTimezone: true }),
+}, t => [unique("practice_item_position").on(t.runId,t.position), unique("practice_item_target").on(t.runId,t.reviewItemId),
+  unique("practice_items_owner_id").on(t.userId,t.id),
+  foreignKey({ columns: [t.userId,t.runId], foreignColumns: [practiceRuns.userId,practiceRuns.id], name: "practice_items_owner_run" }).onDelete("cascade"),
+  foreignKey({ columns: [t.userId,t.reviewItemId], foreignColumns: [reviewItems.userId,reviewItems.id], name: "practice_items_owner_review" }),
+]);
+export const practiceRequests = pgTable("practice_requests", {
+  id: uuid("id").primaryKey().defaultRandom(), userId: uuid("user_id").notNull(), runId: uuid("run_id").notNull(),
+  requestKey: text("request_key").notNull(), requestHash: text("request_hash").notNull(), command: text("command").notNull(),
+  itemId: uuid("item_id"), revision: integer("revision").notNull(),
+}, t => [unique("practice_request_once").on(t.userId,t.requestKey),
+  foreignKey({ columns: [t.userId,t.runId], foreignColumns: [practiceRuns.userId,practiceRuns.id], name: "practice_request_owner_run" }).onDelete("cascade"),
+  foreignKey({ columns: [t.userId,t.itemId], foreignColumns: [practiceRunItems.userId,practiceRunItems.id], name: "practice_request_owner_item" }).onDelete("cascade"),
+]);

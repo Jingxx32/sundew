@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { deriveTcfLearningSummary } from "./learning";
+import { deriveTcfLearningSummary, isTcfReviewDue } from "./learning";
 
 const at = (day: number) => new Date(`2026-08-${String(day).padStart(2, "0")}T12:00:00Z`);
 const attempt = (id: string, day: number, correct: boolean, uncertain = false) => ({ id, answeredAt: at(day), correct, uncertain });
@@ -34,4 +34,11 @@ test("a wrong or uncertain latest answer breaks a prior confident streak", () =>
   ]);
   assert.equal(summary.consecutiveConfidentCorrect, 0);
   assert.equal(summary.status, "needs_review");
+});
+
+test("confidently correct questions become due after their scheduled interval", () => {
+  const summary = deriveTcfLearningSummary([attempt("a", 1, true)]);
+  assert.equal(summary.needsReview, false);
+  assert.equal(isTcfReviewDue(summary, at(3)), false);
+  assert.equal(isTcfReviewDue(summary, at(4)), true);
 });

@@ -1,6 +1,10 @@
 "use server";
 
-import { randomUUID } from "node:crypto";
+import { syncReviewTarget } from "@/lib/review/service";
+import { reviewDataEnabled, lockReviewOwner, conjugationKey } from "@/lib/review/adapters";
+
+import { createHash, randomUUID } from "node:crypto";
+import { revalidatePath } from "next/cache";
 import { desc, inArray, and, eq, count, sql } from "drizzle-orm";
 
 import { db } from "@/lib/db";
@@ -244,33 +248,58 @@ export async function recordConjugationAttempt(input: {
   tense: DrillTense;
   person: number;
   userInput: string;
+  requestKey?: string;
 }): Promise<GradeResult> {
   const user = await requireUser();
+  if (input.requestKey !== undefined && (typeof input.requestKey !== "string" || !/^[a-zA-Z0-9-]{12,100}$/.test(input.requestKey))) {
+    throw new Error("Invalid request key");
+  }
+  if (!Number.isInteger(input.person) || input.person < 0 || input.person > 5 ||
+      typeof input.userInput !== "string" || !input.userInput.trim() || input.userInput.length > 200) {
+    throw new Error("Invalid conjugation answer");
+  }
   if (!DRILL_TENSES.includes(input.tense) || !isKnownVerb(input.verb)) {
     throw new Error(`Unknown drill target: ${input.verb} / ${input.tense}`);
   }
-  const person = Math.min(Math.max(Math.trunc(input.person), 0), 5);
+  const person = input.person;
+  const userInput = input.userInput.normalize("NFC").trim();
+  const requestHash = createHash("sha256").update(JSON.stringify({ verb: input.verb, tense: input.tense, person, userInput })).digest("hex");
 
   const accepted = acceptedForms(input.verb, input.tense, person);
   const expected = conjugate(input.verb, input.tense, person);
   const given = gradeKey(input.userInput);
   const correct = given !== "" && accepted.some((a) => gradeKey(a) === given);
 
-  await db.insert(conjugationAttempts).values({
+  const saved = await db.transaction(async tx => {
+    if (reviewDataEnabled()) await lockReviewOwner(tx,user.id);
+  const [created] = await tx.insert(conjugationAttempts).values({
     id: randomUUID(),
     userId: user.id,
     verb: input.verb,
     tense: input.tense,
     person,
-    userInput: input.userInput.normalize("NFC").trim(),
+    userInput,
     expected,
     correct,
+    requestKey: input.requestKey ?? null,
+    requestHash,
+  }).onConflictDoNothing({ target: [conjugationAttempts.userId, conjugationAttempts.requestKey] }).returning();
+  let saved = created;
+  if (!saved) {
+    [saved] = await tx.select().from(conjugationAttempts).where(and(
+      eq(conjugationAttempts.userId, user.id), eq(conjugationAttempts.requestKey, input.requestKey!),
+    )).limit(1);
+    if (!saved || saved.requestHash !== requestHash) throw new Error("Request key was reused with a different answer");
+  }
+    if (reviewDataEnabled()) await syncReviewTarget(tx,user.id,"conjugation",conjugationKey(input.verb,input.tense,input.person));
+    return saved;
   });
 
-  // No revalidatePath here: re-rendering the page mid-round would regenerate
-  // the random queue under the deck. The end-of-round "New round" button
-  // calls router.refresh(), which refetches queue + stats together.
-  return { correct, expected, accepted, ruleHint: RULE_HINTS[input.tense] };
+  revalidatePath("/today");
+
+  // Only Today is invalidated. Revalidating this drill route mid-round would
+  // regenerate the random queue under the deck.
+  return { correct: saved.correct, expected: saved.expected, accepted, ruleHint: RULE_HINTS[input.tense] };
 }
 
 /* ------------------------------------------------------------------ */

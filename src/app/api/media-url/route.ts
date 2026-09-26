@@ -11,6 +11,11 @@ export async function GET(request: NextRequest) {
 
   const path = request.nextUrl.searchParams.get("path");
   if (!path) return NextResponse.json({ error: "Missing media path." }, { status: 400 });
+  // Speaking recordings require an asset-ID lookup and owner check. Do not sign
+  // arbitrary paths, including legacy recordings once migrated from public/.
+  if (/^\/?(?:media\/)?(?:private\/)?speaking\//.test(path)) {
+    return NextResponse.json({ error: "Use authorized recording playback." }, { status: 403 });
+  }
 
   try {
     const url = await getPrivateMediaUrl(path);

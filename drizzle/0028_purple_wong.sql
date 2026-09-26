@@ -1,0 +1,1 @@
+ALTER TABLE "speaking_turns" ADD COLUMN "transcription_disputed_at" timestamp with time zone;

@@ -90,26 +90,53 @@ export async function setSpeakingProfile(text: string): Promise<void> {
 /* ------------------------------------------------------------------ */
 
 export type StudyGoal = {
+  learningMode: "general" | "tcf";
   /** Target CLB/NCLC level, 4–10. null = not set. */
   targetClb: number | null;
   /** Exam date as YYYY-MM-DD. null = long-term prep, no date yet. */
   examDate: string | null;
+  /** IANA time zone used for Today and weekly boundaries. */
+  timeZone: string;
 };
 
 const EXAM_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+function isValidCalendarDate(value: string): boolean {
+  if (!EXAM_DATE_RE.test(value)) return false;
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
+}
+
+function isValidTimeZone(value: string): boolean {
+  try {
+    new Intl.DateTimeFormat("en", { timeZone: value }).format();
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export async function getStudyGoal(): Promise<StudyGoal> {
   const user = await requireUser();
   const rows = await db
     .select()
     .from(userSettings)
-    .where(and(eq(userSettings.userId, user.id), inArray(userSettings.key, ["target_clb", "exam_date"])));
+    .where(and(eq(userSettings.userId, user.id), inArray(userSettings.key, ["learning_mode", "target_clb", "exam_date", "time_zone"])));
   const map = new Map(rows.map((r) => [r.key, r.value]));
   const clb = Number(map.get("target_clb"));
   const date = map.get("exam_date") ?? "";
+  const explicitMode = map.get("learning_mode");
+  const targetClb = Number.isInteger(clb) && clb >= 4 && clb <= 10 ? clb : null;
+  const examDate = isValidCalendarDate(date) ? date : null;
+  const timeZoneRaw = map.get("time_zone") ?? "UTC";
   return {
-    targetClb: Number.isInteger(clb) && clb >= 4 && clb <= 10 ? clb : null,
-    examDate: EXAM_DATE_RE.test(date) ? date : null,
+    learningMode: explicitMode === "general" || explicitMode === "tcf"
+      ? explicitMode
+      : targetClb !== null || examDate !== null ? "tcf" : "general",
+    targetClb,
+    examDate,
+    timeZone: isValidTimeZone(timeZoneRaw) ? timeZoneRaw : "UTC",
   };
 }
 
@@ -120,18 +147,28 @@ export async function setStudyGoal(goal: StudyGoal): Promise<void> {
       ? String(goal.targetClb)
       : "";
   const date = goal.examDate && EXAM_DATE_RE.test(goal.examDate) ? goal.examDate : "";
-  for (const [key, value] of [
+  if (goal.examDate && !isValidCalendarDate(goal.examDate)) throw new Error("Invalid exam date");
+  if (!isValidTimeZone(goal.timeZone)) throw new Error("Invalid time zone");
+  const learningMode = goal.learningMode === "tcf" ? "tcf" : "general";
+  const entries = [
+    ["learning_mode", learningMode],
     ["target_clb", clb],
     ["exam_date", date],
-  ] as const) {
-    await db
-      .insert(userSettings)
-      .values({ userId: user.id, key, value })
-      .onConflictDoUpdate({
-        target: [userSettings.userId, userSettings.key],
-        set: { value, updatedAt: new Date() },
-      });
-  }
+    ["time_zone", goal.timeZone],
+  ] as const;
+  await db.transaction(async (tx) => {
+    for (const [key, value] of entries) {
+      await tx
+        .insert(userSettings)
+        .values({ userId: user.id, key, value })
+        .onConflictDoUpdate({
+          target: [userSettings.userId, userSettings.key],
+          set: { value, updatedAt: new Date() },
+        });
+    }
+  });
   revalidatePath("/settings");
   revalidatePath("/progress");
+  revalidatePath("/today");
+  revalidatePath("/training");
 }

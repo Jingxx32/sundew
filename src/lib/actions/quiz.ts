@@ -1,6 +1,10 @@
 "use server";
 
+import { syncReviewTarget } from "@/lib/review/service";
+import { reviewDataEnabled, lockReviewOwner } from "@/lib/review/adapters";
+
 import { randomUUID } from "node:crypto";
+import { createHash } from "node:crypto";
 import { eq, desc, and, inArray, asc, type SQL } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -10,6 +14,7 @@ import {
   quizPassages,
   quizQuestions,
   quizAttempts,
+  quizQuestionAttempts,
   type QuizSet,
   type QuizPassage,
   type QuizQuestion,
@@ -19,6 +24,7 @@ import { extractPdfText } from "@/lib/pdf/extract";
 import { parseQuizFromText } from "@/lib/ai/quiz-parse";
 import { QuizParseSchema, type ParsedQuiz } from "@/lib/ai/quiz-schema";
 import { requireUser } from "@/lib/auth/session";
+import { gradeQuizAnswers, type QuizAnswer } from "@/lib/quiz/grading";
 
 const QUIZ_SECTIONS = [
   "reading",
@@ -142,30 +148,59 @@ export async function confirmQuizImport(input: {
 
 export async function submitQuizAttempt(input: {
   setId: string;
-  score: number;
-  total: number;
+  answers: QuizAnswer[];
+  requestKey: string;
 }): Promise<QuizAttempt> {
   const user = await requireUser();
-  const total = Math.max(0, Math.round(input.total));
-  const score = Math.min(total, Math.max(0, Math.round(input.score)));
+  if (typeof input.requestKey !== "string" || !/^[a-zA-Z0-9-]{12,100}$/.test(input.requestKey)) {
+    throw new Error("Invalid request key");
+  }
+  if (!Array.isArray(input.answers) || input.answers.length > 200) throw new Error("Invalid answers");
   const ownedSet = await db
-    .select({ id: quizSets.id })
+    .select({ id: quizSets.id, section: quizSets.section })
     .from(quizSets)
     .where(and(eq(quizSets.id, input.setId), eq(quizSets.userId, user.id)))
     .limit(1);
   if (ownedSet.length === 0) throw new Error("Quiz set not found");
-  const [attempt] = await db
-    .insert(quizAttempts)
-    .values({
-      id: randomUUID(),
-      userId: user.id,
-      setId: input.setId,
-      score,
-      total,
-    })
-    .returning();
+  const questions = await db.select({
+    id: quizQuestions.id,
+    type: quizQuestions.type,
+    answer: quizQuestions.answer,
+    options: quizQuestions.options,
+  }).from(quizQuestions).innerJoin(quizPassages, eq(quizQuestions.passageId, quizPassages.id))
+    .where(eq(quizPassages.setId, input.setId));
+  const targetType = ownedSet[0].section === "dictation" ? "fill_blank" : "single";
+  const gradable = questions.filter((q) => q.type === targetType) as Array<{
+    id: string; type: "single" | "fill_blank"; answer: unknown; options: string[] | null;
+  }>;
+  const graded = gradeQuizAnswers(gradable, input.answers);
+  const score = graded.filter((answer) => answer.correct).length;
+  const requestHash = createHash("sha256").update(JSON.stringify({ setId: input.setId,
+    answers: [...graded].sort((a, b) => a.questionId.localeCompare(b.questionId)).map(({ questionId, answer, uncertain }) => ({ questionId, answer, uncertain })) })).digest("hex");
+  const attempt = await db.transaction(async (tx) => {
+    if (reviewDataEnabled()) await lockReviewOwner(tx,user.id);
+    const [created] = await tx.insert(quizAttempts).values({
+      id: randomUUID(), userId: user.id, setId: input.setId, score, total: graded.length,
+      requestKey: input.requestKey, requestHash,
+    }).onConflictDoNothing({ target: [quizAttempts.userId, quizAttempts.requestKey] }).returning();
+    if (!created) {
+      const [existing] = await tx.select().from(quizAttempts).where(and(
+        eq(quizAttempts.userId, user.id), eq(quizAttempts.requestKey, input.requestKey),
+      )).limit(1);
+      if (!existing || existing.requestHash !== requestHash) throw new Error("Request key was used for different answers");
+      return existing;
+    }
+    await tx.insert(quizQuestionAttempts).values(graded.map((answer) => ({
+      userId: user.id, attemptId: created.id, questionId: answer.questionId,
+      answer: answer.answer, correct: answer.correct, uncertain: answer.uncertain,
+    })));
+    if (reviewDataEnabled()) for (const answer of graded) await syncReviewTarget(tx,user.id,"quiz",answer.questionId);
+    return created;
+  });
 
   revalidatePath("/quiz");
+  revalidatePath("/review");
+  revalidatePath("/today");
   return attempt;
 }
 

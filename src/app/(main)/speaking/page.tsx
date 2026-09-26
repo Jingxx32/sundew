@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
-import { ArrowDown, AudioLines, Clock3, MessagesSquare } from "lucide-react";
+import { ArrowDown, AudioLines, MessagesSquare } from "lucide-react";
 import { listPromptsWithStats } from "@/lib/actions/speaking";
 import { Button } from "@/components/ui/button";
 import { PromptList } from "./_components/prompt-list";
@@ -38,7 +38,7 @@ export default async function SpeakingPage() {
                   Exam simulation
                 </span>
                 <span className="rounded-full bg-surface/80 px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
-                  Live dialogue next
+                  Private voice pilot
                 </span>
               </div>
 
@@ -66,10 +66,7 @@ export default async function SpeakingPage() {
                 ))}
               </div>
 
-              <p className="mt-5 flex items-center gap-2 text-xs text-muted-foreground">
-                <Clock3 className="h-3.5 w-3.5" aria-hidden="true" />
-                The full exam flow will open here in the next stage.
-              </p>
+              <Button asChild className="mt-5"><Link href="/speaking/task-2">Open Task 2 practice</Link></Button>
             </div>
           </article>
 

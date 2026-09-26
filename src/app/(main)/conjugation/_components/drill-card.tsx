@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Check, RefreshCw, X } from "lucide-react";
 
@@ -21,22 +21,34 @@ export function DrillCard({ queue }: { queue: DrillItem[] }) {
   const [result, setResult] = useState<GradeResult | null>(null);
   const [score, setScore] = useState(0);
   const [pending, startTransition] = useTransition();
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const request = useRef<Parameters<typeof recordConjugationAttempt>[0] | null>(null);
+  const saving = useRef(false);
 
   const item = queue[index];
   const finished = index >= queue.length;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!item || result || !input.trim()) return;
+    if (!item || result || !input.trim() || saving.current) return;
+    // Freeze one logical submission until its saved result is confirmed.
+    // A lost response retries the same payload and key, rather than adding history.
+    request.current ??= {
+      verb: item.verb, tense: item.tense, person: item.person, userInput: input,
+      requestKey: globalThis.crypto?.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`,
+    };
+    saving.current = true;
+    setSubmitted(true);
+    setSaveError(null);
     startTransition(async () => {
-      const graded = await recordConjugationAttempt({
-        verb: item.verb,
-        tense: item.tense,
-        person: item.person,
-        userInput: input,
-      });
-      setResult(graded);
-      if (graded.correct) setScore((s) => s + 1);
+      try {
+        const graded = await recordConjugationAttempt(request.current!);
+        setResult(graded);
+        if (graded.correct) setScore((s) => s + 1);
+      } catch {
+        setSaveError("Could not confirm that your answer was saved. Retry to confirm it.");
+      } finally { saving.current = false; }
     });
   }
 
@@ -44,6 +56,9 @@ export function DrillCard({ queue }: { queue: DrillItem[] }) {
     setIndex((i) => i + 1);
     setInput("");
     setResult(null);
+    request.current = null;
+    setSubmitted(false);
+    setSaveError(null);
   }
 
   function handleNewRound() {
@@ -51,6 +66,9 @@ export function DrillCard({ queue }: { queue: DrillItem[] }) {
     setScore(0);
     setInput("");
     setResult(null);
+    request.current = null;
+    setSubmitted(false);
+    setSaveError(null);
     // refresh() re-renders the page → fresh random queue + updated stats
     startTransition(() => router.refresh());
   }
@@ -109,7 +127,8 @@ export function DrillCard({ queue }: { queue: DrillItem[] }) {
         <Input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          disabled={result !== null || pending}
+          disabled={submitted || result !== null || pending}
+          maxLength={200}
           placeholder={item.pronominal ? "me …" : "Type the form…"}
           className="max-w-sm text-base"
           lang="fr"
@@ -119,7 +138,7 @@ export function DrillCard({ queue }: { queue: DrillItem[] }) {
         />
         {result === null ? (
           <Button type="submit" disabled={pending || !input.trim()}>
-            {pending ? "Checking…" : "Check"}
+            {pending ? "Saving…" : saveError ? "Retry save" : "Check"}
           </Button>
         ) : (
           <Button type="button" onClick={handleNext}>
@@ -128,6 +147,7 @@ export function DrillCard({ queue }: { queue: DrillItem[] }) {
           </Button>
         )}
       </form>
+      {saveError && <p role="alert" className="mt-3 text-sm text-danger">{saveError}</p>}
 
       {/* Verdict */}
       {result && (

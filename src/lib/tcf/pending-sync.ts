@@ -29,7 +29,9 @@ const STORAGE_KEY = "tcf-pending-sync";
 const RETRY_INTERVAL_MS = 30_000;
 
 function sendItem(item: PendingItem): Promise<void> {
-  return item.kind === "drill" ? recordTcfQuestionAttempt(item.payload) : recordTcfExamAttempt(item.payload);
+  return item.kind === "drill"
+    ? recordTcfQuestionAttempt({ ...item.payload, requestKey: item.id })
+    : recordTcfExamAttempt({ ...item.payload, requestKey: item.id });
 }
 
 // crypto.randomUUID() throws outside a secure context — a plain-http LAN

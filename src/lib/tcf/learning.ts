@@ -20,6 +20,11 @@ export type TcfQuestionLearningSummary = {
   needsReview: boolean;
 };
 
+/** A confident answer can become due again after its review interval. */
+export function isTcfReviewDue(summary: TcfQuestionLearningSummary, now: Date): boolean {
+  return summary.nextReviewAt !== null && summary.nextReviewAt <= now;
+}
+
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 /**

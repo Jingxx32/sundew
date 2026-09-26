@@ -1,7 +1,7 @@
 "use server";
 
-import { randomUUID } from "node:crypto";
-import { eq, and, desc, count, inArray, gte, asc, type SQL, sql } from "drizzle-orm";
+import { createHash, randomUUID } from "node:crypto";
+import { eq, and, desc, count, inArray, gte, asc, lt, or, type SQL, sql } from "drizzle-orm";
 import { format, parseISO, startOfWeek, addWeeks } from "date-fns";
 import { revalidatePath } from "next/cache";
 
@@ -23,7 +23,7 @@ export type ErrorWithContext = ErrorRecord & {
   errorIndex: number;
 };
 
-export type MicroDrillView = Omit<MicroDrill, "userId">;
+export type MicroDrillView = Pick<MicroDrill, "id" | "errorId" | "promptText" | "responseFr" | "feedbackJson" | "feedbackStatus" | "createdAt">;
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                             */
@@ -205,6 +205,7 @@ export async function getMicroDrillsForError(errorId: string): Promise<MicroDril
       promptText: microDrills.promptText,
       responseFr: microDrills.responseFr,
       feedbackJson: microDrills.feedbackJson,
+      feedbackStatus: microDrills.feedbackStatus,
       createdAt: microDrills.createdAt,
     })
     .from(microDrills)
@@ -219,9 +220,11 @@ export async function getMicroDrillsForError(errorId: string): Promise<MicroDril
 export async function createMicroDrill(
   errorId: string,
   responseFr: string,
-): Promise<MicroDrillFeedback> {
+  requestKey: string,
+): Promise<MicroDrillView> {
   const user = await requireUser();
-  if (!responseFr.trim()) throw new Error("Response cannot be empty.");
+  if (!responseFr.trim() || responseFr.length > 1000) throw new Error("Response must contain 1–1000 characters.");
+  if (!/^[a-zA-Z0-9-]{12,100}$/.test(requestKey)) throw new Error("Invalid request key");
 
   const errorRow = await db
     .select()
@@ -233,25 +236,91 @@ export async function createMicroDrill(
 
   const normalised = responseFr.normalize("NFC");
   const promptText = errorRow.microDrill ?? errorRow.explanationEn;
-
-  const feedback = await evaluateMicroDrill(
-    promptText,
-    errorRow.original,
-    errorRow.correction,
-    normalised,
-  );
-
-  await db.insert(microDrills).values({
+  const requestHash = createHash("sha256").update(JSON.stringify({ errorId, normalised })).digest("hex");
+  const [created] = await db.insert(microDrills).values({
     id: randomUUID(),
     userId: user.id,
     errorId,
     promptText,
     responseFr: normalised,
-    feedbackJson: feedback,
-  });
+    feedbackStatus: "pending",
+    feedbackAttempts: 1,
+    feedbackLeaseUntil: new Date(Date.now() + 5 * 60_000),
+    requestKey,
+    requestHash,
+  }).onConflictDoNothing({ target: [microDrills.userId, microDrills.requestKey] })
+    .returning({ id: microDrills.id });
+  if (!created) {
+    const [existing] = await db.select().from(microDrills).where(and(
+      eq(microDrills.userId, user.id), eq(microDrills.requestKey, requestKey),
+    )).limit(1);
+    if (!existing || existing.requestHash !== requestHash) throw new Error("Request key was reused for another response");
+    return toMicroDrillView(existing);
+  }
+  const saved = await evaluateSavedMicroDrill(created.id, user.id, errorRow);
+  revalidatePath("/progress");
+  revalidatePath("/review");
+  return saved;
+}
+
+function toMicroDrillView(row: MicroDrill): MicroDrillView {
+  return { id: row.id, errorId: row.errorId, promptText: row.promptText,
+    responseFr: row.responseFr, feedbackJson: row.feedbackJson,
+    feedbackStatus: row.feedbackStatus, createdAt: row.createdAt };
+}
+
+async function evaluateSavedMicroDrill(id: string, userId: string, errorRow: ErrorRecord): Promise<MicroDrillView> {
+  const [saved] = await db.select().from(microDrills).where(and(eq(microDrills.id, id), eq(microDrills.userId, userId))).limit(1);
+  if (!saved) throw new Error("Saved response was not found");
+  let feedback: MicroDrillFeedback;
+  try {
+    feedback = await evaluateMicroDrill(saved.promptText, errorRow.original, errorRow.correction, saved.responseFr);
+  } catch {
+    const [failed] = await db.update(microDrills).set({ feedbackStatus: "failed", feedbackLeaseUntil: null })
+      .where(and(eq(microDrills.id, id), eq(microDrills.userId, userId),
+        eq(microDrills.feedbackAttempts, saved.feedbackAttempts), eq(microDrills.feedbackStatus, "pending")))
+      .returning();
+    return failed ? toMicroDrillView(failed) : readCurrentMicroDrill(id, userId);
+  }
+  // A lease can expire while the provider is still running. Only the generation
+  // that started this call may publish; late success/failure must not overwrite a retry.
+  const [ready] = await db.update(microDrills).set({ feedbackJson: feedback, feedbackStatus: "ready", feedbackLeaseUntil: null })
+    .where(and(eq(microDrills.id, id), eq(microDrills.userId, userId),
+      eq(microDrills.feedbackAttempts, saved.feedbackAttempts), eq(microDrills.feedbackStatus, "pending")))
+    .returning();
+  return ready ? toMicroDrillView(ready) : readCurrentMicroDrill(id, userId);
+}
+
+async function readCurrentMicroDrill(id: string, userId: string): Promise<MicroDrillView> {
+  const [row] = await db.select().from(microDrills)
+    .where(and(eq(microDrills.id, id), eq(microDrills.userId, userId))).limit(1);
+  if (!row) throw new Error("Saved response was removed");
+  return toMicroDrillView(row);
+}
+
+export async function retryMicroDrillFeedback(id: string): Promise<MicroDrillView> {
+  const user = await requireUser();
+  const [row] = await db.select().from(microDrills).where(and(eq(microDrills.id, id), eq(microDrills.userId, user.id))).limit(1);
+  if (!row) throw new Error("Response not found");
+  if (row.feedbackStatus === "ready" || row.feedbackAttempts >= 2) return toMicroDrillView(row);
+  const [claimed] = await db.update(microDrills).set({ feedbackStatus: "pending",
+    feedbackAttempts: row.feedbackAttempts + 1, feedbackLeaseUntil: new Date(Date.now() + 5 * 60_000) })
+    .where(and(eq(microDrills.id, id), eq(microDrills.userId, user.id),
+      eq(microDrills.feedbackAttempts, row.feedbackAttempts),
+      or(eq(microDrills.feedbackStatus, "failed"),
+        and(eq(microDrills.feedbackStatus, "pending"), lt(microDrills.feedbackLeaseUntil, new Date())))))
+    .returning({ id: microDrills.id });
+  if (!claimed) {
+    const [current] = await db.select().from(microDrills).where(and(eq(microDrills.id, id), eq(microDrills.userId, user.id))).limit(1);
+    return toMicroDrillView(current);
+  }
+  const [errorRow] = await db.select().from(errors).where(and(eq(errors.id, row.errorId), eq(errors.userId, user.id))).limit(1);
+  if (!errorRow) throw new Error("Source error was removed");
+  const result = await evaluateSavedMicroDrill(id, user.id, errorRow);
 
   revalidatePath("/progress");
-  return feedback;
+  revalidatePath("/review");
+  return result;
 }
 
 /* ------------------------------------------------------------------ */

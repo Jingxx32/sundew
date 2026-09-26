@@ -102,6 +102,11 @@ export async function startScriptSession(promptId: string): Promise<string> {
 
 export async function finishScriptSession(sessionId: string): Promise<SessionScores> {
   const user = await requireUser();
+  const [owned] = await db.select({ id: speakingSessions.id }).from(speakingSessions).where(and(
+    eq(speakingSessions.id, sessionId), eq(speakingSessions.userId, user.id),
+    eq(speakingSessions.mode, "script_practice"), eq(speakingSessions.status, "active"),
+  )).limit(1);
+  if (!owned) throw new Error("Active script session not found");
   const turns = await db
     .select()
     .from(speakingTurns)
@@ -135,10 +140,10 @@ export async function finishScriptSession(sessionId: string): Promise<SessionSco
   const [row] = await db
     .update(speakingSessions)
     .set({ status: "completed", scores, completedAt: new Date() })
-    .where(and(eq(speakingSessions.id, sessionId), eq(speakingSessions.userId, user.id)))
+    .where(and(eq(speakingSessions.id, sessionId), eq(speakingSessions.userId, user.id), eq(speakingSessions.mode, "script_practice"), eq(speakingSessions.status, "active")))
     .returning({ promptId: speakingSessions.promptId });
 
   revalidatePath("/speaking");
-  if (row) revalidatePath(`/speaking/${row.promptId}/script`);
+  if (row?.promptId) revalidatePath(`/speaking/${row.promptId}/script`);
   return scores;
 }

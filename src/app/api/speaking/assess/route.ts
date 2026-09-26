@@ -1,10 +1,10 @@
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { speakingSessions, speakingTurns } from "@/lib/db/schema";
+import { speakingAssets, speakingSessions, speakingTurns } from "@/lib/db/schema";
 import { assessPronunciation } from "@/lib/speech/azure";
 import { AuthenticationError, requireUser } from "@/lib/auth/session";
+import { assertSpeakingStorageReady, putRecording, recordingKey } from "@/lib/storage/speaking-recordings";
+import { wavDurationSeconds } from "@/lib/speaking/audio";
 
 /** ~30s of 16kHz mono PCM16 WAV is <1MB; 10MB is a generous ceiling. */
 const MAX_AUDIO_BYTES = 10 * 1024 * 1024;
@@ -34,10 +34,13 @@ export async function POST(request: Request) {
   if (!(audio instanceof File)) {
     return Response.json({ error: "missing_audio" }, { status: 400 });
   }
-  if (audio.size > MAX_AUDIO_BYTES) {
+  if (audio.size === 0 || audio.size > MAX_AUDIO_BYTES) {
     return Response.json({ error: "audio_too_large" }, { status: 413 });
   }
   const referenceText = (form.get("referenceText") as string | null)?.trim() || null;
+  if (referenceText && referenceText.length > 1000) {
+    return Response.json({ error: "reference_too_long" }, { status: 400 });
+  }
   // sessionId is interpolated into a filesystem path — accept UUIDs only.
   const sessionIdRaw = (form.get("sessionId") as string | null) || null;
   if (sessionIdRaw && !UUID_RE.test(sessionIdRaw)) {
@@ -45,12 +48,16 @@ export async function POST(request: Request) {
   }
   const sessionId = sessionIdRaw;
   const orderIndexRaw = form.get("orderIndex") as string | null;
+  const orderIndex = orderIndexRaw === null ? NaN : Number(orderIndexRaw);
+  if (!sessionId || !Number.isInteger(orderIndex) || orderIndex < 0 || orderIndex >= 200 || !referenceText) {
+    return Response.json({ error: "active_script_session_required" }, { status: 400 });
+  }
 
   if (sessionId) {
     const ownedSession = await db
       .select({ id: speakingSessions.id })
       .from(speakingSessions)
-      .where(and(eq(speakingSessions.id, sessionId), eq(speakingSessions.userId, user.id)))
+      .where(and(eq(speakingSessions.id, sessionId), eq(speakingSessions.userId, user.id), eq(speakingSessions.mode, "script_practice"), eq(speakingSessions.status, "active")))
       .limit(1);
     if (ownedSession.length === 0) {
       return Response.json({ error: "invalid_session" }, { status: 404 });
@@ -58,6 +65,14 @@ export async function POST(request: Request) {
   }
 
   const wav = Buffer.from(await audio.arrayBuffer());
+  if (!wavDurationSeconds(wav)) {
+    return Response.json({ error: "invalid_audio" }, { status: 400 });
+  }
+  try {
+    assertSpeakingStorageReady();
+  } catch {
+    return Response.json({ error: "private_storage_unavailable" }, { status: 503 });
+  }
 
   let result;
   try {
@@ -71,13 +86,10 @@ export async function POST(request: Request) {
   }
 
   let turnId: string | undefined;
-  const orderIndex = orderIndexRaw === null ? NaN : parseInt(orderIndexRaw, 10);
-  if (sessionId && Number.isInteger(orderIndex)) {
-    const dir = path.join(process.cwd(), "public", "media", "speaking", sessionId);
-    await mkdir(dir, { recursive: true });
-    const filename = `${String(orderIndex).padStart(3, "0")}.wav`;
-    await writeFile(path.join(dir, filename), wav);
-
+  if (sessionId && Number.isInteger(orderIndex) && orderIndex >= 0 && orderIndex < 200) {
+    const assetId = crypto.randomUUID();
+    const key = recordingKey(sessionId, assetId, "user", "wav");
+    await putRecording(key, wav, "audio/wav");
     const { transcript, ...assessment } = result;
     const [turn] = await db
       .insert(speakingTurns)
@@ -87,10 +99,20 @@ export async function POST(request: Request) {
         orderIndex,
         role: "user",
         text: transcript,
-        audioPath: `/media/speaking/${sessionId}/${filename}`,
+        audioPath: `/api/speaking/recordings/${assetId}`,
         assessment,
       })
       .returning({ id: speakingTurns.id });
+    await db.insert(speakingAssets).values({
+      id: assetId,
+      userId: user.id,
+      sessionId,
+      turnId: turn.id,
+      objectKey: key,
+      mimeType: "audio/wav",
+      byteLength: wav.length,
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    });
     turnId = turn.id;
   }
 

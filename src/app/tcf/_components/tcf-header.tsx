@@ -51,12 +51,12 @@ export function TcfHeader() {
           </button>
         )}
         <Link
-          href="/library"
+          href="/today"
           aria-label="Retour à Sundew"
           className="flex items-center gap-1.5 rounded-md text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
         >
           <span aria-hidden>←</span>
-          <span className="hidden sm:inline">Sundew</span>
+          <span className="hidden sm:inline">Today</span>
         </Link>
       </div>
     </header>

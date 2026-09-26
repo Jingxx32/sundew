@@ -48,6 +48,30 @@ export type GapReviewCard = {
   answerIndex: number;
 };
 
+export async function getDueGapCount(): Promise<number> {
+  const user = await requireUser();
+  const row = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(vocabularyGaps)
+    .innerJoin(
+      userVocabulary,
+      and(
+        eq(vocabularyGaps.userId, userVocabulary.userId),
+        eq(vocabularyGaps.lemma, userVocabulary.lemma),
+      ),
+    )
+    .where(
+      and(
+        eq(vocabularyGaps.userId, user.id),
+        eq(vocabularyGaps.status, "active"),
+        lte(vocabularyGaps.dueAt, new Date()),
+        sql`${userVocabulary.translation} is not null`,
+      ),
+    )
+    .then((rows) => rows[0]);
+  return Number(row?.count ?? 0);
+}
+
 const shuffle = <T,>(a: T[]) => a.map((v) => [Math.random(), v] as const).sort((x, y) => x[0] - y[0]).map(([, v]) => v);
 
 export async function getDueGapCards(limit = 20): Promise<GapReviewCard[]> {
@@ -119,10 +143,24 @@ export async function getDueGapCards(limit = 20): Promise<GapReviewCard[]> {
     });
 }
 
-export async function gradeGapReview(gapId: string, correct: boolean): Promise<{ box: number; status: VocabGapStatus }> {
+export async function gradeGapReview(gapId: string, answer: string, requestKey: string): Promise<{ box: number; status: VocabGapStatus; correct: boolean }> {
   const user = await requireUser();
-  const result = await gradeGap(user.id, gapId, correct);
+  if (typeof answer !== "string" || answer.length > 200 ||
+      typeof requestKey !== "string" || !/^[a-zA-Z0-9-]{12,100}$/.test(requestKey)) throw new Error("Invalid review answer");
+  const [row] = await db.select({ gapType: vocabularyGaps.gapType, lemma: vocabularyGaps.lemma,
+    translation: userVocabulary.translation, surface: userVocabulary.surface })
+    .from(vocabularyGaps).innerJoin(userVocabulary, and(
+      eq(vocabularyGaps.userId, userVocabulary.userId), eq(vocabularyGaps.lemma, userVocabulary.lemma),
+    )).where(and(eq(vocabularyGaps.id, gapId), eq(vocabularyGaps.userId, user.id))).limit(1);
+  if (!row || !row.translation) throw new Error("Review card is unavailable");
+  const normalized = (value: string) => value.normalize("NFC").trim().toLocaleLowerCase("fr");
+  const correct = row.gapType === "recognition" ? normalized(answer) === normalized(row.translation)
+    : row.gapType === "listening" ? normalized(answer) === normalized(row.lemma)
+    : normalized(answer) === normalized(row.lemma) || normalized(answer) === normalized(row.surface);
+  const result = await gradeGap(user.id, gapId, correct, { answer, gradingMethod: "objective", requestKey });
   revalidatePath("/vocabulary/review");
+  revalidatePath("/review");
+  revalidatePath("/today");
   return result;
 }
 
@@ -142,6 +180,8 @@ export async function setGapStatus(gapId: string, status: VocabGapStatus): Promi
       .where(and(eq(vocabularyGaps.id, gapId), eq(vocabularyGaps.userId, user.id)));
   }
   revalidatePath("/vocabulary/review");
+  revalidatePath("/review");
+  revalidatePath("/today");
 }
 
 /** Change a gap's type. If a row for (lemma, newType) already exists, the
