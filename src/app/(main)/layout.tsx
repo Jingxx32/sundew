@@ -1,4 +1,5 @@
 import { AccountSession } from "@/components/account-session";
+import { ImpersonationBanner } from "@/components/impersonation-banner";
 import { Sidebar } from "@/components/sidebar";
 import { requirePageUser } from "@/lib/auth/session";
 
@@ -18,8 +19,9 @@ export default async function MainLayout({
         >
           Skip to content
         </a>
-        <Sidebar />
+        <Sidebar email={user.email} role={user.role} />
         <main id="main-content" className="min-w-0 flex-1 pb-20 md:pb-0">
+          {user.impersonatedBy && <ImpersonationBanner email={user.email} />}
           {children}
         </main>
       </div>

@@ -82,7 +82,7 @@ function MobileNavigation({ pathname }: { pathname: string }) {
   );
 }
 
-export function Sidebar() {
+export function Sidebar({ email, role }: { email: string; role: "admin" | "member" }) {
   const pathname = usePathname();
   return (
     <>
@@ -93,7 +93,15 @@ export function Sidebar() {
           <p className="mb-1 mt-6 px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Workspace</p>
           {SECONDARY_NAVIGATION.map((item) => <NavigationLink key={item.href} item={item} pathname={pathname} />)}
         </nav>
-        <div className="mt-auto border-t border-border/70 px-3 pt-4"><p className="text-[11px] uppercase tracking-wider text-muted-foreground">v0.2 · self</p></div>
+        <Link
+          href="/account"
+          className="mt-auto rounded-lg border-t border-border/70 px-3 pt-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+        >
+          <p className="truncate text-xs font-medium" title={email}>{email}</p>
+          <p className="mt-1 text-[11px] uppercase tracking-wider text-muted-foreground">
+            {role === "admin" ? "Administrator" : "Member"}
+          </p>
+        </Link>
       </aside>
       <MobileNavigation pathname={pathname} />
     </>

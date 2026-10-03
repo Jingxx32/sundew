@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { TcfHeader } from "./_components/tcf-header";
 import { AccountSession } from "@/components/account-session";
+import { ImpersonationBanner } from "@/components/impersonation-banner";
 import { requirePageUser } from "@/lib/auth/session";
 
 export default async function TcfLayout({ children }: { children: React.ReactNode }) {
@@ -15,6 +16,7 @@ export default async function TcfLayout({ children }: { children: React.ReactNod
         >
           Aller à l’exercice
         </a>
+        {user.impersonatedBy && <ImpersonationBanner email={user.email} />}
         <Suspense fallback={<div className="h-[53px] border-b border-border/60" />}>
           <TcfHeader />
         </Suspense>
