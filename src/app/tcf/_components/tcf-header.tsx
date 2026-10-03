@@ -4,12 +4,14 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAccountId } from "@/components/account-session";
 import { flushPendingSync, usePendingSyncCount } from "@/lib/tcf/pending-sync";
 
 export function TcfHeader() {
+  const owner = useAccountId();
   const searchParams = useSearchParams();
   const skill = searchParams.get("skill") === "reading" ? "reading" : "listening";
-  const pendingCount = usePendingSyncCount();
+  const pendingCount = usePendingSyncCount(owner);
 
   return (
     <header className="flex items-center justify-between gap-2 border-b border-border/60 bg-background px-4 py-3 sm:px-6">
@@ -42,7 +44,7 @@ export function TcfHeader() {
         {pendingCount > 0 && (
           <button
             type="button"
-            onClick={() => void flushPendingSync()}
+            onClick={() => void flushPendingSync(owner)}
             title="Ces réponses n'ont pas pu être enregistrées sur le serveur — cliquez pour réessayer maintenant."
             className="flex items-center gap-1.5 rounded-lg border border-warning/40 bg-warning-soft px-2 py-1 text-xs font-medium text-warning focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning/40"
           >

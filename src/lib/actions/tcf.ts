@@ -25,6 +25,7 @@ import {
 } from "@/lib/tcf/learning";
 import { requireUser } from "@/lib/auth/session";
 import { gradeExamAnswers } from "@/lib/tcf/exam-grading";
+import { assertSyncAccount } from "@/lib/tcf/sync-identity";
 
 export type TcfLevel = (typeof tcfLevelEnum.enumValues)[number];
 
@@ -343,8 +344,11 @@ export async function recordTcfExamAttempt(input: {
   /** Per-question detail; unanswered questions are simply absent. */
   answers?: TcfExamAnswer[];
   requestKey?: string;
+  /** The account the browser queued this answer under; a mismatch is rejected. */
+  expectedUserId?: string;
 }): Promise<void> {
   const user = await requireUser();
+  assertSyncAccount(user.id, input.expectedUserId);
   if (!input.setId || !Array.isArray(input.answers) || input.answers.length > 100) throw new Error("Invalid exam answers");
   if (input.requestKey && !/^[a-zA-Z0-9-]{8,100}$/.test(input.requestKey)) throw new Error("Invalid request key");
   const [set] = await db.select({ id: tcfSets.id, skill: tcfSets.skill, testNumber: tcfSets.testNumber })
@@ -408,8 +412,11 @@ export async function recordTcfQuestionAttempt(input: {
   uncertain?: boolean;
   mode?: "drill" | "review";
   requestKey?: string;
+  /** The account the browser queued this answer under; a mismatch is rejected. */
+  expectedUserId?: string;
 }): Promise<void> {
   const user = await requireUser();
+  assertSyncAccount(user.id, input.expectedUserId);
   if (input.requestKey && !/^[a-zA-Z0-9-]{8,100}$/.test(input.requestKey)) throw new Error("Invalid request key");
   if (!Number.isInteger(input.chosen)) throw new Error("Réponse invalide.");
   const chosen = input.chosen;

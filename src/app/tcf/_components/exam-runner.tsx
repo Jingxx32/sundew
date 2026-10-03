@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Check, X, Flag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useAccountId } from "@/components/account-session";
 import { hasTranscriptSection } from "@/lib/tcf/parse-explanation";
 import { ExplanationPanel } from "./explanation-panel";
 import { VerdictBar } from "./verdict-bar";
@@ -78,6 +79,7 @@ function ScoreHeader({ testNumber, score }: { testNumber: number; score: ReturnT
 }
 
 export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: ExamRunnerProps) {
+  const owner = useAccountId();
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   // answers[i] = chosen option index for questions[i]
   const [answers, setAnswers] = useState<Record<number, number>>({});
@@ -135,7 +137,7 @@ export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: E
     // Persist the run — total + per-level + per-question — so this signal
     // flows into Progress and the error loop (fire-and-forget).
     const result = computeScore(questions, answers);
-    submitExamAttempt({
+    submitExamAttempt(owner, {
       setId: questions[0]?.setId ?? null,
       skill,
       testNumber,

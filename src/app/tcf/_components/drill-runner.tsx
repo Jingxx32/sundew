@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Eye, Loader2, PenLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAccountId } from "@/components/account-session";
 import { cn } from "@/lib/utils";
 import { hasTranscriptSection } from "@/lib/tcf/parse-explanation";
 import { ExplanationPanel } from "./explanation-panel";
@@ -119,6 +120,7 @@ export function DrillRunner({
   showSummaryOnComplete = true,
   syncUrl = true,
 }: DrillRunnerProps) {
+  const owner = useAccountId();
   // A round is a fixed set of questions, but answering one revalidates the TCF
   // paths, which re-runs the scheduler on the server: `getTcfScheduledDrillQuestions`
   // ranks by learning status, so the just-answered question can be reordered or
@@ -127,7 +129,7 @@ export function DrillRunner({
   // answer. Snapshot on mount instead; the page keys this component by
   // skill/level/round, so picking another session still gives a fresh list.
   const [questions] = useState(sessionInput);
-  const storageKey = `tcf-drill:${skill}:${level}:${kind}:${questions.map((q) => q.id).join(",")}`;
+  const storageKey = `${owner}:tcf-drill:${skill}:${level}:${kind}:${questions.map((q) => q.id).join(",")}`;
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [showAnswer, setShowAnswer] = useState(false);
   const [chosen, setChosen] = useState<number>();
@@ -198,7 +200,7 @@ export function DrillRunner({
       ...previous,
       [q.id]: !correct || uncertain ? "needs_review" : nextStreak >= 3 ? "stable" : "in_progress",
     }));
-    submitDrillAttempt({
+    submitDrillAttempt(owner, {
       questionId: q.id,
       chosen: optionIndex,
       uncertain,
