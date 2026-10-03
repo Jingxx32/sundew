@@ -1,13 +1,13 @@
 import { AccountSession } from "@/components/account-session";
 import { Sidebar } from "@/components/sidebar";
-import { requireUser } from "@/lib/auth/session";
+import { requirePageUser } from "@/lib/auth/session";
 
 export default async function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const user = await requireUser();
+  const user = await requirePageUser();
 
   return (
     <AccountSession userId={user.id}>
