@@ -1,4 +1,4 @@
-import { pgEnum, pgTable, text, integer, timestamp, jsonb, boolean, uuid, uniqueIndex, unique, index, primaryKey, foreignKey, check, type AnyPgColumn } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, text, integer, bigint, timestamp, jsonb, boolean, uuid, uniqueIndex, unique, index, primaryKey, foreignKey, check, type AnyPgColumn } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import type { ReviewSnapshot } from "../review/types";
 // Type-only imports (erased at build — they do NOT pull the OpenAI SDK into the
@@ -25,21 +25,98 @@ export const users = pgTable(
   "users",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    authIssuer: text("auth_issuer").notNull(),
-    authSubject: text("auth_subject").notNull(),
+    // Legacy Easy Auth identity, unread since Better Auth; dropped by the post-cutover cleanup.
+    authIssuer: text("auth_issuer"),
+    authSubject: text("auth_subject"),
+    name: text("name").notNull().default(""),
     email: text("email").notNull(),
+    emailVerified: boolean("email_verified").notNull().default(false),
+    image: text("image"),
     role: userRoleEnum("role").notNull().default("member"),
+    banned: boolean("banned").notNull().default(false),
+    banReason: text("ban_reason"),
+    banExpires: timestamp("ban_expires", { withTimezone: true }),
+    // Legacy flag copied into `banned` by 0037; unread, dropped with authIssuer.
     status: userStatusEnum("status").notNull().default("active"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
     unique("users_auth_identity_key").on(t.authIssuer, t.authSubject),
+    unique("users_email_unique").on(t.email),
     index("users_email_idx").on(t.email),
   ],
 );
 
 export type AppUser = typeof users.$inferSelect;
+
+/* ------------------------------------------------------------------ */
+/*  auth — Better Auth sessions, sign-in methods, codes, rate limits    */
+/*  Property names must match Better Auth's field names exactly.        */
+/* ------------------------------------------------------------------ */
+
+export const sessions = pgTable(
+  "sessions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    token: text("token").notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    ipAddress: text("ip_address"),
+    userAgent: text("user_agent"),
+    impersonatedBy: uuid("impersonated_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique("sessions_token_key").on(t.token), index("sessions_user_id_idx").on(t.userId)],
+);
+
+export const accounts = pgTable(
+  "accounts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    accountId: text("account_id").notNull(),
+    providerId: text("provider_id").notNull(),
+    accessToken: text("access_token"),
+    refreshToken: text("refresh_token"),
+    idToken: text("id_token"),
+    accessTokenExpiresAt: timestamp("access_token_expires_at", { withTimezone: true }),
+    refreshTokenExpiresAt: timestamp("refresh_token_expires_at", { withTimezone: true }),
+    scope: text("scope"),
+    password: text("password"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    unique("accounts_provider_account_key").on(t.providerId, t.accountId),
+    index("accounts_user_id_idx").on(t.userId),
+  ],
+);
+
+export const verifications = pgTable(
+  "verifications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    identifier: text("identifier").notNull(),
+    value: text("value").notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("verifications_identifier_idx").on(t.identifier)],
+);
+
+export const rateLimits = pgTable(
+  "rate_limits",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    key: text("key").notNull(),
+    count: integer("count").notNull(),
+    lastRequest: bigint("last_request", { mode: "number" }).notNull(),
+  },
+  (t) => [unique("rate_limits_key_key").on(t.key)],
+);
 
 /* ------------------------------------------------------------------ */
 /*  documents — your library of French source material                 */
