@@ -210,6 +210,15 @@ Otherwise, record that the tokens are low-value basic-scope tokens.
 The migration is additive for the old code: Easy Auth code keeps working
 after it runs, so it can be applied before the deploy.
 
+**Out-of-band application.** The shared database is at migration 0025;
+0026–0036 are deferred (owner decision, 2026-10-03). The file therefore stays
+in the normal chain as 0037, but it is written to be **idempotent**. It is
+applied to the shared database by `scripts/apply-auth-migration.mts`, which
+rehearses in a rolled-back transaction before applying, and it is **not**
+recorded in `drizzle.__drizzle_migrations`. Recording it would make the
+migrator skip 0026–0036 forever. When the deferred chain is applied later,
+0037 runs again as a no-op.
+
 ### 4.4 Better Auth configuration (`src/lib/auth/auth.ts`)
 
 - **Adapter**: `drizzleAdapter(db, { provider: "pg", schema })` with
@@ -220,16 +229,17 @@ after it runs, so it can be applied before the deploy.
   - `otpLength: 6`, `expiresIn: 300`, `allowedAttempts: 3`;
   - `storeOTP: "hashed"` (the default is plaintext);
   - `sendVerificationOTP` → §4.7.
-- **`admin` plugin**: `defaultRole: "member"`, `adminRoles: ["admin"]`,
-  impersonation duration 1 h (the default).
+- **`admin` plugin**: `roles: { admin: adminAc, member: userAc }` (the plugin
+  defaults to `admin` / `user`, so `member` must be declared),
+  `defaultRole: "member"`, `adminRoles: ["admin"]`, impersonation duration 1 h
+  (the default).
 - **Account linking**: enabled (the default).
   - Google reports verified emails, so Google ↔ OTP accounts with the same
     email resolve to one user.
   - Do not set `allowDifferentEmails`.
 - **`rateLimit`**: `storage: "database"`.
   - Production defaults: 100 requests per 10 s.
-  - `customRules` for the OTP send endpoint: 3 per 60 s per IP.
-  - Verify the endpoint path against 1.7.
+  - The email-OTP plugin's built-in rule limits each OTP endpoint to 3 per 60 s per IP (set explicitly via its `rateLimit` option), so no `customRules` entry is needed.
   - `ipAddressHeaders` / `trustedProxies`: see §8.
 - **Sign-up gate**: `databaseHooks.user.create.before` rejects with an
   `APIError` when sign-up is disabled.
@@ -291,7 +301,10 @@ then, the smoke checks and manual checks call `admin.impersonateUser` directly.
   - `getSessionCookie(request)`; no cookie → a page request redirects to
     `/login?callbackURL=<path+search>`; an API request gets 401 JSON (current
     behavior).
-  - Public prefixes: `/login`, `/demo`, `/api/auth`.
+  - Public prefixes: `/login`, `/demo`, `/api/auth`, `/assets` (brand images only).
+    `public/media` (private exam audio) stays behind the gate.
+  - For allowed page requests, the original path is forwarded as `x-sundew-path`,
+    so `requirePageUser()` can build its `callbackURL`.
   - Easy Auth handling is removed.
 - **`src/lib/auth/session.ts`**: same exports and signatures.
   - `getCurrentUser = cache(...)` → `auth.api.getSession({ headers: await headers() })`.
@@ -380,8 +393,9 @@ pieces below into the new implementation.
 
 1. **Send first, queue on failure** (the original behavior). This removes the
    "1 non enregistrée" badge flash on every answer.
-2. When a flush finishes and items were enqueued meanwhile, flush again
-   immediately instead of waiting for the 30 s interval.
+2. *(Subsumed by 1.)* Codex's enqueue-first design left answers enqueued during
+   a flush waiting for the next 30 s tick. With send-first, only failed sends are
+   ever queued, and they are retried on the next trigger like any failure.
 3. Restore the deleted explanatory comments (why the queue exists; why
    `crypto.randomUUID` can't be used on plain-HTTP LAN), and place imports
    in the files' existing order.
@@ -406,7 +420,7 @@ once; this is accepted.
 | Rate limited | 429 → "Too many attempts, wait a minute" |
 | Email provider failure | Generic "Couldn't send the code"; logged server-side without the code |
 | Production email not configured | OTP hidden and fails closed; Google unaffected |
-| Missing `BETTER_AUTH_SECRET` / `BETTER_AUTH_URL` in production | Fail at startup (no insecure default) |
+| Missing `BETTER_AUTH_SECRET` in production | Better Auth refuses to run with a missing or default secret (no insecure fallback) |
 | Stale tab after an account switch or impersonation | `AccountSession` reloads other tabs; queued TCF answers for another account are rejected with `ACCOUNT_CHANGED` and kept for their owner |
 
 ---
