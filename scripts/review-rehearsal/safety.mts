@@ -24,6 +24,9 @@ export function validateTarget(raw: string | undefined, expected: string, applic
 }
 
 export function failureCategory(error: unknown): string {
-  if (error && typeof error === "object" && "code" in error) return String(error.code);
+  // drizzle-orm >= 0.44 wraps driver errors in DrizzleQueryError; the SQLSTATE lives on `cause`.
+  for (let current: unknown = error; current && typeof current === "object"; current = (current as { cause?: unknown }).cause) {
+    if ("code" in current) return String((current as { code: unknown }).code);
+  }
   return error instanceof Error ? error.name : "UnknownFailure";
 }
