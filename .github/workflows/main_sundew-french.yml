@@ -23,23 +23,28 @@ jobs:
         with:
           node-version: '22.x'
 
-      - name: npm install, build, and test
+      - name: npm ci, build, and test
         run: |
-          npm install
-          npm run build --if-present
-          npm run test --if-present
+          npm ci
+          npm run build
+          npm test
+
+      # The free App Service tier stops the site when a build exceeds its CPU
+      # quota (3 CPU-minutes per 5 minutes), so Azure must not build. Ship the
+      # prebuilt standalone server with its static assets instead; App Service
+      # only runs `node server.js`. Zipping here keeps file modes intact.
+      - name: Package the standalone server
+        run: |
+          cp -R public .next/standalone/public
+          cp -R .next/static .next/standalone/.next/static
+          rm -f .next/standalone/.env*
+          cd .next/standalone && zip -qr "$GITHUB_WORKSPACE/release.zip" .
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          # App Service builds this source archive on its Linux host. Uploading
-          # GitHub's node_modules can leave broken executable links such as
-          # node_modules/.bin/next in the deployed package.
-          path: |
-            .
-            !node_modules
-            !.next
+          path: release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -53,7 +58,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: node-app
-      
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -67,4 +72,6 @@ jobs:
         with:
           app-name: 'sundew-french'
           slot-name: 'Production'
-          package: .
+          package: release.zip
+          # App Service sets HOSTNAME to the container name; bind on all interfaces.
+          startup-command: 'HOSTNAME=0.0.0.0 node server.js'
