@@ -194,6 +194,25 @@ Do not add categories without considering AI labelling accuracy and dashboard co
 
 Specs and plans live under `docs/superpowers/{specs,plans}/`; product direction in `docs/audit-*.md`. Current queue: TCF error loop steps 2–4 (AI skill-tagging, smart re-drill queue, weak-points panel + exam review page), lightweight review queue (Leitner), TCF EE writing mode (gated on writing habit recovery).
 
+## Deployment
+
+Production runs on **Vercel Hobby** at `https://sundew.jingxuanxu.com` (domain registered at
+Cloudflare; its DNS records point at Vercel as **DNS only / grey cloud** — never proxied).
+Vercel builds and deploys `main` through its Git integration; env vars live in the Vercel
+project settings. `vercel.json` pins functions to `yul1` (Montréal), next to the Azure
+Postgres in Canada Central.
+
+- Vercel caps request bodies at **4.5 MB** and function runtime at **300 s** on Hobby. Keep
+  upload limits below 4.5 MB and long AI calls well under 300 s.
+- Vercel's egress IPs are dynamic, so the Azure Postgres firewall allows all IPs; the
+  connection string must keep `sslmode=require`.
+- `BETTER_AUTH_URL` and the Google OAuth redirect URI
+  (`<origin>/api/auth/callback/google`) must match the production domain.
+- Transition (from 2026-10): the old Azure App Service (`sundew-french`) and its workflow
+  `.github/workflows/main_sundew-french.yml` stay for about a week after cutover as a
+  rollback path. When they are removed, also drop `output: "standalone"` from
+  `next.config.ts` (only that workflow needs it) and the `AZUREAPPSERVICE_*` repo secrets.
+
 ## Environment variables
 
 ```
@@ -205,6 +224,14 @@ OPENAI_MODEL_ENRICH   # vocab enrich; defaults to gpt-4o-mini
 DATABASE_URL          # Required — PostgreSQL connection string (e.g. postgres://user:pass@host/db)
 AZURE_SPEECH_KEY      # Speaking only — Azure Cognitive Services Speech key
 AZURE_SPEECH_REGION   # Speaking only — e.g. canadacentral
+BETTER_AUTH_URL       # Required — site origin, e.g. https://sundew.jingxuanxu.com
+BETTER_AUTH_SECRET    # Required — session signing secret
+GOOGLE_CLIENT_ID      # Google sign-in
+GOOGLE_CLIENT_SECRET  # Google sign-in
+RESEND_API_KEY        # Production email OTP (dev prints codes to the console)
+AUTH_EMAIL_FROM       # Production email OTP sender address
+AUTH_SIGNUP_ENABLED   # "true"/"false"; sign-up is closed in production by default
+CLOUDFLARE_R2_ACCOUNT_ID / _ACCESS_KEY_ID / _SECRET_ACCESS_KEY / _BUCKET  # Media + recordings (required in production)
 TCF_LISTENING_DIR     # TCF import only — local folder of listening PDFs + audio
 TCF_READING_DIR       # TCF import only — local folder of reading questions
 TCF_SAMPLE_PDF        # TCF parser debug scripts only — one local PDF

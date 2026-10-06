@@ -6,8 +6,8 @@ import { AuthenticationError, requireUser } from "@/lib/auth/session";
 import { assertSpeakingStorageReady, putRecording, recordingKey } from "@/lib/storage/speaking-recordings";
 import { wavDurationSeconds } from "@/lib/speaking/audio";
 
-/** ~30s of 16kHz mono PCM16 WAV is <1MB; 10MB is a generous ceiling. */
-const MAX_AUDIO_BYTES = 10 * 1024 * 1024;
+/** ~30s of 16kHz mono PCM16 WAV is <1MB. Stays under Vercel's 4.5MB request-body cap. */
+const MAX_AUDIO_BYTES = 4 * 1024 * 1024;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function POST(request: Request) {
