@@ -1,3 +1,7 @@
+// Must come first: statically imports @napi-rs/canvas and installs the DOMMatrix
+// polyfill. Without it, file tracing drops the canvas package and importing
+// pdf-parse throws "DOMMatrix is not defined" on Vercel.
+import "pdf-parse/worker";
 import { PDFParse } from "pdf-parse";
 
 export type PdfExtract = {
