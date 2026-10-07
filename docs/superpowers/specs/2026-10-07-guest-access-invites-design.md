@@ -258,6 +258,8 @@ under the gated prefixes; this table must stay exhaustive.
   "detailed entry".
 - **Look-up popover**: a `locked` result reads "Look-ups outside the sample texts
   need an invite code."
+- **`/practice` for guests**: lists their sample submissions ("Sample feedback"),
+  since starting a new task is locked.
 
 ---
 
@@ -315,6 +317,10 @@ codes again; codes are low-value and revocable.
 6. The providers' `disableSignUp` options are removed; the hook is the single
    gate, and `/login` maps its messages (Google errors arrive as the callback
    `error` param).
+7. Because sign-up is no longer disabled at the provider, `sendVerificationOTP`
+   sends a sign-in code only to an existing account or to a new address whose
+   request carries a valid `sundew_invite` cookie; otherwise it sends nothing.
+   This protects Resend's 100/day cap from code requests for arbitrary addresses.
 
 If user creation fails after the reservation, one use is lost — accepted (rare,
 visible on the admin page).
@@ -360,23 +366,27 @@ visible on the admin page).
 ### 9.2 Sample workspace — authoring (one-time, estimated < US$0.20)
 
 ```
-data/sample-workspace/
-  source/          # reviewed Markdown: 3 texts, 2 writing prompts, 2 learner essays
-  workspace.json   # exported rows: symbolic ids, relative timestamps
-  lookups.json     # ~450 pre-generated look-up entries keyed by normalized surface
+src/lib/sample-workspace/
+  source/            # reviewed Markdown: 3 texts, 2 learner essays
+  fixtures/
+    workspace.json   # exported rows: symbolic ids, relative timestamps, shared lemma rows
+    lookups.json     # ~450 pre-generated look-up entries keyed by normalized surface
 ```
+
+(`data/` is gitignored, so the fixtures live next to the code that bundles them.)
 
 All content is original (the repository `origin` is public) and is recorded in
 `docs/demo-content-sources.md`.
 
 1. **Draft** — `npm run sample:draft`: gpt-4o drafts three A2–B1 texts (everyday
-   life in Montréal), two writing prompts and two learner essays with natural
-   errors into `source/`; the owner edits them. ≈ US$0.05.
+   life in Montréal) and two learner essays (responding to texts 1 and 2) with
+   natural errors into `source/`; the owner edits them. ≈ US$0.03. The writing
+   prompts come from the app's own task generator in step 2.
 2. **Produce with the real app**, locally: create an invite; sign up a "sample
    author" by email OTP (codes print to the console in development); paste the
    texts into Library, read them, save ~15 words; complete both prompts with the
    learner essays and get real feedback; do a few conjugation and review
-   sessions so Today and Progress show a week of history. ≈ US$0.10. The author
+   sessions so Today and Progress show a week of history. ≈ US$0.07. The author
    account lives in the production database and **stays** there for free
    re-exports.
 3. **Export** — `npm run sample:export -- --email <author>` writes `workspace.json`:
@@ -393,7 +403,7 @@ All content is original (the repository `origin` is public) and is recorded in
      tables, or any exported string contains an email address.
 4. **Look-ups** — `npm run sample:lookups`: `lookupWord(surface, sentence)` for
    every unique token of the three texts → `lookups.json`; prints processed /
-   succeeded / failed. ≈ US$0.05.
+   succeeded / failed. ≈ US$0.07.
 5. **Review and commit**: the owner reviews the diff; provenance is recorded
    (AI-assisted, author, date, reviewer).
 
@@ -405,6 +415,10 @@ All content is original (the repository `origin` is public) and is recorded in
 - Remapping is a pure, unit-tested function; the insert loop is thin.
 - Both JSON files are imported statically (a few hundred KB in the server bundle).
 - `request_key` columns are unique per user, so copying them is safe.
+- `user_vocabulary`, `vocabulary_occurrences` and `vocabulary_gaps` reference the
+  shared `vocabulary_lookups.lemma`. The fixture carries those shared lemma rows
+  (`lemma`, `surface`); seeding upserts them first (`on conflict do nothing`),
+  as `upsertEntry()` does.
 - **Drift check** — `npm run sample:check` seeds a temporary user in a
   rolled-back transaction and prints per-table counts. Run after every
   migration and before every deploy; on failure, re-export (no AI cost).
