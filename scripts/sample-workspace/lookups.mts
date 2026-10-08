@@ -19,7 +19,7 @@ const documents = (workspace.tables.documents ?? []) as Array<{ content: string 
 if (!documents.length) throw new Error("workspace.json has no documents; run sample:export first");
 
 const items = new Map(documents.flatMap((d) => tokenizeForLookups(d.content)).map((item) => [item.key, item]));
-const missing = [...items.values()].filter((item) => !(item.key in entries));
+const missing = [...items.values()].filter((item) => !Object.hasOwn(entries, item.key));
 console.log(`${items.size} distinct words, ${missing.length} without an entry; estimated cost ≈ US$${(missing.length * 0.00015).toFixed(2)}`);
 if (!process.argv.includes("--yes")) {
   console.log("Dry run. Re-run with --yes to generate.");

@@ -99,7 +99,8 @@ export async function resolveLookup(
   const rule = canUse(user.access, "lookup");
   if (rule !== true) {
     // Guests: pre-generated entries for the sample texts only — never an AI call.
-    const sample = rule === "sample" ? SAMPLE_LOOKUPS[sampleLookupKey(surface)] : undefined;
+    const sampleKey = sampleLookupKey(surface);
+    const sample = rule === "sample" && Object.hasOwn(SAMPLE_LOOKUPS, sampleKey) ? SAMPLE_LOOKUPS[sampleKey] : undefined;
     if (!sample) return { status: "locked", feature: "lookup" };
     const resolved = await persistLookup(user.id, surface, sentenceContext, source, sample);
     return { status: "ok", lemma: resolved, surface, result: sample, cached: true };
