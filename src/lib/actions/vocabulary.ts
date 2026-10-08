@@ -19,6 +19,10 @@ import type { LookupSource, VocabEntrySummary, VocabEntryDetail } from "@/lib/vo
 import { requireUser } from "@/lib/auth/session";
 import { requireFeature } from "@/lib/access/guard";
 import { canUse } from "@/lib/access/features";
+import sampleLookups from "@/lib/sample-workspace/fixtures/lookups.json";
+import { sampleLookupKey } from "@/lib/sample-workspace/lookups";
+
+const SAMPLE_LOOKUPS = sampleLookups as Record<string, LookupResult>;
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                               */
@@ -92,8 +96,14 @@ export async function resolveLookup(
     }
   }
 
-  // Guests never trigger an AI look-up (Task 14 adds the sample entries here).
-  if (canUse(user.access, "lookup") !== true) return { status: "locked", feature: "lookup" };
+  const rule = canUse(user.access, "lookup");
+  if (rule !== true) {
+    // Guests: pre-generated entries for the sample texts only — never an AI call.
+    const sample = rule === "sample" ? SAMPLE_LOOKUPS[sampleLookupKey(surface)] : undefined;
+    if (!sample) return { status: "locked", feature: "lookup" };
+    const resolved = await persistLookup(user.id, surface, sentenceContext, source, sample);
+    return { status: "ok", lemma: resolved, surface, result: sample, cached: true };
+  }
 
   // Cache miss — Tier 1 AI. The writes are one atomic unit (see persistLookup): a
   // partial failure would otherwise leave an entry without its alias/occurrence.
