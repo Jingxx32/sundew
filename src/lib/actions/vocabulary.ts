@@ -17,6 +17,8 @@ import { norm, upsertEntry, upsertAlias, recordOccurrence, resolveLemma } from "
 import { upsertGap } from "@/lib/vocabulary/gaps";
 import type { LookupSource, VocabEntrySummary, VocabEntryDetail } from "@/lib/vocabulary/types";
 import { requireUser } from "@/lib/auth/session";
+import { requireFeature } from "@/lib/access/guard";
+import { canUse } from "@/lib/access/features";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                               */
@@ -28,11 +30,32 @@ export type { LookupSource, OccurrenceLink, VocabEntrySummary, VocabEntryDetail 
 /*  Cache-first lookup                                                  */
 /* ------------------------------------------------------------------ */
 
+export type LookupOutcome =
+  | { status: "ok"; lemma: string; surface: string; result: LookupResult; cached: boolean }
+  | { status: "locked"; feature: "lookup" };
+
+/** Writes a look-up result for this user: entry, alias, occurrence and recognition gap, atomically. */
+async function persistLookup(userId: string, surface: string, sentenceContext: string, source: LookupSource, result: LookupResult): Promise<string> {
+  const resolved = norm(result.lemma || surface);
+  await db.transaction(async (tx) => {
+    await upsertEntry(userId, resolved, surface, result, tx);
+    await upsertAlias(userId, norm(surface), resolved, tx);
+    await recordOccurrence({
+      userId, lemma: resolved, surface, sentenceContext,
+      sourceType: source.type,
+      documentId: source.type === "reading" ? source.documentId : null,
+      tcfQuestionId: source.type === "tcf" ? source.tcfQuestionId : null,
+    }, tx);
+    await upsertGap({ userId, lemma: resolved, gapType: "recognition", source: "lookup", dbx: tx });
+  });
+  return resolved;
+}
+
 export async function resolveLookup(
   surface: string,
   sentenceContext: string,
   source: LookupSource,
-): Promise<{ lemma: string; surface: string; result: LookupResult; cached: boolean }> {
+): Promise<LookupOutcome> {
   const user = await requireUser();
   await assertLookupSource(user.id, source);
   const lemma = await resolveLemma(user.id, surface);
@@ -65,39 +88,22 @@ export async function resolveLookup(
         in_context: row.inContext ?? "",
         examples: (row.examples as string[]) ?? [],
       };
-      return { lemma, surface, result, cached: true };
+      return { status: "ok", lemma, surface, result, cached: true };
     }
   }
 
-  // Cache miss — Tier 1 AI. The three writes are one atomic unit: a partial
-  // failure would otherwise leave an entry without its alias/occurrence.
+  // Guests never trigger an AI look-up (Task 14 adds the sample entries here).
+  if (canUse(user.access, "lookup") !== true) return { status: "locked", feature: "lookup" };
+
+  // Cache miss — Tier 1 AI. The writes are one atomic unit (see persistLookup): a
+  // partial failure would otherwise leave an entry without its alias/occurrence.
   const result = await lookupWord(surface, sentenceContext);
-  const resolved = norm(result.lemma || surface);
-  await db.transaction(async (tx) => {
-    await upsertEntry(user.id, resolved, surface, result, tx);
-    await upsertAlias(user.id, norm(surface), resolved, tx);
-    await recordOccurrence({
-      userId: user.id,
-      lemma: resolved,
-      surface,
-      sentenceContext,
-      sourceType: source.type,
-      documentId: source.type === "reading" ? source.documentId : null,
-      tcfQuestionId: source.type === "tcf" ? source.tcfQuestionId : null,
-    }, tx);
-    await upsertGap({
-      userId: user.id,
-      lemma: resolved,
-      gapType: "recognition",
-      source: "lookup",
-      dbx: tx,
-    });
-  });
-  return { lemma: resolved, surface, result, cached: false };
+  const resolved = await persistLookup(user.id, surface, sentenceContext, source, result);
+  return { status: "ok", lemma: resolved, surface, result, cached: false };
 }
 
 export async function reexplainInContext(lemma: string, sentenceContext: string): Promise<string> {
-  const user = await requireUser();
+  const user = await requireFeature("lookup");
   const owned = await db
     .select({ lemma: userVocabulary.lemma })
     .from(userVocabulary)
@@ -125,6 +131,8 @@ export async function saveVocabularyWord(word: string): Promise<void> {
     .where(and(eq(userVocabulary.userId, user.id), eq(userVocabulary.lemma, lemma)))
     .returning({ lemma: userVocabulary.lemma });
   if (saved.length === 0) return;
+  // Guests keep the basic entry; enrichment is a paid AI call.
+  if (canUse(user.access, "enrich") !== true) return;
   // Enrich after the response is sent (Next's official post-response hook), so
   // the save returns instantly and the work is still guaranteed to run.
   after(async () => {
@@ -137,7 +145,7 @@ export async function saveVocabularyWord(word: string): Promise<void> {
 }
 
 export async function enrichEntry(lemma: string): Promise<void> {
-  const user = await requireUser();
+  const user = await requireFeature("enrich");
   await enrichEntryForUser(user.id, lemma);
 }
 

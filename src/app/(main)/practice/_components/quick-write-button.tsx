@@ -5,12 +5,15 @@ import { Loader2, PenLine } from "lucide-react";
 
 import { quickWrite } from "@/lib/actions/tasks";
 import { Button } from "@/components/ui/button";
+import { InviteOnlyNote } from "@/components/invite-only-note";
+import { useFeatureLocked } from "@/components/access-context";
 
 /** One-click entry into the writing loop: generates an archive-driven task
  *  (no document required) and redirects to the task stage. */
 export function QuickWriteButton({ compact = false }: { compact?: boolean }) {
   const [pending, startTransition] = useTransition();
   const [failed, setFailed] = useState(false);
+  const locked = useFeatureLocked("writing");
 
   function handleClick() {
     setFailed(false);
@@ -27,7 +30,7 @@ export function QuickWriteButton({ compact = false }: { compact?: boolean }) {
 
   return (
     <div className="space-y-2">
-      <Button onClick={handleClick} disabled={pending} size={compact ? "default" : "lg"}>
+      <Button onClick={handleClick} disabled={pending || locked} size={compact ? "default" : "lg"}>
         {pending ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -40,10 +43,14 @@ export function QuickWriteButton({ compact = false }: { compact?: boolean }) {
           </>
         )}
       </Button>
-      {!compact && (
-        <p className="text-xs text-muted-foreground">
-          A prompt tuned to your error profile — no document needed.
-        </p>
+      {locked ? (
+        <InviteOnlyNote />
+      ) : (
+        !compact && (
+          <p className="text-xs text-muted-foreground">
+            A prompt tuned to your error profile — no document needed.
+          </p>
+        )
       )}
       {failed && (
         <p className="text-xs text-danger">

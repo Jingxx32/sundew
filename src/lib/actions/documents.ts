@@ -12,6 +12,7 @@ import { documents, readingSessions } from "@/lib/db/schema";
 import { countWords, naiveLevelEstimate } from "@/lib/cefr";
 import { estimateCefrLevel } from "@/lib/ai/cefr-estimator";
 import { requireUser } from "@/lib/auth/session";
+import { requireFeature } from "@/lib/access/guard";
 
 const NewDocumentSchema = z.object({
   title: z.string().trim().min(1, "Title is required").max(200),
@@ -37,7 +38,7 @@ export async function createDocument(
   _prevState: CreateDocumentResult | null,
   formData: FormData,
 ): Promise<CreateDocumentResult> {
-  const user = await requireUser();
+  const user = await requireFeature("upload");
   const raw = {
     title: formData.get("title")?.toString() ?? "",
     source: formData.get("source")?.toString() ?? "",

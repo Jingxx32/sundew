@@ -32,6 +32,16 @@ for (const { file, feature, summaryReads = [] } of WHOLE_FILES) {
 export const SINGLE_EXPORTS: Array<[string, string, string]> = [
   ["src/lib/actions/tasks.ts", "writeFromTcfPassage", "tcf"],
   ["src/lib/actions/vocab-gaps.ts", "markTcfVocabGap", "tcf"],
+  ["src/lib/actions/tasks.ts", "generateWritingTask", "writing"],
+  ["src/lib/actions/tasks.ts", "practiceFromPattern", "writing"],
+  ["src/lib/actions/tasks.ts", "quickWrite", "writing"],
+  ["src/lib/actions/tasks.ts", "createSubmission", "writing"],
+  ["src/lib/actions/tasks.ts", "regenerateFeedback", "writing"],
+  ["src/lib/actions/errors.ts", "createMicroDrill", "microDrill"],
+  ["src/lib/actions/errors.ts", "retryMicroDrillFeedback", "microDrill"],
+  ["src/lib/actions/documents.ts", "createDocument", "upload"],
+  ["src/lib/actions/vocabulary.ts", "enrichEntry", "enrich"],
+  ["src/lib/actions/vocabulary.ts", "reexplainInContext", "lookup"],
 ];
 
 test("single gated exports", () => {

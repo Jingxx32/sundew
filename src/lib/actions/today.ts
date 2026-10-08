@@ -225,7 +225,9 @@ export async function selectTodayActivity(key: TodayActivityKey): Promise<void> 
 }
 
 export async function startTodayActivity(key: TodayActivityKey): Promise<void> {
+  const user = await requireUser();
   const activity = await saveFocus(key);
-  if (key === "writing" && !activity.done && activity.href === "/practice") await quickWrite();
+  // Guests land on /practice, which shows their sample feedback instead of generating a task.
+  if (key === "writing" && !activity.done && activity.href === "/practice" && canUse(user.access, "writing") === true) await quickWrite();
   redirect(activity.href);
 }

@@ -1,7 +1,7 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { after } from "next/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -46,7 +46,7 @@ export async function generateWritingTask(
   vocabWords: string[] = [],
   opts?: GenerateTaskOptions,
 ): Promise<string> {
-  const user = await requireUser();
+  const user = await requireFeature("writing");
   const [doc, profile] = await Promise.all([
     documentId
       ? db
@@ -117,7 +117,7 @@ export async function practiceFromPattern(
   category: ErrorCategory,
   subcategory: string,
 ): Promise<string> {
-  await requireUser();
+  await requireFeature("writing");
   const def = ERROR_TAXONOMY[category];
   if (!def) throw new Error("Unknown error category.");
   const hasSub = Object.prototype.hasOwnProperty.call(
@@ -141,7 +141,7 @@ export async function practiceFromPattern(
  * straight on the task stage. Powers the "Écrire maintenant" entry.
  */
 export async function quickWrite(): Promise<void> {
-  await requireUser();
+  await requireFeature("writing");
   const taskId = await generateWritingTask(null, [], { source: "archive" });
   revalidatePath("/practice");
   redirect(`/practice?taskId=${taskId}`);
@@ -353,7 +353,7 @@ async function persistFeedback(
 }
 
 export async function createSubmission(taskId: string, contentFr: string): Promise<void> {
-  const user = await requireUser();
+  const user = await requireFeature("writing");
   const taskExists = await db
     .select({ id: writingTasks.id })
     .from(writingTasks)
@@ -420,7 +420,7 @@ export async function createSubmission(taskId: string, contentFr: string): Promi
 export async function regenerateFeedback(
   submissionId: string,
 ): Promise<{ ok: boolean }> {
-  const user = await requireUser();
+  const user = await requireFeature("writing");
   const submission = await db
     .select()
     .from(submissions)
@@ -477,6 +477,17 @@ export async function getWritingTaskWithDocument(id: string) {
         .then((r) => r[0] ?? null)
     : null;
   return { task, doc };
+}
+
+export async function listRecentSubmissions(limit = 5): Promise<Array<{ id: string; promptEn: string; submittedAt: Date }>> {
+  const user = await requireUser();
+  return db
+    .select({ id: submissions.id, promptEn: writingTasks.promptEn, submittedAt: submissions.submittedAt })
+    .from(submissions)
+    .innerJoin(writingTasks, eq(writingTasks.id, submissions.taskId))
+    .where(eq(submissions.userId, user.id))
+    .orderBy(desc(submissions.submittedAt))
+    .limit(limit);
 }
 
 export async function getSubmissionWithFeedback(submissionId: string) {

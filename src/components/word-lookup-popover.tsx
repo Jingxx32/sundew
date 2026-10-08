@@ -13,11 +13,14 @@ import { useTextSelection } from "@/hooks/use-text-selection";
 import { Chip } from "@/components/ui/chip";
 import { Button } from "@/components/ui/button";
 import { CEFR_CHIP_CLASSES, type CefrLevel } from "@/lib/cefr";
+import { InviteOnlyNote } from "@/components/invite-only-note";
+import { useFeatureLocked } from "@/components/access-context";
 import { cn } from "@/lib/utils";
 
 type State =
   | { phase: "hidden" }
   | { phase: "loading"; word: string; x: number; y: number }
+  | { phase: "locked"; word: string; x: number; y: number }
   | {
       phase: "ready";
       lemma: string;
@@ -52,7 +55,12 @@ export function WordLookupPopover({
       setState({ phase: "loading", word: requested, x, y });
       startTransition(async () => {
         try {
-          const { lemma, result } = await resolveLookup(requested, sel.sentenceContext, source);
+          const outcome = await resolveLookup(requested, sel.sentenceContext, source);
+          if (outcome.status === "locked") {
+            setState((p) => (p.phase !== "hidden" && p.word === requested ? { phase: "locked", word: requested, x, y } : p));
+            return;
+          }
+          const { lemma, result } = outcome;
           // Ignore a stale response if the user has since selected another word.
           setState((p) =>
             p.phase !== "hidden" && p.word === requested
@@ -93,6 +101,17 @@ export function WordLookupPopover({
     >
       {state.phase === "loading" ? (
         <LoadingSkeleton word={word} onClose={() => setState({ phase: "hidden" })} />
+      ) : state.phase === "locked" ? (
+        <div className="space-y-3 p-4 text-sm">
+          <div className="flex items-start justify-between gap-2">
+            <span className="text-base font-semibold">{word}</span>
+            <button type="button" onClick={() => setState({ phase: "hidden" })} aria-label="Close word lookup" className="shrink-0 rounded-md text-subtle-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40">
+              <X className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
+          <p className="text-muted-foreground">Look-ups outside the sample texts need an invite code.</p>
+          <InviteOnlyNote />
+        </div>
       ) : (
         <LookupCard
           lemma={state.lemma}
@@ -153,6 +172,7 @@ function LookupCard({
   const [inContext, setInContext] = useState(result.in_context);
   const [isReexplaining, startReexplain] = useTransition();
   const [isSaving, startSave] = useTransition();
+  const reexplainLocked = useFeatureLocked("lookup");
 
   function handleSave() {
     startSave(async () => {
@@ -207,6 +227,7 @@ function LookupCard({
       {/* In this context */}
       <Section label="In this context">
         <p className="text-foreground">{inContext}</p>
+        {!reexplainLocked && (
         <button
           onClick={handleReexplain}
           disabled={isReexplaining}
@@ -215,6 +236,7 @@ function LookupCard({
           <RefreshCw className={cn("h-3 w-3", isReexplaining && "animate-spin")} />
           Re-explain in this sentence
         </button>
+        )}
       </Section>
 
       <Divider />
