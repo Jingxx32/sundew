@@ -25,8 +25,8 @@ Set `AUTH_SIGNUP_ENABLED=false` in Vercel and redeploy. No new accounts, with or
 ## Cleanup job
 
 - Route: `/api/cron/cleanup-guests`, Vercel Cron, daily at 09:00 UTC (`vercel.json`). It needs `CRON_SECRET`; without it the route returns 401.
-- Each run deletes at most 100 guests older than 7 days, oldest first. Each guest is re-checked right before deletion (still anonymous, still past the cutoff).
-- It logs `guest cleanup {…}` in Vercel logs and returns `{ deleted, failed, skipped, totals }`. `failed` rows are retried by the next run.
+- Each run deletes at most 250 guests older than 7 days (more than the daily cap of 200), oldest first, and stops after 240 s to stay inside Vercel's 300 s limit. Each guest is re-checked right before deletion (still anonymous, still past the cutoff).
+- It logs `guest cleanup {…}` in Vercel logs and returns `{ deleted, failed, skipped, stoppedEarly, totals }`. `failed` rows and anything left after `stoppedEarly: true` are picked up by the next run.
 - Run it by hand:
 
 ```bash

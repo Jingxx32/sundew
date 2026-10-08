@@ -2,7 +2,8 @@
 export const GUEST_LIFETIME_DAYS = 7;
 export const GUEST_SIGNINS_PER_IP_PER_HOUR = 3;
 export const GUEST_DAILY_CAP = 200;
-export const GUEST_CLEANUP_BATCH = 100;
+/** At least GUEST_DAILY_CAP, so one daily run can clear a full day of guests. */
+export const GUEST_CLEANUP_BATCH = 250;
 export const INVITE_COOKIE = "sundew_invite";
 export const INVITE_COOKIE_MAX_AGE_S = 600;
 export const INVITE_CHECKS_PER_WINDOW = 10;
