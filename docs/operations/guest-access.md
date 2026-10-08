@@ -4,15 +4,23 @@ Status: shipped with `feat/guest-access`. Updated 2026-10-08.
 
 Three access levels: **guest** (one-click anonymous account, limited features, deleted after 7 days), **full** (invite code, Google or email code), **admin** (the owner). Code map is in `CLAUDE.md` under "Access levels".
 
+## Before the first deploy
+
+- Vercel Production has `CRON_SECRET` set (the cleanup route returns 401 without it).
+- `AUTH_SIGNUP_ENABLED` is unset or `true`. Its default changed, so a leftover `false` makes every invite sign-up fail with `SIGNUP_CLOSED`.
+- `AUTH_RATE_LIMIT_ENABLED` is not set.
+
 ## Sign-up behavior
 
 - A new account needs an invite code. Google sign-up carries the code through Better Auth's signed OAuth state; email-code sign-up reads the `sundew_invite` cookie (10 minutes).
 - Sign-in codes by email go only to existing accounts, or to new addresses that hold a valid invite cookie.
-- A guest who signs up with a code is converted to a full account.
+- A guest who signs up with a code gets a new full account; the guest account and its demo data are deleted.
 
 ## Create an invite
 
 Open `/admin/invites`. Codes are plaintext and revocable; revoking stops new sign-ups with that code, not existing accounts.
+
+A user who created invite codes cannot be deleted (admin removal or script) until those codes are reassigned or deleted; the delete is refused before any data is removed.
 
 ## Turn guests off
 
@@ -20,7 +28,7 @@ Set `GUEST_ACCESS_ENABLED=false` in Vercel (Production) and redeploy. The button
 
 ## Stop all sign-ups
 
-Set `AUTH_SIGNUP_ENABLED=false` in Vercel and redeploy. No new accounts, with or without a code. Unset means `true`.
+Set `AUTH_SIGNUP_ENABLED=false` in Vercel and redeploy. No new full accounts, with or without a code. Guests are still created unless you also set `GUEST_ACCESS_ENABLED=false`. Unset means `true`.
 
 ## Cleanup job
 
