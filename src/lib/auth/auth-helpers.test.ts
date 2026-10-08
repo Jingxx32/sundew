@@ -11,9 +11,9 @@ test("callback paths stay on this site", () => {
   }
 });
 
-test("sign-up is closed in production unless explicitly opened", () => {
-  assert.equal(signupEnabled({ NODE_ENV: "production" }), false);
-  assert.equal(signupEnabled({ NODE_ENV: "production", AUTH_SIGNUP_ENABLED: "true" }), true);
+test("invite sign-up is on unless the kill switch is set", () => {
+  assert.equal(signupEnabled({ NODE_ENV: "production" }), true);
+  assert.equal(signupEnabled({ NODE_ENV: "production", AUTH_SIGNUP_ENABLED: "false" }), false);
   assert.equal(signupEnabled({ NODE_ENV: "development" }), true);
   assert.equal(signupEnabled({ NODE_ENV: "development", AUTH_SIGNUP_ENABLED: "false" }), false);
 });
