@@ -18,7 +18,11 @@
     "db:seed": "tsx scripts/seed.ts",
     "db:seed-rules": "tsx scripts/seed-rules.ts",
     "db:reenrich": "tsx scripts/reenrich-vocab.ts",
-    "tcf:explain-export": "tsx scripts/export-tcf-explanations.ts"
+    "tcf:explain-export": "tsx scripts/export-tcf-explanations.ts",
+    "sample:draft": "node --import tsx scripts/sample-workspace/draft.mts",
+    "sample:export": "node --import tsx scripts/sample-workspace/export.mts",
+    "sample:lookups": "node --import tsx scripts/sample-workspace/lookups.mts",
+    "sample:check": "node --import tsx scripts/sample-workspace/check.mts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1128.0",
