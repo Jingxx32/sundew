@@ -2,7 +2,8 @@ import { and, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { speakingAssets, speakingSessions, speakingTurns } from "@/lib/db/schema";
 import { assessPronunciation } from "@/lib/speech/azure";
-import { AuthenticationError, requireUser } from "@/lib/auth/session";
+import { AuthenticationError, authErrorStatus } from "@/lib/auth/session";
+import { requireFeature } from "@/lib/access/guard";
 import { assertSpeakingStorageReady, putRecording, recordingKey } from "@/lib/storage/speaking-recordings";
 import { wavDurationSeconds } from "@/lib/speaking/audio";
 
@@ -11,14 +12,14 @@ const MAX_AUDIO_BYTES = 4 * 1024 * 1024;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function POST(request: Request) {
-  let user: Awaited<ReturnType<typeof requireUser>>;
+  let user: Awaited<ReturnType<typeof requireFeature>>;
   try {
-    user = await requireUser();
+    user = await requireFeature("speaking");
   } catch (error) {
     if (error instanceof AuthenticationError) {
       return Response.json(
         { error: error.code.toLowerCase() },
-        { status: error.code === "FORBIDDEN" ? 403 : error.code === "AUTH_MISCONFIGURED" ? 503 : 401 },
+        { status: authErrorStatus(error.code) },
       );
     }
     throw error;

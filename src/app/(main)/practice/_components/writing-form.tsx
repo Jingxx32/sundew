@@ -3,6 +3,8 @@
 import { useTransition, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { InviteOnlyNote } from "@/components/invite-only-note";
+import { useFeatureLocked } from "@/components/access-context";
 import { createSubmission } from "@/lib/actions/tasks";
 
 type Props = {
@@ -18,13 +20,14 @@ function countWords(text: string): number {
 export function WritingForm({ taskId, minWordCount, maxWordCount }: Props) {
   const [text, setText] = useState("");
   const [isPending, startTransition] = useTransition();
+  const locked = useFeatureLocked("writing");
 
   const words = text.trim() ? countWords(text) : 0;
   const belowMin = words > 0 && words < minWordCount;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!text.trim() || isPending) return;
+    if (!text.trim() || isPending || locked) return;
     startTransition(async () => {
       await createSubmission(taskId, text.trim());
     });
@@ -36,7 +39,7 @@ export function WritingForm({ taskId, minWordCount, maxWordCount }: Props) {
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder="Écrivez votre réponse en français…"
-        disabled={isPending}
+        disabled={isPending || locked}
         rows={12}
         className="w-full text-base leading-relaxed resize-none rounded-xl border border-border bg-surface px-5 py-4 text-foreground placeholder:text-subtle-foreground focus:outline-none focus:ring-2 focus:ring-accent/40 disabled:opacity-50 transition-colors"
       />
@@ -59,7 +62,8 @@ export function WritingForm({ taskId, minWordCount, maxWordCount }: Props) {
           )}
         </p>
 
-        <Button type="submit" disabled={isPending || !text.trim()}>
+        {locked && <InviteOnlyNote className="mr-auto" />}
+        <Button type="submit" disabled={isPending || locked || !text.trim()}>
           {isPending ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />

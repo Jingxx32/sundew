@@ -80,7 +80,7 @@ Document excerpt: ${docContent.slice(0, 600)}${docContent.length > 600 ? "…" :
       : ""
   }${useProfile && profile ? buildProfileUserBlock(profile) : ""}`;
 
-  const completion = await getOpenAI().chat.completions.parse({
+  const completion = await (await getOpenAI()).chat.completions.parse({
     model: MODELS.task,
     messages: [
       { role: "system", content: systemContent },

@@ -6,15 +6,18 @@ import {
   Layers3,
   RotateCcw,
   Settings,
+  Ticket,
   UserRound,
   type LucideIcon,
 } from "lucide-react";
+import type { FeatureKey } from "@/lib/access/features";
 
 export type NavigationItem = {
   href: string;
   label: string;
   icon: LucideIcon;
   matches: (pathname: string) => boolean;
+  feature?: FeatureKey;
 };
 
 const within = (segment: string) => (pathname: string) =>
@@ -32,11 +35,15 @@ export const PRIMARY_NAVIGATION: NavigationItem[] = [
 ];
 
 export const SECONDARY_NAVIGATION: NavigationItem[] = [
-  { href: "/tcf", label: "TCF Canada", icon: Headphones, matches: within("/tcf") },
+  { href: "/tcf", label: "TCF Canada", icon: Headphones, matches: within("/tcf"), feature: "tcf" },
   { href: "/library", label: "Library", icon: BookOpen, matches: (p) => within("/library")(p) || within("/documents")(p) },
   { href: "/progress", label: "Progress", icon: BarChart3, matches: within("/progress") },
   { href: "/settings", label: "Settings", icon: Settings, matches: within("/settings") },
   { href: "/account", label: "Account", icon: UserRound, matches: within("/account") },
+];
+
+export const ADMIN_NAVIGATION: NavigationItem[] = [
+  { href: "/admin/invites", label: "Invites", icon: Ticket, matches: within("/admin") },
 ];
 
 export const ALL_NAVIGATION = [...PRIMARY_NAVIGATION, ...SECONDARY_NAVIGATION];

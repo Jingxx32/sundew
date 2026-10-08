@@ -23,7 +23,7 @@ import {
 import { extractPdfText } from "@/lib/pdf/extract";
 import { parseQuizFromText } from "@/lib/ai/quiz-parse";
 import { QuizParseSchema, type ParsedQuiz } from "@/lib/ai/quiz-schema";
-import { requireUser } from "@/lib/auth/session";
+import { requireFeature } from "@/lib/access/guard";
 import { gradeQuizAnswers, type QuizAnswer } from "@/lib/quiz/grading";
 
 const QUIZ_SECTIONS = [
@@ -47,7 +47,7 @@ export type ImportQuizResult =
 export async function importQuizFromPdf(
   formData: FormData,
 ): Promise<ImportQuizResult> {
-  await requireUser();
+  await requireFeature("quiz");
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) {
     return { ok: false, error: "empty" };
@@ -65,7 +65,7 @@ export async function importQuizFromPdf(
 export async function parseQuizFromPastedText(
   rawText: string,
 ): Promise<ImportQuizResult> {
-  await requireUser();
+  await requireFeature("quiz");
   if (!rawText.trim()) return { ok: false, error: "empty" };
   return parsePastedOrExtractedText(rawText);
 }
@@ -96,7 +96,7 @@ export async function confirmQuizImport(input: {
   source?: string | null;
   parsed: ParsedQuiz;
 }): Promise<{ setId: string }> {
-  const user = await requireUser();
+  const user = await requireFeature("quiz");
   // Re-validate the client-held preview payload before trusting it
   const parsed = QuizParseSchema.parse(input.parsed);
 
@@ -151,7 +151,7 @@ export async function submitQuizAttempt(input: {
   answers: QuizAnswer[];
   requestKey: string;
 }): Promise<QuizAttempt> {
-  const user = await requireUser();
+  const user = await requireFeature("quiz");
   if (typeof input.requestKey !== "string" || !/^[a-zA-Z0-9-]{12,100}$/.test(input.requestKey)) {
     throw new Error("Invalid request key");
   }
@@ -217,7 +217,7 @@ export async function listQuizSets(opts?: {
   exam?: string;
   section?: string;
 }): Promise<QuizSetListItem[]> {
-  const user = await requireUser();
+  const user = await requireFeature("quiz");
   const filters: SQL[] = [eq(quizSets.userId, user.id)];
   if (opts?.exam && opts.exam !== "all") {
     filters.push(eq(quizSets.exam, opts.exam));
@@ -288,7 +288,7 @@ export type QuizSetDetail = {
 };
 
 export async function getQuizSet(setId: string): Promise<QuizSetDetail | null> {
-  const user = await requireUser();
+  const user = await requireFeature("quiz");
   const set = await db
     .select()
     .from(quizSets)
@@ -327,7 +327,7 @@ export async function getQuizSet(setId: string): Promise<QuizSetDetail | null> {
 }
 
 export async function deleteQuizSet(setId: string) {
-  const user = await requireUser();
+  const user = await requireFeature("quiz");
   await db.delete(quizSets).where(and(eq(quizSets.id, setId), eq(quizSets.userId, user.id)));
   revalidatePath("/quiz");
 }

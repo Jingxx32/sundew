@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/input";
 import { createMicroDrill, getMicroDrillsForError, retryMicroDrillFeedback, type MicroDrillView } from "@/lib/actions/errors";
 import type { MicroDrillFeedback } from "@/lib/ai/micro-drill";
+import { InviteOnlyNote } from "@/components/invite-only-note";
+import { useFeatureLocked } from "@/components/access-context";
 
 type Props = {
   errorId: string;
@@ -30,6 +32,7 @@ export function MicroDrillDialog({ errorId, microDrill, original, correction }: 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [priorAttempts, setPriorAttempts] = useState<MicroDrillView[]>([]);
   const [isPending, startTransition] = useTransition();
+  const locked = useFeatureLocked("microDrill");
 
   // Load prior attempts whenever the dialog opens
   useEffect(() => {
@@ -219,12 +222,13 @@ export function MicroDrillDialog({ errorId, microDrill, original, correction }: 
         )}
 
         <DialogFooter>
+          {locked && <InviteOnlyNote className="mr-auto" />}
           {feedback ? (
             <Button variant="outline" size="sm" onClick={handleNewAttempt}>
               New attempt
             </Button>
           ) : currentAttempt ? (
-            <Button size="sm" onClick={handleRetryFeedback} disabled={isPending || currentAttempt.feedbackStatus === "ready"}>
+            <Button size="sm" onClick={handleRetryFeedback} disabled={isPending || locked || currentAttempt.feedbackStatus === "ready"}>
               {isPending ? "Checking…" : "Retry feedback"}
             </Button>
           ) : (
@@ -237,7 +241,7 @@ export function MicroDrillDialog({ errorId, microDrill, original, correction }: 
               >
                 Cancel
               </Button>
-              <Button size="sm" onClick={handleSubmit} disabled={isPending}>
+              <Button size="sm" onClick={handleSubmit} disabled={isPending || locked}>
                 {isPending ? "Checking…" : "Submit"}
               </Button>
             </>

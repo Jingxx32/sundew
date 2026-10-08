@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/client";
 
-export function SignOutButton({ className }: { className?: string }) {
+export function SignOutButton({ className, label = "Sign out" }: { className?: string; label?: string }) {
   const [pending, setPending] = useState(false);
   return (
     <Button
@@ -18,7 +18,7 @@ export function SignOutButton({ className }: { className?: string }) {
         window.location.assign("/login");
       }}
     >
-      Sign out
+      {label}
     </Button>
   );
 }

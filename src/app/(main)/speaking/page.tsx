@@ -5,8 +5,11 @@ import { ArrowDown, AudioLines, MessagesSquare } from "lucide-react";
 import { listPromptsWithStats } from "@/lib/actions/speaking";
 import { Button } from "@/components/ui/button";
 import { PromptList } from "./_components/prompt-list";
+import { pageGate } from "@/lib/access/page-gate";
 
 export default async function SpeakingPage() {
+  const locked = await pageGate("speaking");
+  if (locked) return locked;
   const prompts = await listPromptsWithStats();
 
   return (

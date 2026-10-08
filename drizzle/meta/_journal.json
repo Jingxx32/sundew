@@ -267,6 +267,13 @@
       "when": 1791006451802,
       "tag": "0037_auth_foundation",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1791439341955,
+      "tag": "0038_guest_access_invites",
+      "breakpoints": true
     }
   ]
 }

@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { clearInviteCode } from "@/lib/actions/invites";
 import { authClient } from "@/lib/auth/client";
 
 const MESSAGES: Record<string, string> = {
@@ -10,7 +12,9 @@ const MESSAGES: Record<string, string> = {
   OTP_EXPIRED: "That code has expired. Send a new one.",
   TOO_MANY_ATTEMPTS: "Too many attempts. Send a new code.",
   BANNED_USER: "This account has been disabled.",
-  signup_disabled: "Sign-up is currently closed. Existing accounts can sign in.",
+  INVITE_REQUIRED: "An invite code is required to create an account.",
+  INVITE_INVALID: "This invite code is no longer valid.",
+  SIGNUP_CLOSED: "Sign-up is currently closed. Existing accounts can sign in.",
 };
 const FALLBACK = "Something went wrong. Please try again.";
 
@@ -20,16 +24,19 @@ function messageFor(error: { code?: string; status?: number }): string {
 }
 
 export function LoginForm({
+  mode,
   callbackPath,
   otpAvailable,
   signupOpen,
   initialError,
 }: {
+  mode: "sign-in" | "create";
   callbackPath: string;
   otpAvailable: boolean;
   signupOpen: boolean;
   initialError: string | null;
 }) {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState<"email" | "code">("email");
@@ -133,9 +140,26 @@ export function LoginForm({
           )}
         </>
       )}
+      {mode === "create" && (
+        <button
+          type="button"
+          className="text-sm text-muted-foreground hover:text-accent"
+          onClick={async () => {
+            await clearInviteCode();
+            router.refresh();
+          }}
+        >
+          Use a different invite code
+        </button>
+      )}
       {!signupOpen && (
         <p className="text-xs leading-5 text-muted-foreground">
           Sign-up is currently closed. Existing accounts can sign in.
+        </p>
+      )}
+      {mode === "sign-in" && signupOpen && (
+        <p className="text-xs leading-5 text-muted-foreground">
+          New here? You&apos;ll need an invite code to create an account.
         </p>
       )}
       {error && (

@@ -2,12 +2,15 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { getTcfSetQuestions } from "@/lib/actions/tcf";
 import { ExamRunner } from "../_components/exam-runner";
+import { pageGate } from "@/lib/access/page-gate";
 
 export default async function TcfExamPage({
   searchParams,
 }: {
   searchParams: Promise<{ skill?: string; test?: string; i?: string }>;
 }) {
+  const locked = await pageGate("tcf");
+  if (locked) return locked;
   const { skill: skillParam, test: testParam, i: indexParam } = await searchParams;
   const skill = (skillParam === "reading" ? "reading" : "listening") as "listening" | "reading";
   const testNumber = Math.max(1, parseInt(testParam ?? "1", 10) || 1);

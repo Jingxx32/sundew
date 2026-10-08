@@ -297,8 +297,9 @@ export async function recordConjugationAttempt(input: {
 
   revalidatePath("/today");
 
-  // Only Today is invalidated. Revalidating this drill route mid-round would
-  // regenerate the random queue under the deck.
+  // Today must stay fresh. Next also re-renders the page the action was called
+  // from, so /conjugation gets a new random queue prop mid-round; DrillCard keeps
+  // its own deck and adopts the new queue only on "New round".
   return { correct: saved.correct, expected: saved.expected, accepted, ruleHint: RULE_HINTS[input.tense] };
 }
 

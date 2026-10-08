@@ -1,6 +1,7 @@
 "use server";
 
 import { and, desc, eq } from "drizzle-orm";
+import { canUse } from "@/lib/access/features";
 import { requireUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { conjugationAttempts, quizPassages, quizQuestionAttempts, quizQuestions, quizSets } from "@/lib/db/schema";
@@ -26,7 +27,8 @@ export async function getReviewCenterItems(): Promise<{
   const now = new Date();
   const sources: ReviewSource[] = ["tcf", "writing", "vocabulary", "conjugation", "quiz"];
   const results = await Promise.allSettled([
-    getTcfReviewQueue(),
+    // Guests have no TCF access; an empty queue keeps it out of "unavailable".
+    canUse(user.access, "tcf") === true ? getTcfReviewQueue() : Promise.resolve([]),
     listErrors({ limit: 60 }),
     listGaps(),
     db.select({ id: conjugationAttempts.id, verb: conjugationAttempts.verb,

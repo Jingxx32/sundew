@@ -10,13 +10,20 @@ import { toAuthenticatedUser, type AuthenticatedUser } from "./user";
 export type { AuthenticatedUser } from "./user";
 
 export class AuthenticationError extends Error {
-  readonly code: "UNAUTHENTICATED" | "FORBIDDEN" | "AUTH_MISCONFIGURED";
+  readonly code: "UNAUTHENTICATED" | "FORBIDDEN" | "FEATURE_LOCKED" | "AUTH_MISCONFIGURED";
 
   constructor(code: AuthenticationError["code"]) {
     super(code);
     this.name = "AuthenticationError";
     this.code = code;
   }
+}
+
+/** HTTP status for route handlers that catch an AuthenticationError. */
+export function authErrorStatus(code: AuthenticationError["code"]): 401 | 403 | 503 {
+  if (code === "UNAUTHENTICATED") return 401;
+  if (code === "AUTH_MISCONFIGURED") return 503;
+  return 403;
 }
 
 /** Validates the session cookie against the database once per request. */

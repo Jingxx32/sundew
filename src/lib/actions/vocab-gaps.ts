@@ -11,7 +11,8 @@ import {
   type VocabGapType,
   type VocabGapStatus,
 } from "@/lib/db/schema";
-import { requireUser } from "@/lib/auth/session";
+import { AuthenticationError, requireUser } from "@/lib/auth/session";
+import { requireFeature } from "@/lib/access/guard";
 
 /** Manual gap marking from a TCF question. Creates the entry (cache-first lookup),
  *  the occurrence, and the gap row. */
@@ -21,12 +22,13 @@ export async function markTcfVocabGap(input: {
   tcfQuestionId: string;
   gapType: VocabGapType;
 }): Promise<void> {
-  const user = await requireUser();
-  const { lemma } = await resolveLookup(input.surface, input.sentenceContext, {
+  const user = await requireFeature("tcf");
+  const outcome = await resolveLookup(input.surface, input.sentenceContext, {
     type: "tcf",
     tcfQuestionId: input.tcfQuestionId,
   });
-  await upsertGap({ userId: user.id, lemma, gapType: input.gapType, source: "manual" });
+  if (outcome.status !== "ok") throw new AuthenticationError("FEATURE_LOCKED");
+  await upsertGap({ userId: user.id, lemma: outcome.lemma, gapType: input.gapType, source: "manual" });
 }
 
 /* ------------------------------------------------------------------ */

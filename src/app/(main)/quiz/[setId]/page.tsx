@@ -6,12 +6,15 @@ import { Chip } from "@/components/ui/chip";
 import { getQuizSet } from "@/lib/actions/quiz";
 import { QuizRunner } from "./_components/quiz-runner";
 import { ClozeRunner } from "./_components/cloze-runner";
+import { pageGate } from "@/lib/access/page-gate";
 
 export default async function QuizSetPage({
   params,
 }: {
   params: Promise<{ setId: string }>;
 }) {
+  const locked = await pageGate("quiz");
+  if (locked) return locked;
   const { setId } = await params;
   const detail = await getQuizSet(setId);
   if (!detail) notFound();

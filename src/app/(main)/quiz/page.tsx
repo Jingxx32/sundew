@@ -6,12 +6,15 @@ import { Chip } from "@/components/ui/chip";
 import { listQuizSets, type QuizSetListItem } from "@/lib/actions/quiz";
 import { ImportQuizDialog } from "./_components/import-dialog";
 import { QuizFilters } from "./_components/quiz-filters";
+import { pageGate } from "@/lib/access/page-gate";
 
 export default async function QuizPage({
   searchParams,
 }: {
   searchParams: Promise<{ exam?: string; section?: string }>;
 }) {
+  const locked = await pageGate("quiz");
+  if (locked) return locked;
   const { exam, section } = await searchParams;
 
   const [sets, allSets] = await Promise.all([

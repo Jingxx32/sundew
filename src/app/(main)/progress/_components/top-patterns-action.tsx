@@ -4,6 +4,8 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { practiceFromPattern } from "@/lib/actions/tasks";
+import { InviteOnlyNote } from "@/components/invite-only-note";
+import { useFeatureLocked } from "@/components/access-context";
 import type { ErrorCategory } from "@/lib/taxonomy";
 
 type Props = {
@@ -15,6 +17,7 @@ export function PracticeFromPatternButton({ category, subcategory }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const locked = useFeatureLocked("writing");
 
   function handleClick() {
     setError(null);
@@ -28,6 +31,8 @@ export function PracticeFromPatternButton({ category, subcategory }: Props) {
       }
     });
   }
+
+  if (locked) return <InviteOnlyNote />;
 
   return (
     <div className="flex flex-col items-end gap-1">

@@ -11,7 +11,7 @@ export async function generateSpeakingScript(
   prompt: SpeakingPrompt,
   profile: string,
 ): Promise<string> {
-  const completion = await getOpenAI().chat.completions.create({
+  const completion = await (await getOpenAI()).chat.completions.create({
     model: MODELS.speaking,
     temperature: 0.7,
     messages: [

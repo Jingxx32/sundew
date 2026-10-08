@@ -1,7 +1,7 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { after } from "next/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -27,6 +27,8 @@ import { ensureEntryForWord, norm } from "@/lib/vocabulary/helpers";
 import { upsertGap, gradeGap } from "@/lib/vocabulary/gaps";
 import { getProductionGapLemmas } from "@/lib/actions/vocab-gaps";
 import { requireUser } from "@/lib/auth/session";
+import { requireFeature } from "@/lib/access/guard";
+import { locateErrorSpan } from "@/lib/feedback/error-span";
 
 const ARCHIVE_PLACEHOLDER_TITLE = "(Targeted practice from your error archive)";
 const ARCHIVE_PLACEHOLDER_TYPE = "personal";
@@ -45,7 +47,7 @@ export async function generateWritingTask(
   vocabWords: string[] = [],
   opts?: GenerateTaskOptions,
 ): Promise<string> {
-  const user = await requireUser();
+  const user = await requireFeature("writing");
   const [doc, profile] = await Promise.all([
     documentId
       ? db
@@ -116,7 +118,7 @@ export async function practiceFromPattern(
   category: ErrorCategory,
   subcategory: string,
 ): Promise<string> {
-  await requireUser();
+  await requireFeature("writing");
   const def = ERROR_TAXONOMY[category];
   if (!def) throw new Error("Unknown error category.");
   const hasSub = Object.prototype.hasOwnProperty.call(
@@ -140,7 +142,7 @@ export async function practiceFromPattern(
  * straight on the task stage. Powers the "Écrire maintenant" entry.
  */
 export async function quickWrite(): Promise<void> {
-  await requireUser();
+  await requireFeature("writing");
   const taskId = await generateWritingTask(null, [], { source: "archive" });
   revalidatePath("/practice");
   redirect(`/practice?taskId=${taskId}`);
@@ -152,7 +154,7 @@ export async function quickWrite(): Promise<void> {
  * Returns the task id; the (client) caller navigates to the task stage.
  */
 export async function writeFromTcfPassage(questionId: string): Promise<string> {
-  const user = await requireUser();
+  const user = await requireFeature("tcf");
   const row = await db
     .select({
       passage: tcfQuestions.passage,
@@ -195,31 +197,23 @@ export async function writeFromTcfPassage(questionId: string): Promise<string> {
 }
 
 /**
- * LLM character offsets are notoriously unreliable. If the reported span doesn't
- * match `original`, recover it by unique-substring search; otherwise keep the
- * clamped span. Prevents mis-highlighted or silently dropped error cards.
+ * Re-anchor the LLM's span on `original` (see `locateErrorSpan`). When it can't
+ * be found at all, keep the clamped offsets so the error card is not dropped.
  */
 function repairSpan(
   content: string,
   original: string,
   start: number,
   end: number,
+  context?: string | null,
 ): { start: number; end: number } {
+  const located = locateErrorSpan(content, original, start, end, context);
+  if (located) return located;
+  console.warn(
+    `[feedback] could not locate span for "${original}" — keeping clamped offsets`,
+  );
   const clampedStart = Math.max(0, Math.min(content.length, start));
   const clampedEnd = Math.max(clampedStart, Math.min(content.length, end));
-  if (content.slice(clampedStart, clampedEnd) === original) {
-    return { start: clampedStart, end: clampedEnd };
-  }
-  if (original.length > 0) {
-    const idx = content.indexOf(original);
-    // Only trust the search when the substring occurs exactly once in the text.
-    if (idx !== -1 && content.indexOf(original, idx + 1) === -1) {
-      return { start: idx, end: idx + original.length };
-    }
-    console.warn(
-      `[feedback] could not locate span for "${original}" — keeping clamped offsets`,
-    );
-  }
   return { start: clampedStart, end: clampedEnd };
 }
 
@@ -244,7 +238,13 @@ async function persistFeedback(
   if (feedback.errors.length > 0) {
     await db.insert(errors).values(
       feedback.errors.map((err) => {
-        const span = repairSpan(content, err.original, err.span.start, err.span.end);
+        const span = repairSpan(
+          content,
+          err.original,
+          err.span.start,
+          err.span.end,
+          err.trigger_context,
+        );
         return {
           id: randomUUID(),
           userId,
@@ -352,7 +352,7 @@ async function persistFeedback(
 }
 
 export async function createSubmission(taskId: string, contentFr: string): Promise<void> {
-  const user = await requireUser();
+  const user = await requireFeature("writing");
   const taskExists = await db
     .select({ id: writingTasks.id })
     .from(writingTasks)
@@ -419,7 +419,7 @@ export async function createSubmission(taskId: string, contentFr: string): Promi
 export async function regenerateFeedback(
   submissionId: string,
 ): Promise<{ ok: boolean }> {
-  const user = await requireUser();
+  const user = await requireFeature("writing");
   const submission = await db
     .select()
     .from(submissions)
@@ -476,6 +476,17 @@ export async function getWritingTaskWithDocument(id: string) {
         .then((r) => r[0] ?? null)
     : null;
   return { task, doc };
+}
+
+export async function listRecentSubmissions(limit = 5): Promise<Array<{ id: string; promptEn: string; submittedAt: Date }>> {
+  const user = await requireUser();
+  return db
+    .select({ id: submissions.id, promptEn: writingTasks.promptEn, submittedAt: submissions.submittedAt })
+    .from(submissions)
+    .innerJoin(writingTasks, eq(writingTasks.id, submissions.taskId))
+    .where(eq(submissions.userId, user.id))
+    .orderBy(desc(submissions.submittedAt))
+    .limit(limit);
 }
 
 export async function getSubmissionWithFeedback(submissionId: string) {

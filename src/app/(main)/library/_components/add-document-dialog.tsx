@@ -14,6 +14,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input, Textarea } from "@/components/ui/input";
+import { InviteOnlyNote } from "@/components/invite-only-note";
+import { useFeatureLocked } from "@/components/access-context";
 import {
   createDocument,
   type CreateDocumentResult,
@@ -22,6 +24,7 @@ import {
 export function AddDocumentDialog() {
   const [open, setOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const locked = useFeatureLocked("upload");
 
   const [state, action, pending] = useActionState<
     CreateDocumentResult | null,
@@ -39,6 +42,18 @@ export function AddDocumentDialog() {
     },
     null,
   );
+
+  if (locked) {
+    return (
+      <div className="flex flex-col items-end gap-1">
+        <Button disabled>
+          <Plus className="h-4 w-4" />
+          Add Document
+        </Button>
+        <InviteOnlyNote />
+      </div>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

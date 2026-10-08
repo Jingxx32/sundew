@@ -40,7 +40,7 @@ the user isn't left correcting style in a follow-up commit (`fcecc9e` → `70a6a
 
 Sundew is an output-driven French learning app. The core loop: read French source material → AI generates a writing task anchored to it → user writes → AI gives structured, classified feedback → every error flows into a persistent learner profile that drives future tasks.
 
-This is a personal app (single user, no auth). Current status: **MVP (S1–S7) and v0.2 (S8–S10) are shipped** — full writing-feedback loop, errors archive, progress dashboard, learner profile, generic quiz engine (podcast cloze dictation), conjugation drills, TCF listening/reading question bank (~3200 questions) with drill + exam modes, lemma-keyed vocabulary memory, and Speaking Phase 1 (read-aloud with Azure pronunciation assessment; needs `AZURE_SPEECH_KEY`). Next up: the TCF error loop — see `docs/superpowers/specs/2026-07-06-tcf-error-loop-design.md`. Audits live in `docs/audit-*.md` / `docs/*-audit-*.md`.
+This is a personal app that friends can join by invite code or try as one-click guests (guest / full / admin access). Current status: **MVP (S1–S7) and v0.2 (S8–S10) are shipped** — full writing-feedback loop, errors archive, progress dashboard, learner profile, generic quiz engine (podcast cloze dictation), conjugation drills, TCF listening/reading question bank (~3200 questions) with drill + exam modes, lemma-keyed vocabulary memory, and Speaking Phase 1 (read-aloud with Azure pronunciation assessment; needs `AZURE_SPEECH_KEY`). Next up: the TCF error loop — see `docs/superpowers/specs/2026-07-06-tcf-error-loop-design.md`. Audits live in `docs/audit-*.md` / `docs/*-audit-*.md`.
 
 ## Commands
 
@@ -57,6 +57,7 @@ npm run db:seed-rules # Seed the grammar-rules knowledge base
 npm run db:reenrich  # Re-run vocab enrichment for already-enriched entries
 
 npm run tcf:explain-export  # Back up every TCF explanation to data/tcf-explanations/
+npm run sample:check         # Seed + delete the sample workspace in a rolled-back transaction (after migrations, before deploys)
 ```
 
 ### Write a TCF explanation for one question
@@ -161,6 +162,15 @@ Page (async server component)
 The one exception to "no API layer": `app/api/speaking/assess/route.ts`, a route
 handler for audio upload + Azure pronunciation assessment.
 
+### Access levels
+
+Access is guest / full / admin, derived in `src/lib/auth/user.ts`. Guests are one-click anonymous accounts, deleted 7 days after creation; see `docs/operations/guest-access.md`.
+
+- `src/lib/access/features.ts` lists what guests may use. New server actions in a gated area call `requireFeature`; gated pages call `pageGate`.
+- Every new table with a `user_id` column is picked up by `src/lib/account/owned-tables.ts` automatically (account and guest deletion). A test fails if a child table without `user_id` is not registered there.
+- The sample workspace guests start with is seeded from `src/lib/sample-workspace/fixtures/` (drafts in `source/`; `data/` is gitignored). Author account: `sample-author@example.com`.
+- Feedback highlights are re-located with `src/lib/feedback/error-span.ts`; do not trust stored offsets alone.
+
 ### Database
 
 **PostgreSQL** (Azure) via the `postgres` package (postgres.js) + Drizzle ORM (migrated from SQLite in S3.5). Connect via `DATABASE_URL` env var. ~23 tables in five groups:
@@ -230,7 +240,10 @@ GOOGLE_CLIENT_ID      # Google sign-in
 GOOGLE_CLIENT_SECRET  # Google sign-in
 RESEND_API_KEY        # Production email OTP (dev prints codes to the console)
 AUTH_EMAIL_FROM       # Production email OTP sender address
-AUTH_SIGNUP_ENABLED   # "true"/"false"; sign-up is closed in production by default
+AUTH_SIGNUP_ENABLED   # Invite sign-up kill switch; "false" stops new accounts (codes always required)
+GUEST_ACCESS_ENABLED  # "false" disables one-click guest accounts
+AUTH_RATE_LIMIT_ENABLED # Development only: "true" enables Better Auth rate limiting
+CRON_SECRET           # Required in production — Vercel Cron bearer token for /api/cron/*
 CLOUDFLARE_R2_ACCOUNT_ID / _ACCESS_KEY_ID / _SECRET_ACCESS_KEY / _BUCKET  # Media + recordings (required in production)
 TCF_LISTENING_DIR     # TCF import only — local folder of listening PDFs + audio
 TCF_READING_DIR       # TCF import only — local folder of reading questions

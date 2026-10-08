@@ -9,6 +9,7 @@ import {
 import { Card } from "@/components/ui/card";
 import { LevelBadge } from "./_components/level-badge";
 import { LEVEL_LABELS } from "@/lib/tcf/display";
+import { pageGate } from "@/lib/access/page-gate";
 
 const SKILLS = {
   listening: { label: "Écoute", title: "Compréhension orale", icon: Headphones, levelVerb: "Écoute" },
@@ -20,6 +21,8 @@ export default async function TcfPage({
 }: {
   searchParams: Promise<{ skill?: string }>;
 }) {
+  const locked = await pageGate("tcf");
+  if (locked) return locked;
   const { skill: skillParam } = await searchParams;
   const skill = skillParam === "reading" ? "reading" : "listening";
   const meta = SKILLS[skill];

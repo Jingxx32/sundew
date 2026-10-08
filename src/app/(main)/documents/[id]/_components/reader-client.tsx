@@ -16,6 +16,8 @@ import { CEFR_CHIP_CLASSES, type CefrLevel } from "@/lib/cefr";
 import { cn } from "@/lib/utils";
 import type { Document } from "@/lib/db/schema";
 import { WordLookupPopover } from "@/components/word-lookup-popover";
+import { InviteOnlyNote } from "@/components/invite-only-note";
+import { useFeatureLocked } from "@/components/access-context";
 import { SessionSidebar } from "./session-sidebar";
 
 type Props = {
@@ -30,6 +32,7 @@ export function ReaderShell({ doc, paragraphs, initialSavedWords }: Props) {
   const [savedWords, setSavedWords] = useState<string[]>(initialSavedWords);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generateError, setGenerateError] = useState<string | null>(null);
+  const writingLocked = useFeatureLocked("writing");
 
   const level = (doc.estimatedLevel ?? "B1") as CefrLevel;
 
@@ -135,7 +138,7 @@ export function ReaderShell({ doc, paragraphs, initialSavedWords }: Props) {
           </div>
           <Button
             variant="default"
-            disabled={isGenerating}
+            disabled={isGenerating || writingLocked}
             onClick={() => handleGenerateTask()}
             className="self-start shrink-0"
           >
@@ -147,6 +150,8 @@ export function ReaderShell({ doc, paragraphs, initialSavedWords }: Props) {
             Generate Writing Task
           </Button>
         </div>
+
+        {writingLocked && <InviteOnlyNote className="mb-4" />}
 
         {generateError && (
           <p className="mb-4 text-sm text-danger bg-danger-soft rounded-lg px-4 py-2">

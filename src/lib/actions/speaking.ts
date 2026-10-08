@@ -15,7 +15,7 @@ import {
 } from "@/lib/db/schema";
 import { generateSpeakingScript } from "@/lib/ai/speaking-script";
 import { getSpeakingProfile } from "./settings";
-import { requireUser } from "@/lib/auth/session";
+import { requireFeature } from "@/lib/access/guard";
 
 export type PromptWithStats = SpeakingPrompt & {
   sessionCount: number;
@@ -23,7 +23,7 @@ export type PromptWithStats = SpeakingPrompt & {
 };
 
 export async function listPromptsWithStats(): Promise<PromptWithStats[]> {
-  const user = await requireUser();
+  const user = await requireFeature("speaking");
   const rows = await db
     .select({
       prompt: speakingPrompts,
@@ -44,7 +44,7 @@ export async function listPromptsWithStats(): Promise<PromptWithStats[]> {
 export async function getPromptWithScript(
   promptId: string,
 ): Promise<{ prompt: SpeakingPrompt; script: SpeakingScript | null }> {
-  const user = await requireUser();
+  const user = await requireFeature("speaking");
   const prompt = await db
     .select()
     .from(speakingPrompts)
@@ -65,7 +65,7 @@ export async function getPromptWithScript(
 }
 
 export async function generateScript(promptId: string): Promise<SpeakingScript> {
-  const user = await requireUser();
+  const user = await requireFeature("speaking");
   const { prompt } = await getPromptWithScript(promptId);
   const profile = await getSpeakingProfile();
   const content = await generateSpeakingScript(prompt, profile);
@@ -80,7 +80,7 @@ export async function generateScript(promptId: string): Promise<SpeakingScript> 
 }
 
 export async function updateScript(scriptId: string, content: string): Promise<void> {
-  const user = await requireUser();
+  const user = await requireFeature("speaking");
   const trimmed = content.trim();
   if (!trimmed) throw new Error("Script content cannot be empty");
   const [row] = await db
@@ -92,7 +92,7 @@ export async function updateScript(scriptId: string, content: string): Promise<v
 }
 
 export async function startScriptSession(promptId: string): Promise<string> {
-  const user = await requireUser();
+  const user = await requireFeature("speaking");
   const [session] = await db
     .insert(speakingSessions)
     .values({ userId: user.id, promptId, mode: "script_practice" })
@@ -101,7 +101,7 @@ export async function startScriptSession(promptId: string): Promise<string> {
 }
 
 export async function finishScriptSession(sessionId: string): Promise<SessionScores> {
-  const user = await requireUser();
+  const user = await requireFeature("speaking");
   const [owned] = await db.select({ id: speakingSessions.id }).from(speakingSessions).where(and(
     eq(speakingSessions.id, sessionId), eq(speakingSessions.userId, user.id),
     eq(speakingSessions.mode, "script_practice"), eq(speakingSessions.status, "active"),

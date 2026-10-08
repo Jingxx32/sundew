@@ -36,6 +36,8 @@ export const users = pgTable(
     banned: boolean("banned").notNull().default(false),
     banReason: text("ban_reason"),
     banExpires: timestamp("ban_expires", { withTimezone: true }),
+    // Better Auth anonymous plugin: one-click guest accounts.
+    isAnonymous: boolean("is_anonymous").notNull().default(false),
     // Legacy flag copied into `banned` by 0037; unread, dropped with authIssuer.
     status: userStatusEnum("status").notNull().default("active"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -116,6 +118,41 @@ export const rateLimits = pgTable(
     lastRequest: bigint("last_request", { mode: "number" }).notNull(),
   },
   (t) => [unique("rate_limits_key_key").on(t.key)],
+);
+
+/* ------------------------------------------------------------------ */
+/*  invites — admin-issued codes that unlock account creation           */
+/* ------------------------------------------------------------------ */
+
+export const inviteCodes = pgTable(
+  "invite_codes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    /** Normalized XXXX-XXXX (Crockford base32); plaintext so admins can copy it again. */
+    code: text("code").notNull(),
+    maxUses: integer("max_uses").notNull(),
+    usedCount: integer("used_count").notNull().default(0),
+    expiresAt: timestamp("expires_at", { withTimezone: true }),
+    note: text("note").notNull().default(""),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    createdBy: uuid("created_by").notNull().references(() => users.id),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    unique("invite_codes_code_key").on(t.code),
+    check("invite_codes_uses", sql`${t.maxUses} >= 1 and ${t.usedCount} >= 0 and ${t.usedCount} <= ${t.maxUses}`),
+  ],
+);
+
+export const inviteRedemptions = pgTable(
+  "invite_redemptions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    inviteId: uuid("invite_id").notNull().references(() => inviteCodes.id),
+    userId: uuid("user_id").notNull().references(() => users.id),
+    redeemedAt: timestamp("redeemed_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique("invite_redemptions_user_key").on(t.userId), index("invite_redemptions_invite_idx").on(t.inviteId)],
 );
 
 /* ------------------------------------------------------------------ */

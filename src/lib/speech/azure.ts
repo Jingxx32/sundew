@@ -1,4 +1,5 @@
 import * as sdk from "microsoft-cognitiveservices-speech-sdk";
+import { assertAiAllowed } from "@/lib/access/ai-guard";
 import type { TurnAssessment } from "@/lib/db/schema";
 
 export type AssessmentResult = { transcript: string } & TurnAssessment;
@@ -14,6 +15,7 @@ export async function assessPronunciation(
   wav: Buffer,
   referenceText: string | null,
 ): Promise<AssessmentResult | null> {
+  await assertAiAllowed();
   const key = process.env.AZURE_SPEECH_KEY;
   const region = process.env.AZURE_SPEECH_REGION;
   if (!key || !region) {

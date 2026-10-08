@@ -37,7 +37,7 @@ export async function transcribePodcast(
   }
 
   try {
-    const transcription = await getOpenAI().audio.transcriptions.create({
+    const transcription = await (await getOpenAI()).audio.transcriptions.create({
       file: await toFile(buf, "episode.mp3"),
       model: MODELS.transcribe,
       language: "fr",

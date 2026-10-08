@@ -8,6 +8,7 @@ import { ERROR_TAXONOMY } from "@/lib/taxonomy";
 import type { ErrorCategory } from "@/lib/taxonomy";
 import { CATEGORY_STYLES } from "@/lib/category-styles";
 import { extractSentence } from "@/lib/text";
+import { locateErrorSpan } from "@/lib/feedback/error-span";
 import type { Rule } from "@/lib/db/schema";
 import type { ErrorWithContext } from "@/lib/actions/errors";
 import { MicroDrillDialog } from "@/components/micro-drill-dialog";
@@ -25,10 +26,17 @@ export function ArchivedErrorCard({ error, rule }: Props) {
     (categoryDef?.subcategories as Record<string, string>)?.[error.subcategory] ??
     error.subcategory;
 
-  const { sentence, errorStart, errorEnd } = extractSentence(
+  const span = locateErrorSpan(
     error.submissionContentFr,
+    error.original,
     error.spanStart,
     error.spanEnd,
+    error.triggerContext,
+  ) ?? { start: error.spanStart, end: error.spanEnd };
+  const { sentence, errorStart, errorEnd } = extractSentence(
+    error.submissionContentFr,
+    span.start,
+    span.end,
   );
 
   const before = sentence.slice(0, errorStart);

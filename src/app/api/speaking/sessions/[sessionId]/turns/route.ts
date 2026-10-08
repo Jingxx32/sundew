@@ -1,4 +1,5 @@
-import { AuthenticationError, requireUser } from "@/lib/auth/session";
+import { AuthenticationError, authErrorStatus } from "@/lib/auth/session";
+import { requireFeature } from "@/lib/access/guard";
 import { processSimulationTurn } from "@/lib/speaking/voice";
 import { MAX_TURN_BYTES } from "@/lib/speaking/audio";
 
@@ -9,9 +10,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ ses
   const origin = request.headers.get("origin");
   if (origin && origin !== new URL(request.url).origin) return Response.json({ error: "Invalid origin" }, { status: 403 });
   let user;
-  try { user = await requireUser(); }
+  try { user = await requireFeature("speaking"); }
   catch (error) {
-    if (error instanceof AuthenticationError) return Response.json({ error: "Unauthorized" }, { status: error.code === "FORBIDDEN" ? 403 : 401 });
+    if (error instanceof AuthenticationError) return Response.json({ error: "Unauthorized" }, { status: authErrorStatus(error.code) });
     throw error;
   }
   const { sessionId } = await params;

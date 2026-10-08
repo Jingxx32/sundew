@@ -5,12 +5,15 @@ import { ReviewHistory } from "../_components/review-history";
 import { LevelBadge } from "../_components/level-badge";
 import { LEVEL_ORDER } from "@/lib/tcf/display";
 import { getTcfQuestionHistory, getTcfReviewQueue, type TcfLevel } from "@/lib/actions/tcf";
+import { pageGate } from "@/lib/access/page-gate";
 
 export default async function TcfReviewPage({
   searchParams,
 }: {
   searchParams: Promise<{ skill?: string; level?: string; tag?: string; q?: string }>;
 }) {
+  const locked = await pageGate("tcf");
+  if (locked) return locked;
   const params = await searchParams;
   const skill = params.skill === "listening" || params.skill === "reading" ? params.skill : undefined;
   const level = LEVEL_ORDER.includes(params.level as TcfLevel) ? (params.level as TcfLevel) : undefined;

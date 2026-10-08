@@ -13,6 +13,7 @@ import { ERROR_TAXONOMY } from "@/lib/taxonomy";
 import { evaluateMicroDrill } from "@/lib/ai/micro-drill";
 import type { MicroDrillFeedback } from "@/lib/ai/micro-drill";
 import { requireUser } from "@/lib/auth/session";
+import { requireFeature } from "@/lib/access/guard";
 
 export type ErrorWithContext = ErrorRecord & {
   submissionContentFr: string;
@@ -222,7 +223,7 @@ export async function createMicroDrill(
   responseFr: string,
   requestKey: string,
 ): Promise<MicroDrillView> {
-  const user = await requireUser();
+  const user = await requireFeature("microDrill");
   if (!responseFr.trim() || responseFr.length > 1000) throw new Error("Response must contain 1–1000 characters.");
   if (!/^[a-zA-Z0-9-]{12,100}$/.test(requestKey)) throw new Error("Invalid request key");
 
@@ -299,7 +300,7 @@ async function readCurrentMicroDrill(id: string, userId: string): Promise<MicroD
 }
 
 export async function retryMicroDrillFeedback(id: string): Promise<MicroDrillView> {
-  const user = await requireUser();
+  const user = await requireFeature("microDrill");
   const [row] = await db.select().from(microDrills).where(and(eq(microDrills.id, id), eq(microDrills.userId, user.id))).limit(1);
   if (!row) throw new Error("Response not found");
   if (row.feedbackStatus === "ready" || row.feedbackAttempts >= 2) return toMicroDrillView(row);

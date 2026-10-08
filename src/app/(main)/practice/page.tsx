@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, BookOpen } from "lucide-react";
-import { getWritingTaskWithDocument } from "@/lib/actions/tasks";
+import { getWritingTaskWithDocument, listRecentSubmissions } from "@/lib/actions/tasks";
+import { requirePageUser } from "@/lib/auth/session";
 import { TaskCard } from "./_components/task-card";
 import { WritingForm } from "./_components/writing-form";
 import { QuickWriteButton } from "./_components/quick-write-button";
@@ -14,6 +15,8 @@ export default async function PracticePage({
   const { taskId } = await searchParams;
 
   if (!taskId) {
+    const user = await requirePageUser();
+    const samples = user.access === "guest" ? await listRecentSubmissions() : [];
     return (
       <div className="max-w-2xl mx-auto px-10 py-24 text-center space-y-6">
         <div className="flex justify-center mb-2">
@@ -23,6 +26,20 @@ export default async function PracticePage({
         <div className="flex justify-center">
           <QuickWriteButton />
         </div>
+        {samples.length > 0 && (
+          <div className="mx-auto max-w-sm space-y-2 text-left">
+            <div className="text-[11px] font-medium uppercase tracking-wider text-accent">Sample feedback</div>
+            <ul className="space-y-1">
+              {samples.map((s) => (
+                <li key={s.id}>
+                  <Link href={`/practice/${s.id}/feedback`} className="block truncate text-sm text-muted-foreground transition-colors hover:text-foreground">
+                    {s.promptEn}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         <p className="text-muted-foreground text-sm leading-relaxed max-w-sm mx-auto">
           Prefer writing about something you read? Open a document in the{" "}
           <Link href="/library" className="text-accent hover:underline">
