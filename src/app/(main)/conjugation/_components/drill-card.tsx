@@ -16,6 +16,18 @@ import {
 
 export function DrillCard({ queue }: { queue: DrillItem[] }) {
   const router = useRouter();
+  // The card plays its own deck. A refresh (e.g. a server action revalidating
+  // this page) hands down a new random queue; adopt it only for "New round".
+  const [deck, setDeck] = useState(queue);
+  const [seenQueue, setSeenQueue] = useState(queue);
+  const [roundRequested, setRoundRequested] = useState(false);
+  if (queue !== seenQueue) {
+    setSeenQueue(queue);
+    if (roundRequested) {
+      setDeck(queue);
+      setRoundRequested(false);
+    }
+  }
   const [index, setIndex] = useState(0);
   const [input, setInput] = useState("");
   const [result, setResult] = useState<GradeResult | null>(null);
@@ -26,8 +38,8 @@ export function DrillCard({ queue }: { queue: DrillItem[] }) {
   const request = useRef<Parameters<typeof recordConjugationAttempt>[0] | null>(null);
   const saving = useRef(false);
 
-  const item = queue[index];
-  const finished = index >= queue.length;
+  const item = deck[index];
+  const finished = index >= deck.length;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -70,10 +82,11 @@ export function DrillCard({ queue }: { queue: DrillItem[] }) {
     setSubmitted(false);
     setSaveError(null);
     // refresh() re-renders the page → fresh random queue + updated stats
+    setRoundRequested(true);
     startTransition(() => router.refresh());
   }
 
-  if (queue.length === 0) {
+  if (deck.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-border bg-surface/50 px-8 py-16 text-center">
         <p className="text-xl">No drills available.</p>
@@ -88,7 +101,7 @@ export function DrillCard({ queue }: { queue: DrillItem[] }) {
     return (
       <div className="rounded-2xl bg-surface shadow-card px-8 py-12 text-center">
         <p className="text-[30px] font-bold tracking-[-0.03em]">
-          {score}/{queue.length} correct
+          {score}/{deck.length} correct
         </p>
         <p className="mt-2 text-sm text-muted-foreground">
           Attempts saved — your mastery list below is up to date.
@@ -110,7 +123,7 @@ export function DrillCard({ queue }: { queue: DrillItem[] }) {
           {item.fromErrors && <Chip variant="warning">from your errors</Chip>}
         </div>
         <span className="text-xs text-muted-foreground">
-          {index + 1} / {queue.length}
+          {index + 1} / {deck.length}
         </span>
       </div>
 
