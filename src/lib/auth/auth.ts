@@ -7,11 +7,12 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { admin, anonymous, emailOTP } from "better-auth/plugins";
 import { adminAc, userAc } from "better-auth/plugins/admin/access";
-import { purgeOwnedData } from "@/lib/account/delete";
+import { deleteUserData, purgeOwnedData } from "@/lib/account/delete";
 import { GUEST_DAILY_CAP, GUEST_SIGNINS_PER_IP_PER_HOUR, INVITE_COOKIE } from "@/lib/access/limits";
 import { db } from "@/lib/db";
 import { accounts, rateLimits, sessions, users, verifications } from "@/lib/db/schema";
 import { mayReceiveSignInCode, recordRedemption, reserveInviteUse } from "@/lib/invites/redeem";
+import { seedSampleWorkspace } from "@/lib/sample-workspace/seed";
 import { sendOtpEmail } from "./email";
 import { guestAccessEnabled, rateLimitEnabled } from "./guest";
 import { signupEnabled } from "./signup";
@@ -96,7 +97,16 @@ export const auth = betterAuth({
           return { data: user };
         },
         after: async (user, context) => {
-          if (user.isAnonymous === true) return;
+          if (user.isAnonymous === true) {
+            try {
+              await seedSampleWorkspace(user.id);
+            } catch (error) {
+              console.error("Sample workspace seeding failed", error);
+              await deleteUserData(user.id);
+              throw new APIError("INTERNAL_SERVER_ERROR", { code: "GUEST_SEED_FAILED", message: "Couldn't start the demo." });
+            }
+            return;
+          }
           const code = await inviteCodeFor(context);
           if (!code) return;
           await recordRedemption(code, user.id);

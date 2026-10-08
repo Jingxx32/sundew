@@ -1,1 +1,2378 @@
-{}
+{
+  "acheté": {
+    "lemma": "acheter",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "bought",
+    "in_context": "In this sentence, 'acheté' is the past participle of the verb 'acheter' used in the compound past tense (passé composé) with the auxiliary verb 'avoir'. It agrees with the direct object 'quelques fleurs', which is feminine plural, hence the form 'acheté' remains unchanged as it is not directly preceding the object.",
+    "examples": [
+      "Hier, j'ai acheté un nouveau livre.",
+      "Nous avons acheté des légumes au marché."
+    ]
+  },
+  "acheter": {
+    "lemma": "acheter",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "to buy",
+    "in_context": "In this sentence, 'acheter' is used in the infinitive form to express the action of buying fresh and local products at the market. It follows the structure 'venir pour + infinitive', indicating purpose or intention.",
+    "examples": [
+      "J'aime acheter des livres au marché.",
+      "Nous allons acheter des légumes frais demain."
+    ]
+  },
+  "activités": {
+    "lemma": "activité",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "activities",
+    "in_context": "In this sentence, 'activités' is used in the plural form to refer to various special events or workshops that take place at the market during the autumn season. The use of the plural indicates that there are multiple types of activities available for visitors to enjoy.",
+    "examples": [
+      "Les activités de l'été attirent beaucoup de touristes.",
+      "Nous avons participé à plusieurs activités culturelles pendant notre voyage."
+    ]
+  },
+  "admirer": {
+    "lemma": "admirer",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "to admire",
+    "in_context": "In this sentence, 'admirer' is used in the infinitive form following the verb 'faire' (to do), which is a common construction in French. The phrase 'faire admirer' means to take time to appreciate or enjoy something, in this case, the view of the city from Mont-Royal.",
+    "examples": [
+      "J'aime admirer les étoiles la nuit.",
+      "Elle a pris des photos pour admirer la beauté des paysages."
+    ]
+  },
+  "âgées": {
+    "lemma": "âgé",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "elderly",
+    "in_context": "In this sentence, \"âgées\" agrees in gender and number with \"personnes,\" which is feminine plural. It is used to refer to elderly people who are given priority for seating in the metro, highlighting social norms of respect and consideration for older individuals.",
+    "examples": [
+      "Les personnes âgées ont besoin de plus de soins.",
+      "Il est important de respecter les opinions des personnes âgées."
+    ]
+  },
+  "agréable": {
+    "lemma": "agréable",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "pleasant",
+    "in_context": "In this sentence, 'agréable' describes the atmosphere of the park, indicating that it is enjoyable for people despite the crowd. The adjective is in its masculine singular form to agree with 'l'ambiance', which is feminine singular, but here it is used to convey the overall feeling of the environment.",
+    "examples": [
+      "L'été est une saison agréable pour se promener.",
+      "Ce restaurant a une ambiance très agréable."
+    ]
+  },
+  "ai": {
+    "lemma": "avoir",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "I have",
+    "in_context": "In this sentence, 'j'ai' is the first person singular form of the verb 'avoir' (to have) in the passé composé, indicating that the speaker completed the action of taking the metro yesterday. The auxiliary verb 'avoir' is used here to form the past tense, which is common in French to describe past actions.",
+    "examples": [
+      "J'ai mangé un sandwich pour le déjeuner.",
+      "Nous avons vu un film intéressant hier soir."
+    ]
+  },
+  "aiment": {
+    "lemma": "aimer",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "love",
+    "in_context": "In the sentence, 'aiment' is the third person plural form of the verb 'aimer', which means 'to love' or 'to like'. It is used here to express that 'people love to relax and do sports' in the park, indicating a general habit or preference of the subject (les gens).",
+    "examples": [
+      "Les enfants aiment jouer au parc.",
+      "J'aime lire des livres pendant mon temps libre."
+    ]
+  },
+  "aller": {
+    "lemma": "aller",
+    "pos": "verb · intrans.",
+    "level": "A1",
+    "translation": "to go",
+    "in_context": "In this sentence, 'aller' is used in the infinitive form after the verb 'prendre' (to take), indicating the purpose of taking the metro, which is to go to work. This construction is common in French where the infinitive follows another verb to express intention or purpose.",
+    "examples": [
+      "Je vais aller au cinéma ce soir.",
+      "Nous devons aller à l'école demain."
+    ]
+  },
+  "ambiance": {
+    "lemma": "ambiance",
+    "pos": "noun · fem.",
+    "level": "B1",
+    "translation": "atmosphere",
+    "in_context": "In this sentence, 'l'ambiance' refers to the overall atmosphere or mood of the park during the winter day described. It is used in the feminine singular form 'l'ambiance' because 'ambiance' is a feminine noun in French, and it is preceded by the definite article 'la' which contracts to 'l'' before a vowel sound.",
+    "examples": [
+      "L'ambiance dans ce restaurant est très chaleureuse.",
+      "J'aime l'ambiance festive des marchés de Noël."
+    ]
+  },
+  "amie": {
+    "lemma": "amie",
+    "pos": "noun · fem.",
+    "level": "A1",
+    "translation": "friend",
+    "in_context": "In this sentence, 'amie' is used in the feminine form to refer to a female friend, 'Sophie', indicating the gender of the person being talked about. The use of 'mon' before 'amie' shows possession and is appropriate because 'amie' starts with a vowel sound, making the phrase sound smoother.",
+    "examples": [
+      "J'ai rencontré mon amie au café.",
+      "Elle est une amie très fidèle."
+    ]
+  },
+  "animé": {
+    "lemma": "animé",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "lively",
+    "in_context": "In this sentence, 'animé' describes the market as being lively during autumn, indicating a vibrant atmosphere filled with activity and people. The adjective agrees in gender and number with 'il' (referring to 'le marché'), which is masculine singular, hence 'animé' is used in its base form.",
+    "examples": [
+      "Le festival de musique était très animé ce week-end.",
+      "La rue était animée avec des artistes de rue et des musiciens."
+    ]
+  },
+  "apprendre": {
+    "lemma": "apprendre",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "to learn",
+    "in_context": "In this sentence, 'apprendre' is used in the infinitive form as part of the phrase 'ateliers de cuisine pour apprendre', indicating the purpose of the cooking workshops. It shows that the workshops are designed for people to learn how to prepare recipes.",
+    "examples": [
+      "J'aime apprendre de nouvelles langues.",
+      "Elle veut apprendre à jouer du piano."
+    ]
+  },
+  "assise": {
+    "lemma": "assise",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "sitting place",
+    "in_context": "In this sentence, 'place assise' refers to a seat in the metro. The feminine noun 'assise' is used in its singular form to describe a specific type of place, emphasizing the comfort of having a seat in a crowded environment.",
+    "examples": [
+      "Il n'y avait pas de place assise dans le bus ce matin.",
+      "Les enfants ont besoin d'une place assise pour faire leurs devoirs."
+    ]
+  },
+  "ateliers": {
+    "lemma": "atelier",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "workshops",
+    "in_context": "In this sentence, 'ateliers' refers to organized activities where people can learn to cook using seasonal ingredients. It is in the plural form because it indicates multiple workshops available at the market during autumn.",
+    "examples": [
+      "J'ai participé à des ateliers de peinture ce week-end.",
+      "Les ateliers de poterie sont très populaires dans notre village."
+    ]
+  },
+  "attendre": {
+    "lemma": "attendre",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "to wait",
+    "in_context": "In this sentence, 'attendre' is used in the past tense (j'ai dû attendre) to indicate that the speaker had to wait for a while at the metro station due to the crowd. The verb is conjugated in the passé composé, which is a common way to express completed actions in the past in French.",
+    "examples": [
+      "J'ai dû attendre le bus pendant dix minutes.",
+      "Nous avons attendu nos amis au café."
+    ]
+  },
+  "au": {
+    "lemma": "au",
+    "pos": "phrase",
+    "level": "A1",
+    "translation": "to the",
+    "in_context": "In this sentence, 'au' is a contraction of 'à' (to) and 'le' (the), used here to indicate direction or destination, specifically referring to going to work. It is used before masculine singular nouns, which is why it appears as 'au' instead of 'à la' or 'à l''.",
+    "examples": [
+      "Je vais au cinéma ce soir.",
+      "Elle est allée au marché ce matin."
+    ]
+  },
+  "aussi": {
+    "lemma": "aussi",
+    "pos": "adverb",
+    "level": "A2",
+    "translation": "also",
+    "in_context": "In this sentence, 'aussi' is used to indicate that taking the metro is not only a unique experience but also a good way to meet people from various backgrounds. It connects two ideas, emphasizing that both aspects are important.",
+    "examples": [
+      "Il fait beau aujourd'hui, et il est aussi chaud.",
+      "J'aime le chocolat, mais j'aime aussi les bonbons."
+    ]
+  },
+  "automne": {
+    "lemma": "automne",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "autumn",
+    "in_context": "In this sentence, 'automne' is used in the context of describing a specific season when the market is particularly lively, indicating seasonal activities and products available at that time. It is in the masculine singular form, which is standard for the noun 'automne'.",
+    "examples": [
+      "J'adore l'automne parce que les feuilles changent de couleur.",
+      "En automne, les jours deviennent plus courts."
+    ]
+  },
+  "aux": {
+    "lemma": "aux",
+    "pos": "phrase",
+    "level": "A1",
+    "translation": "to the",
+    "in_context": "In this sentence, 'aux' is used as a contraction of 'à' and 'les', indicating direction or location towards a plural noun, which in this case refers to 'personnes âgées' and 'femmes enceintes'. It shows the relationship of giving priority to these groups in the context of public transport etiquette.",
+    "examples": [
+      "Je vais aux magasins ce soir.",
+      "Les enfants jouent aux jeux vidéo."
+    ]
+  },
+  "avait": {
+    "lemma": "avoir",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "there was/there were",
+    "in_context": "In the sentence, 'il y avait beaucoup de monde', 'avait' is the imperfect tense of the verb 'avoir', used here to indicate that there was a lot of people at that time in the past. The imperfect tense is appropriate because it describes a situation that was ongoing or habitual in the past.",
+    "examples": [
+      "Il y avait un chat sur le toit.",
+      "Il y avait beaucoup de bruit pendant la fête."
+    ]
+  },
+  "avant": {
+    "lemma": "avant",
+    "pos": "adverb",
+    "level": "A2",
+    "translation": "before",
+    "in_context": "In this sentence, 'avant' is used to indicate the action of letting passengers exit before entering the metro. It is a common practice in public transport to ensure smooth flow and courtesy among passengers.",
+    "examples": [
+      "Il faut toujours vérifier avant de traverser la rue.",
+      "Je préfère manger avant de sortir."
+    ]
+  },
+  "avec": {
+    "lemma": "avec",
+    "pos": "phrase",
+    "level": "A1",
+    "translation": "with",
+    "in_context": "In this sentence, 'avec' is used to indicate companionship or association, specifying that the speaker spent the day together with their family. It is a preposition that connects the subject to the object, showing who was present during the activity.",
+    "examples": [
+      "Je vais au cinéma avec mes amis.",
+      "Elle a préparé le dîner avec son frère."
+    ]
+  },
+  "avons": {
+    "lemma": "avoir",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "we did",
+    "in_context": "In this sentence, 'avons' is the first person plural form of the verb 'avoir' in the passé composé, indicating that 'we' (nous) performed the action of 'doing' something (in this case, a long walk). The auxiliary verb 'avoir' is used here to form the past tense, which is common in French to describe completed actions.",
+    "examples": [
+      "Nous avons mangé au restaurant hier soir.",
+      "Ils ont joué au football dans le parc."
+    ]
+  },
+  "beaucoup": {
+    "lemma": "beaucoup",
+    "pos": "adverb",
+    "level": "A2",
+    "translation": "a lot",
+    "in_context": "In this sentence, 'beaucoup' is used to indicate a large quantity of people ('beaucoup de monde') at the station. It modifies the noun 'monde' and is part of a common expression to describe abundance or a high number of something.",
+    "examples": [
+      "Il y a beaucoup de livres dans la bibliothèque.",
+      "Elle a beaucoup d'amis à l'école."
+    ]
+  },
+  "belle": {
+    "lemma": "beau",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "beautiful",
+    "in_context": "In this sentence, 'belle' is used to describe 'journée,' which is feminine singular. The adjective agrees in gender and number with the noun it modifies, hence 'belle' is the correct form here to convey that it was a beautiful day.",
+    "examples": [
+      "C'était une belle soirée d'été.",
+      "Elle a une belle voix."
+    ]
+  },
+  "berri-uqam": {
+    "lemma": "Berri-UQAM",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "Berri-UQAM station",
+    "in_context": "In this sentence, 'Berri-UQAM' refers to a specific metro station in Montreal, which is a well-known transit hub. It is used here to indicate where the speaker had to wait due to a large crowd, highlighting the busy nature of this location during rush hours.",
+    "examples": [
+      "Je vais souvent à la station Berri-UQAM pour prendre le métro.",
+      "La station Berri-UQAM est très fréquentée le matin."
+    ]
+  },
+  "blanche": {
+    "lemma": "blanc",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "white",
+    "in_context": "In this sentence, 'blanche' describes the city covered in snow, emphasizing the visual aspect of the winter landscape. The feminine form 'blanche' agrees with the feminine noun 'ville' (city).",
+    "examples": [
+      "La neige est blanche en hiver.",
+      "Les murs de la maison sont peints en blanc."
+    ]
+  },
+  "bon": {
+    "lemma": "bon",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "good",
+    "in_context": "In this sentence, 'bon' describes the type of moment being experienced, indicating that it is enjoyable or pleasant. It agrees in gender and number with 'moment', which is masculine singular, hence 'un bon moment'.",
+    "examples": [
+      "C'était un bon film que nous avons regardé hier.",
+      "Elle a préparé un bon repas pour ses amis."
+    ]
+  },
+  "bonne": {
+    "lemma": "bon",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "good",
+    "in_context": "In this sentence, 'bonne' is used to describe 'façon' (way), indicating that it is a positive or beneficial method of meeting people. The feminine form 'bonne' agrees with the feminine noun 'façon' in gender and number.",
+    "examples": [
+      "C'est une bonne idée d'aller au cinéma ce soir.",
+      "Elle a fait un bon travail sur ce projet."
+    ]
+  },
+  "bottes": {
+    "lemma": "botte",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "boots",
+    "in_context": "In this sentence, 'bottes' is used in the plural form to refer to the footwear that people wear in winter to keep their feet warm and protected from the cold. The context emphasizes the necessity of wearing warm clothing, including boots, during the harsh winter conditions in Montreal.",
+    "examples": [
+      "En hiver, je mets toujours des bottes chaudes pour marcher dans la neige.",
+      "Elle a acheté une nouvelle paire de bottes pour aller à la montagne."
+    ]
+  },
+  "café": {
+    "lemma": "café",
+    "pos": "noun · masc.",
+    "level": "A1",
+    "translation": "café",
+    "in_context": "In this sentence, 'café' refers to a place where people can enjoy drinks, specifically hot chocolate in this context. It is used in the masculine singular form, which is appropriate as it denotes a specific type of establishment.",
+    "examples": [
+      "Nous avons pris un café avant de partir en randonnée.",
+      "Il y a un café charmant au coin de la rue."
+    ]
+  },
+  "castors": {
+    "lemma": "castor",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "beavers",
+    "in_context": "In this context, 'Castors' refers to the name of a specific lake (le lac aux Castors) in Mont-Royal Park, which is likely named after the beavers that inhabit the area. The use of the plural form indicates that the lake is associated with beavers, a common animal in Canadian wildlife.",
+    "examples": [
+      "Les castors construisent des barrages dans les rivières.",
+      "Nous avons vu des castors près du lac pendant notre randonnée."
+    ]
+  },
+  "ce": {
+    "lemma": "ce",
+    "pos": "pronoun",
+    "level": "A1",
+    "translation": "this",
+    "in_context": "In the sentence, 'ce marché' refers specifically to 'this market' that was visited, indicating a particular market that has already been mentioned in the previous sentences. The demonstrative pronoun 'ce' is used here to point out a specific noun (marché) and agrees in gender and number with it.",
+    "examples": [
+      "Ce livre est très intéressant.",
+      "J'aime beaucoup ce restaurant."
+    ]
+  },
+  "ceux": {
+    "lemma": "ceux",
+    "pos": "pronoun",
+    "level": "A2",
+    "translation": "those",
+    "in_context": "In this sentence, 'ceux' is used as a demonstrative pronoun referring to people, specifically 'those who visit Montreal.' It agrees in number with the plural noun it replaces, indicating a group of individuals.",
+    "examples": [
+      "Ceux qui aiment la nature adorent ce parc.",
+      "J'ai rencontré ceux qui travaillent ici."
+    ]
+  },
+  "chaud": {
+    "lemma": "chaud",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "warm",
+    "in_context": "In this sentence, 'chaud' is used to describe the state of being warm inside the metro, contrasting with the very cold winter temperatures outside. It agrees in gender and number with the implied subject 'on', which is neutral in French, so 'chaud' remains in its masculine singular form.",
+    "examples": [
+      "Il fait chaud aujourd'hui, parfait pour une promenade.",
+      "Après le ski, j'aime boire un chocolat chaud."
+    ]
+  },
+  "chocolat": {
+    "lemma": "chocolat",
+    "pos": "noun · masc.",
+    "level": "A1",
+    "translation": "hot chocolate",
+    "in_context": "In this sentence, 'chocolat' is used in the phrase 'chocolat chaud', which means 'hot chocolate'. It is in the masculine singular form, as it refers to a specific type of drink. The context indicates that it was enjoyed in a café after a day of outdoor activities, highlighting a common winter treat.",
+    "examples": [
+      "J'aime boire un chocolat chaud en hiver.",
+      "Au café, ils servent un excellent chocolat au lait."
+    ]
+  },
+  "cidres": {
+    "lemma": "cidre",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "ciders",
+    "in_context": "In this sentence, 'cidres' is used in the plural form to refer to different types of ciders that can be tasted at the market. The noun is masculine and is typically used in the plural when discussing various varieties or brands available for sampling.",
+    "examples": [
+      "J'aime boire des cidres en été.",
+      "Les cidres artisanaux sont très populaires dans cette région."
+    ]
+  },
+  "citrouilles": {
+    "lemma": "citrouille",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "pumpkins",
+    "in_context": "In this sentence, 'citrouilles' is used in the plural form to refer to pumpkins, which are commonly found at markets during the autumn season. The use of the feminine noun 'citrouille' matches the article 'de' that precedes it, indicating a variety of seasonal produce available at the market.",
+    "examples": [
+      "J'ai acheté des citrouilles pour Halloween.",
+      "Les citrouilles sont souvent utilisées dans les recettes d'automne."
+    ]
+  },
+  "comme": {
+    "lemma": "comme",
+    "pos": "adverb",
+    "level": "A2",
+    "translation": "like",
+    "in_context": "In this sentence, 'comme' is used to express comparison between summer and winter, indicating that both seasons are included in the statement about the park's popularity. It connects the two contrasting seasons in a way that emphasizes the park's appeal year-round.",
+    "examples": [
+      "Il aime les fruits comme les pommes et les oranges.",
+      "Elle chante comme un oiseau."
+    ]
+  },
+  "confortable": {
+    "lemma": "confortable",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "comfortable",
+    "in_context": "In this sentence, 'confortable' describes the experience of being in the metro once inside, emphasizing that despite the cold outside, the interior of the metro provides a pleasant and cozy environment. It is used in its masculine singular form to agree with the noun 'rame', which is also feminine, but in this context, it refers to the overall experience, hence the masculine form is appropriate.",
+    "examples": [
+      "Le canapé est très confortable pour se reposer.",
+      "Cette chambre d'hôtel est vraiment confortable."
+    ]
+  },
+  "coucher": {
+    "lemma": "coucher",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "sunset",
+    "in_context": "In this sentence, 'coucher' refers specifically to the time of day when the sun sets, which is a common context for discussing beautiful views in photography. The phrase 'coucher du soleil' is a fixed expression in French that means 'sunset' and is often used to describe picturesque scenes.",
+    "examples": [
+      "Nous avons regardé le coucher du soleil sur la plage.",
+      "Le coucher de soleil était magnifique ce soir."
+    ]
+  },
+  "couleurs": {
+    "lemma": "couleur",
+    "pos": "noun · fem.",
+    "level": "A1",
+    "translation": "colors",
+    "in_context": "In this sentence, 'couleurs' is used in the plural form to describe the various colors of the autumn season, specifically referring to the vibrant colors of fruits and vegetables at the market. The feminine plural form agrees with the noun 'couleurs' and is appropriate in the context of describing multiple items.",
+    "examples": [
+      "Les couleurs de l'automne sont très belles.",
+      "J'aime les couleurs vives dans mon jardin."
+    ]
+  },
+  "couples": {
+    "lemma": "couple",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "couples",
+    "in_context": "In this sentence, 'les couples' refers to romantic partners who are enjoying a leisurely activity together, which fits the context of a pleasant winter day at the park. The noun 'couple' is used in the plural form 'couples' to indicate multiple pairs of people.",
+    "examples": [
+      "Les couples aiment se promener dans les parcs au printemps.",
+      "Il y avait plusieurs couples au restaurant ce soir."
+    ]
+  },
+  "courges": {
+    "lemma": "courge",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "squash",
+    "in_context": "In this sentence, 'courges' is used in the plural form to refer to various types of squash available at the market during the autumn season. It is feminine singular 'courge' that agrees with the plural article 'des' in 'des courges.'",
+    "examples": [
+      "J'aime cuisiner des courges en hiver.",
+      "Les courges d'automne sont délicieuses dans les soupes."
+    ]
+  },
+  "couvert": {
+    "lemma": "couvert",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "covered",
+    "in_context": "In this sentence, 'couvert' describes the state of the park being covered with snow during winter. It is used in the masculine singular form to agree with 'le parc', which is also masculine singular.",
+    "examples": [
+      "Le sol est couvert de feuilles en automne.",
+      "La table est couverte de fleurs pour la fête."
+    ]
+  },
+  "cuisine": {
+    "lemma": "cuisine",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "cooking",
+    "in_context": "In this sentence, 'cuisine' refers to the act of cooking, specifically in the context of workshops that teach participants how to prepare seasonal recipes. The use of 'ateliers de cuisine' indicates a focus on hands-on learning about cooking techniques and recipes.",
+    "examples": [
+      "J'aime suivre des cours de cuisine pour améliorer mes compétences.",
+      "Elle a préparé un plat délicieux lors de son atelier de cuisine."
+    ]
+  },
+  "dans": {
+    "lemma": "dans",
+    "pos": "preposition",
+    "level": "A1",
+    "translation": "in",
+    "in_context": "In this sentence, 'dans' is used to indicate the location of people, specifically stating that there are many people 'in the metro'. This usage is typical for expressing where something is happening or located, which is a fundamental use of the preposition 'dans' in French.",
+    "examples": [
+      "Il y a un chat dans la maison.",
+      "Les livres sont dans le sac."
+    ]
+  },
+  "de": {
+    "lemma": "de",
+    "pos": "phrase",
+    "level": "A1",
+    "translation": "of",
+    "in_context": "In this context, 'de' is used to indicate possession or origin, as in 'des gens de tous les horizons,' meaning 'people of all backgrounds.' This usage shows that the people come from various origins or backgrounds, highlighting diversity.",
+    "examples": [
+      "Il y a beaucoup de livres dans la bibliothèque.",
+      "C'est un ami de ma sœur."
+    ]
+  },
+  "décorer": {
+    "lemma": "décorer",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "to decorate",
+    "in_context": "In this sentence, 'décorer' is used in the infinitive form following 'pour', which indicates purpose. The phrase 'pour décorer nos maisons' explains the intention behind buying flowers, showing that the action of decorating is intended to enhance their homes.",
+    "examples": [
+      "J'aime décorer ma chambre avec des posters.",
+      "Nous allons décorer le sapin pour Noël."
+    ]
+  },
+  "découvre": {
+    "lemma": "découvrir",
+    "pos": "verb · trans.",
+    "level": "B1",
+    "translation": "discover",
+    "in_context": "In this sentence, 'découvre' is used in the present tense to describe a habitual action that occurs when exiting the metro station. It reflects the experience of finding something new or surprising, in this case, the snowy city.",
+    "examples": [
+      "Quand je voyage, je découvre toujours des endroits magnifiques.",
+      "En lisant ce livre, elle découvre des secrets sur sa famille."
+    ]
+  },
+  "degrés": {
+    "lemma": "degré",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "degrees",
+    "in_context": "In this sentence, 'degrés' is used to indicate a measurement of temperature, specifically referring to the cold temperatures in Montreal during winter. The plural form 'degrés' is appropriate here because it refers to multiple units of temperature measurement, which is common when discussing weather conditions.",
+    "examples": [
+      "Il fait 30 degrés aujourd'hui, parfait pour aller à la plage.",
+      "Les températures vont chuter à moins de 10 degrés cette nuit."
+    ]
+  },
+  "déplacer": {
+    "lemma": "déplacer",
+    "pos": "verb · trans.",
+    "level": "B1",
+    "translation": "to get around",
+    "in_context": "In this sentence, 'se déplacer' is used reflexively to mean 'to get around' or 'to move about' in the city. The reflexive form indicates that the subject is performing the action on themselves, which is common in French when talking about personal mobility.",
+    "examples": [
+      "Il est important de bien se déplacer dans une nouvelle ville.",
+      "Pour se déplacer facilement, il faut connaître les transports en commun."
+    ]
+  },
+  "dernier": {
+    "lemma": "dernier",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "last",
+    "in_context": "In this sentence, 'dernier' is used to describe 'Samedi' (Saturday), indicating that it refers to the most recent Saturday before the time of speaking. The adjective agrees in gender and number with 'samedi', which is masculine singular, hence 'dernier' is used in its masculine singular form.",
+    "examples": [
+      "Le dernier film que j'ai vu était incroyable.",
+      "J'ai acheté le dernier livre de mon auteur préféré."
+    ]
+  },
+  "des": {
+    "lemma": "des",
+    "pos": "phrase",
+    "level": "A1",
+    "translation": "some",
+    "in_context": "In this sentence, 'des' is used as an indefinite article to indicate an unspecified quantity of 'manteaux' (coats) and 'bottes' (boots). It implies that there are some coats and some boots, but not a specific number or type, which is common in French when referring to plural nouns.",
+    "examples": [
+      "Il y a des enfants qui jouent dans le parc.",
+      "J'ai acheté des pommes au marché."
+    ]
+  },
+  "descendre": {
+    "lemma": "descendre",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "to go down",
+    "in_context": "In this sentence, 'descendre' is used in the context of temperatures decreasing, which is a common way to express how low temperatures can reach in winter. The verb is in the infinitive form, indicating a general action rather than a specific instance.",
+    "examples": [
+      "Les températures vont descendre encore cette nuit.",
+      "Il faut descendre les escaliers pour aller au jardin."
+    ]
+  },
+  "détendre": {
+    "lemma": "détendre",
+    "pos": "verb · trans.",
+    "level": "B1",
+    "translation": "to relax",
+    "in_context": "In this sentence, 'se détendre' is used reflexively to indicate that people enjoy relaxing in the park. The reflexive form 'se' shows that the action of relaxing is performed by the subject on themselves, which is common in French when expressing personal enjoyment or leisure activities.",
+    "examples": [
+      "Après une longue journée de travail, j'aime me détendre avec un bon livre.",
+      "Il est important de se détendre pour réduire le stress."
+    ]
+  },
+  "difficile": {
+    "lemma": "difficile",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "difficult",
+    "in_context": "In this sentence, 'difficile' describes the challenge of finding a seat in the crowded metro, highlighting the inconvenience faced by commuters during peak hours. The adjective agrees in gender and number with the implicit subject 'il', which refers to the situation of finding a seat.",
+    "examples": [
+      "C'est difficile de comprendre ce texte en français.",
+      "Il est difficile de trouver un bon restaurant dans cette ville."
+    ]
+  },
+  "divertir": {
+    "lemma": "divertir",
+    "pos": "verb · trans.",
+    "level": "B1",
+    "translation": "to entertain",
+    "in_context": "In this sentence, 'divertir' is used in the infinitive form to describe the purpose of the music shows at the market, indicating that they are meant to entertain the visitors. This construction is common in French when explaining the function or goal of an activity.",
+    "examples": [
+      "Les clowns divertissent les enfants lors de la fête.",
+      "Ce film est fait pour divertir le public."
+    ]
+  },
+  "du": {
+    "lemma": "du",
+    "pos": "phrase",
+    "level": "A1",
+    "translation": "of the",
+    "in_context": "In this sentence, 'du' is used to indicate a partitive sense, meaning 'of the cold.' It is a contraction of 'de' and 'le,' which is used here to express a relationship or characteristic associated with the cold, specifically in the context of protection against it.",
+    "examples": [
+      "Il faut se protéger du soleil en été.",
+      "Les enfants jouent dans la neige du matin au soir."
+    ]
+  },
+  "dû": {
+    "lemma": "devoir",
+    "pos": "verb · trans.",
+    "level": "B1",
+    "translation": "had to",
+    "in_context": "In this sentence, 'dû' is the past participle of the verb 'devoir', which means 'to have to'. It is used here to indicate an obligation that occurred in the past, specifically that the speaker had to wait due to the crowd at the station. The form 'dû' agrees with the auxiliary verb 'avoir' in the passé composé, indicating a completed action.",
+    "examples": [
+      "J'ai dû étudier toute la nuit pour l'examen.",
+      "Elle a dû annuler son voyage à cause de la pluie."
+    ]
+  },
+  "en": {
+    "lemma": "en",
+    "pos": "phrase",
+    "level": "A2",
+    "translation": "in",
+    "in_context": "In this sentence, 'en' is used to indicate the means or method of transportation, specifically referring to the subway ('le métro'). It is commonly used in French to express how one travels or moves from one place to another, and here it emphasizes the context of traveling during winter.",
+    "examples": [
+      "Je vais en voiture au travail.",
+      "Elle préfère voyager en train plutôt qu'en avion."
+    ]
+  },
+  "enceintes": {
+    "lemma": "enceinte",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "pregnant woman",
+    "in_context": "In this sentence, \"enceintes\" refers specifically to pregnant women, indicating that people are courteous enough to offer their seats to them in the metro. The word is used in the plural form to match the context of multiple women who might be pregnant.",
+    "examples": [
+      "Les femmes enceintes doivent faire attention à leur santé.",
+      "Il est important de soutenir les femmes enceintes pendant leur grossesse."
+    ]
+  },
+  "endroit": {
+    "lemma": "endroit",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "place",
+    "in_context": "In this sentence, 'endroit' refers to a specific location or place where people enjoy activities like relaxing and sports. It is used in the masculine singular form, which is appropriate for this context as it describes a general location rather than a specific one.",
+    "examples": [
+      "C'est un endroit calme pour lire un livre.",
+      "Nous avons trouvé un endroit idéal pour pique-niquer."
+    ]
+  },
+  "enfants": {
+    "lemma": "enfant",
+    "pos": "noun · masc.",
+    "level": "A1",
+    "translation": "children",
+    "in_context": "In this sentence, 'enfants' is used in the plural form to refer to multiple children who are playing in the snow. The context suggests a lively winter scene where families are enjoying outdoor activities, highlighting the park's appeal to families with children.",
+    "examples": [
+      "Les enfants jouent au parc après l'école.",
+      "Il y a beaucoup d'enfants qui aiment faire de la luge en hiver."
+    ]
+  },
+  "ensuite": {
+    "lemma": "ensuite",
+    "pos": "adverb",
+    "level": "A2",
+    "translation": "then",
+    "in_context": "In this sentence, 'ensuite' is used to indicate the sequence of events after the long walk on Mont-Royal. It connects the action of walking to the next action of having hot chocolate, showing a chronological order of activities.",
+    "examples": [
+      "D'abord, nous avons visité le musée. Ensuite, nous avons mangé dans un restaurant.",
+      "Il a étudié pour son examen. Ensuite, il est allé au cinéma."
+    ]
+  },
+  "entrer": {
+    "lemma": "entrer",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "to enter",
+    "in_context": "In this sentence, 'entrer' is used in the infinitive form to describe the action of people entering the metro after allowing others to exit. It is a common construction in French to use the infinitive after expressions like 'laisser' (to let) which indicates permission or allowance.",
+    "examples": [
+      "Il faut laisser entrer les invités avant de commencer la fête.",
+      "Les enfants doivent entrer dans la classe avant que le cours ne commence."
+    ]
+  },
+  "épais": {
+    "lemma": "épais",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "thick",
+    "in_context": "In this sentence, 'épais' describes the type of coats that Montrealers wear during the cold winter, indicating that they are designed to provide warmth. The adjective agrees in number and gender with the noun 'manteaux', which is masculine plural, hence 'épais' is used in its masculine plural form.",
+    "examples": [
+      "Les murs de cette maison sont très épais.",
+      "J'ai besoin d'un livre épais pour le cours."
+    ]
+  },
+  "est": {
+    "lemma": "être",
+    "pos": "verb · intrans.",
+    "level": "A1",
+    "translation": "is",
+    "in_context": "In this sentence, \"est\" is the third person singular form of the verb \"être\" (to be), used to describe the state of winter in Montreal as being very cold. It is a simple present tense construction that indicates a general truth about the winter weather.",
+    "examples": [
+      "L'été est chaud à Paris.",
+      "Ce livre est intéressant."
+    ]
+  },
+  "et": {
+    "lemma": "et",
+    "pos": "conjunction",
+    "level": "A1",
+    "translation": "and",
+    "in_context": "In this sentence, 'et' is used to connect two adjectives ('rapide' and 'pratique') that describe the metro. It shows that both qualities are true at the same time, which is a common use of 'et' to link similar ideas or items in French.",
+    "examples": [
+      "J'aime le chocolat et les bonbons.",
+      "Il fait beau et chaud aujourd'hui."
+    ]
+  },
+  "était": {
+    "lemma": "être",
+    "pos": "verb · intrans.",
+    "level": "A2",
+    "translation": "it was",
+    "in_context": "In this sentence, \"c'était\" is the third person singular imperfect form of the verb \"être,\" used to describe a past state of comfort in the subway. The imperfect tense is appropriate here as it indicates a situation that was ongoing or habitual in the past.",
+    "examples": [
+      "C'était un beau jour pour se promener.",
+      "Il faisait froid, mais c'était agréable de sortir."
+    ]
+  },
+  "étals": {
+    "lemma": "étal",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "stalls",
+    "in_context": "In this sentence, 'les étals' refers to the stalls at the market where various products are displayed. The plural form 'étals' is used to indicate that there are multiple stalls filled with different items, emphasizing the variety available at the market.",
+    "examples": [
+      "Les étals du marché sont toujours bien garnis le dimanche.",
+      "J'adore me promener entre les étals et découvrir de nouveaux produits."
+    ]
+  },
+  "été": {
+    "lemma": "été",
+    "pos": "noun · masc.",
+    "level": "A1",
+    "translation": "summer",
+    "in_context": "In this sentence, 'été' refers to the summer season, which is contrasted with 'hiver' (winter) to highlight the park's popularity in both seasons. It is used in a general sense to describe a time of year when people enjoy outdoor activities.",
+    "examples": [
+      "En été, nous allons souvent à la plage.",
+      "Les festivals de musique ont lieu en été."
+    ]
+  },
+  "exemple": {
+    "lemma": "exemple",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "for instance",
+    "in_context": "In this sentence, 'par exemple' is used to introduce specific instances of activities available at the market, highlighting the workshops and music shows as examples of what visitors can enjoy. The phrase is commonly used in French to provide clarification or additional information.",
+    "examples": [
+      "Il y a beaucoup de fruits au marché, par exemple des fraises et des cerises.",
+      "Pour apprendre le français, il est utile de lire des livres, par exemple des romans faciles."
+    ]
+  },
+  "expérience": {
+    "lemma": "expérience",
+    "pos": "noun · fem.",
+    "level": "B1",
+    "translation": "experience",
+    "in_context": "In this sentence, 'expérience' refers to the unique and memorable experience of taking the subway in winter, highlighting the specific context of the season and the environment in Montreal. The feminine gender of the noun 'expérience' is reflected in the article 'une'.",
+    "examples": [
+      "C'est une expérience incroyable de voyager à travers l'Europe.",
+      "J'ai eu une expérience enrichissante en travaillant à l'étranger."
+    ]
+  },
+  "façon": {
+    "lemma": "façon",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "way",
+    "in_context": "In this sentence, 'façon' refers to a method or manner of doing something, specifically meeting people. It is used in the expression 'une bonne façon de', which means 'a good way to'. This construction is common in French to describe positive methods or approaches to experiences.",
+    "examples": [
+      "C'est une façon intéressante de voyager.",
+      "Il y a plusieurs façons de résoudre ce problème."
+    ]
+  },
+  "faire": {
+    "lemma": "faire",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "to do",
+    "in_context": "In this sentence, 'faire' is used in the expression 'faire du sport', which means 'to do sports'. It is a common construction in French where 'faire' is combined with a noun to indicate engaging in an activity. Here, it is in the infinitive form because it follows the verb 'aiment' (they love), which requires the infinitive for the action that people enjoy.",
+    "examples": [
+      "J'aime faire du vélo le week-end.",
+      "Elle veut faire un gâteau pour l'anniversaire de son ami."
+    ]
+  },
+  "fait": {
+    "lemma": "faire",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "to do/make",
+    "in_context": "In this sentence, 'fait' is the past participle of the verb 'faire', used here in the compound past tense (passé composé) to indicate an action completed in the past. The auxiliary verb 'avoir' is used with 'fait' to express that the speaker completed the action of taking a long walk.",
+    "examples": [
+      "Nous avons fait un gâteau pour l'anniversaire de ma sœur.",
+      "Il a fait ses devoirs avant de sortir."
+    ]
+  },
+  "famille": {
+    "lemma": "famille",
+    "pos": "noun · fem.",
+    "level": "A1",
+    "translation": "family",
+    "in_context": "In this sentence, 'ma famille' indicates the speaker's family, showing a personal connection and emphasizing the shared experience of spending time together on Mont-Royal. The noun 'famille' is feminine and singular, which is why it is preceded by the possessive adjective 'ma'.",
+    "examples": [
+      "J'aime passer du temps avec ma famille pendant les vacances.",
+      "Ma famille habite à Paris."
+    ]
+  },
+  "femmes": {
+    "lemma": "femme",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "pregnant women",
+    "in_context": "In this context, 'femmes' refers specifically to 'femmes enceintes' or pregnant women, indicating that people are expected to give their seats to those who need them more, highlighting social courtesy and consideration for vulnerable individuals.",
+    "examples": [
+      "Les femmes aiment souvent se retrouver entre amies.",
+      "Il y a beaucoup de femmes dans ce cours de yoga."
+    ]
+  },
+  "fleurs": {
+    "lemma": "fleur",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "flowers",
+    "in_context": "In this sentence, 'fleurs' is used in the plural form to refer to multiple flowers that were purchased for decoration. The context indicates that they are part of the market's offerings, emphasizing the variety of fresh products available.",
+    "examples": [
+      "J'ai acheté des fleurs pour ma mère.",
+      "Les fleurs dans le jardin sont magnifiques au printemps."
+    ]
+  },
+  "fois": {
+    "lemma": "fois",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "time",
+    "in_context": "In this sentence, 'une fois' refers to a specific instance or occasion, indicating that once the speaker is on the train, it becomes comfortable. The phrase 'une fois' is often used in French to denote a moment or a particular time when something occurs, and it is in the singular form here to match the feminine noun 'fois.'",
+    "examples": [
+      "Une fois que j'ai fini mes devoirs, je peux sortir.",
+      "Il est venu une fois à ma fête d'anniversaire."
+    ]
+  },
+  "fond": {
+    "lemma": "fond",
+    "pos": "noun · masc.",
+    "level": "B1",
+    "translation": "cross-country",
+    "in_context": "In this sentence, 'ski de fond' refers specifically to the activity of cross-country skiing, which is a popular winter sport in snowy areas like Mont-Royal. The term 'fond' is used here to describe the type of skiing that takes place on flat or gently rolling terrain, distinguishing it from downhill skiing.",
+    "examples": [
+      "J'adore faire du ski de fond dans les montagnes en hiver.",
+      "Le ski de fond est une excellente façon de profiter de la nature en hiver."
+    ]
+  },
+  "frais": {
+    "lemma": "frais",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "fresh",
+    "in_context": "In this sentence, 'frais' describes the products being sold at the market, indicating that they are recently harvested and not processed. It agrees in number with 'produits', which is masculine plural, hence 'frais' is also in the plural form.",
+    "examples": [
+      "J'aime acheter des légumes frais au supermarché.",
+      "Les poissons frais sont meilleurs pour la santé."
+    ]
+  },
+  "froid": {
+    "lemma": "froid",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "cold",
+    "in_context": "In this sentence, 'froid' refers to the cold weather in winter, which is a common concern in Montreal. It is used in the context of describing how people dress to protect themselves from the cold temperatures during the winter season.",
+    "examples": [
+      "Il fait très froid aujourd'hui, n'oublie pas ton écharpe.",
+      "Le froid de l'hiver peut être difficile à supporter."
+    ]
+  },
+  "généralement": {
+    "lemma": "généralement",
+    "pos": "adverb",
+    "level": "A2",
+    "translation": "generally",
+    "in_context": "In this sentence, 'généralement' is used to describe the typical behavior of people in the metro, indicating that politeness is a common trait among them. It is an adverb that modifies the verb 'sont', showing that this behavior is not absolute but rather a general observation.",
+    "examples": [
+      "Les étudiants sont généralement motivés à réussir leurs examens.",
+      "Les restaurants sont généralement pleins le week-end."
+    ]
+  },
+  "gens": {
+    "lemma": "gens",
+    "pos": "noun · masc. pl.",
+    "level": "A2",
+    "translation": "people",
+    "in_context": "In this sentence, 'gens' is used to refer to a group of people in a general sense. It is plural and does not have a singular form in this context, which is typical for collective nouns in French. The sentence emphasizes the diversity of people one might meet in the city.",
+    "examples": [
+      "Il y a beaucoup de gens au concert ce soir.",
+      "Les gens aiment se retrouver dans les parcs pendant l'été."
+    ]
+  },
+  "goûté": {
+    "lemma": "goûter",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "tasted",
+    "in_context": "In this sentence, 'goûté' is the past participle of the verb 'goûter' and is used in the passé composé construction with 'avoir' (nous avons goûté). This indicates that the action of tasting occurred in the past. The past participle agrees in gender and number with the subject, which is plural (nous).",
+    "examples": [
+      "Hier, j'ai goûté un plat délicieux au restaurant.",
+      "La semaine dernière, nous avons goûté des fromages artisanaux."
+    ]
+  },
+  "grands": {
+    "lemma": "grand",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "biggest",
+    "in_context": "In the sentence, 'grands' is used to describe the market as one of the biggest in Montreal, indicating its size in comparison to other markets. It is in the plural form to agree with 'marchés', which is also plural.",
+    "examples": [
+      "Les grands arbres dans le parc offrent de l'ombre.",
+      "Elle a acheté un grand gâteau pour la fête."
+    ]
+  },
+  "hier": {
+    "lemma": "hier",
+    "pos": "adverb",
+    "level": "A1",
+    "translation": "yesterday",
+    "in_context": "In this sentence, 'hier' is used to indicate that the action of taking the metro happened the day before the current moment. It is an adverb that specifies the time of the action, which is essential for understanding when the event occurred.",
+    "examples": [
+      "Hier, j'ai rencontré un ami au café.",
+      "Hier, il a neigé toute la journée."
+    ]
+  },
+  "hiver": {
+    "lemma": "hiver",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "winter",
+    "in_context": "In this sentence, 'l'hiver' refers specifically to the winter season in Montréal, highlighting the cold temperatures typical of that time of year. The definite article 'l'' indicates that it is a specific winter being discussed, which is common in French when talking about seasons.",
+    "examples": [
+      "L'hiver dernier, il a beaucoup neigé.",
+      "J'adore faire du ski en hiver."
+    ]
+  },
+  "horizons": {
+    "lemma": "horizon",
+    "pos": "noun · masc.",
+    "level": "B1",
+    "translation": "backgrounds",
+    "in_context": "In this sentence, 'horizons' refers to the diverse backgrounds or social contexts of the people one might meet while using the metro. The plural form is used to emphasize the variety of people from different walks of life.",
+    "examples": [
+      "Les étudiants viennent de différents horizons.",
+      "Elle a des amis de tous les horizons."
+    ]
+  },
+  "idéal": {
+    "lemma": "idéal",
+    "pos": "adjective",
+    "level": "B1",
+    "translation": "ideal",
+    "in_context": "In this sentence, 'idéal' describes the market as a perfect place for family activities, emphasizing its suitability for enjoyment. The adjective is used in its masculine singular form to agree with 'endroit', which is masculine singular as well.",
+    "examples": [
+      "C'est un moment idéal pour se détendre.",
+      "Cet hôtel est idéal pour les familles."
+    ]
+  },
+  "il": {
+    "lemma": "il",
+    "pos": "pronoun",
+    "level": "A1",
+    "translation": "there",
+    "in_context": "In this sentence, 'il' is used as an impersonal pronoun to indicate the existence of something, specifically 'there is' or 'there are'. This construction is common in French to describe situations or conditions without a specific subject.",
+    "examples": [
+      "Il y a beaucoup de livres dans la bibliothèque.",
+      "Il y a un café près de chez moi."
+    ]
+  },
+  "ils": {
+    "lemma": "ils",
+    "pos": "pronoun",
+    "level": "A1",
+    "translation": "they",
+    "in_context": "In this sentence, 'ils' is used as a subject pronoun to refer to 'les gens' (the people) mentioned earlier. It is plural and masculine, which is appropriate since it refers to a mixed group of people, and it agrees with the plural verb 'laissent'.",
+    "examples": [
+      "Ils vont au cinéma ce soir.",
+      "Les enfants jouent au parc, et ils sont très contents."
+    ]
+  },
+  "incontournable": {
+    "lemma": "incontournable",
+    "pos": "adjective",
+    "level": "B1",
+    "translation": "must-see",
+    "in_context": "The word 'incontournable' is used here to describe Mont-Royal as an essential place to visit in Montreal. It is an adjective that emphasizes the importance and popularity of the location for tourists, indicating that it cannot be missed when visiting the city.",
+    "examples": [
+      "La Tour Eiffel est un monument incontournable à Paris.",
+      "Ce restaurant est incontournable pour les amateurs de cuisine italienne."
+    ]
+  },
+  "jaune": {
+    "lemma": "jaune",
+    "pos": "adjective",
+    "level": "A1",
+    "translation": "yellow",
+    "in_context": "In this sentence, 'jaune' is used as an adjective to describe the color of the courges (squashes) among other colors like rouge (red) and orange. It agrees in gender and number with the noun it describes, which is implied to be plural in this context.",
+    "examples": [
+      "Les fleurs dans le jardin sont jaunes et belles.",
+      "Elle porte une robe jaune pour la fête."
+    ]
+  },
+  "jean-talon": {
+    "lemma": "Jean-Talon",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "Jean-Talon market",
+    "in_context": "In this sentence, 'Jean-Talon' refers specifically to a well-known market in Montreal, which is a proper noun and does not change form. It is used here to identify a specific location that is significant for its size and offerings, particularly in the autumn season.",
+    "examples": [
+      "Le marché Jean-Talon est très populaire pendant l'été.",
+      "J'aime acheter des légumes au marché Jean-Talon."
+    ]
+  },
+  "jouaient": {
+    "lemma": "jouer",
+    "pos": "verb · intrans.",
+    "level": "A2",
+    "translation": "were playing",
+    "in_context": "In this sentence, 'jouaient' is the imperfect tense of the verb 'jouer', used to describe an ongoing action in the past. It indicates that the children were continuously playing in the snow during that time, reflecting a habitual or repeated action.",
+    "examples": [
+      "Les enfants jouaient au parc pendant l'été.",
+      "Quand j'étais petit, je jouais souvent avec mes amis."
+    ]
+  },
+  "journée": {
+    "lemma": "journée",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "day",
+    "in_context": "In this sentence, 'journée' is used to refer to a specific day spent on Mont-Royal, emphasizing the duration of activities and experiences during that time. It is in the singular feminine form, which is appropriate as it refers to 'la journée' (the day).",
+    "examples": [
+      "J'ai passé une bonne journée à la plage.",
+      "Nous avons eu une journée très chargée hier."
+    ]
+  },
+  "la": {
+    "lemma": "la",
+    "pos": "noun · fem.",
+    "level": "A1",
+    "translation": "the",
+    "in_context": "In this sentence, 'la' is used as the feminine singular definite article before the noun 'station', indicating a specific station, which is a feminine noun in French. The definite article agrees in gender and number with the noun it modifies.",
+    "examples": [
+      "La maison est grande.",
+      "J'aime la musique."
+    ]
+  },
+  "lac": {
+    "lemma": "lac",
+    "pos": "noun · masc.",
+    "level": "A1",
+    "translation": "lake",
+    "in_context": "In this sentence, 'lac' refers to a body of water, specifically a lake, which is a common feature in parks like Mont-Royal. The phrase 'lac aux Castors' indicates the specific name of the lake, which adds a local touch to the description of the park's environment.",
+    "examples": [
+      "Nous avons pique-niqué au bord du lac.",
+      "Le lac est gelé en hiver."
+    ]
+  },
+  "laissent": {
+    "lemma": "laisser",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "let",
+    "in_context": "In this sentence, 'laissent' is the third person plural form of the verb 'laisser' in the present tense, indicating that the people allow or let passengers exit before they enter the metro. This form is used to describe a habitual action performed by many people in a polite manner.",
+    "examples": [
+      "Les parents laissent leurs enfants jouer dans le parc.",
+      "Il est important de laisser passer les piétons sur la route."
+    ]
+  },
+  "le": {
+    "lemma": "le",
+    "pos": "article · masc.",
+    "level": "A1",
+    "translation": "the",
+    "in_context": "In this sentence, 'le' is used as a definite article to specify 'métro', which is a masculine singular noun. It indicates that the speaker is referring to a specific metro system in Montréal, rather than any metro in general.",
+    "examples": [
+      "Le chat est sur le toit.",
+      "Il a acheté le livre que je lui ai recommandé."
+    ]
+  },
+  "les": {
+    "lemma": "les",
+    "pos": "article · plur.",
+    "level": "A1",
+    "translation": "the",
+    "in_context": "In this sentence, 'les' is used as a definite article to indicate that we are talking about specific people, 'les Montréalais', who are known for wearing thick coats and boots. The plural form 'les' agrees with the plural noun 'Montréalais'.",
+    "examples": [
+      "Les enfants jouent dans le parc.",
+      "Les fleurs sont belles au printemps."
+    ]
+  },
+  "leur": {
+    "lemma": "leur",
+    "pos": "pronoun",
+    "level": "A2",
+    "translation": "their",
+    "in_context": "In this sentence, 'leur' is used as a possessive pronoun to indicate that the place being given up belongs to the elderly or pregnant women. It agrees in number with 'place', which is feminine singular, but 'leur' itself does not change form regardless of the noun it modifies.",
+    "examples": [
+      "Ils ont oublié leur parapluie dans le train.",
+      "Les enfants ont perdu leur ballon dans le parc."
+    ]
+  },
+  "leurs": {
+    "lemma": "leur",
+    "pos": "pronoun · poss. plural",
+    "level": "A2",
+    "translation": "their",
+    "in_context": "In this sentence, 'leurs' is used as a possessive pronoun to indicate that the products belong to the sellers. It agrees in number with 'produits', which is plural, hence the use of 'leurs' instead of 'leur'.",
+    "examples": [
+      "Les enfants aiment jouer avec leurs jouets.",
+      "Les étudiants doivent préparer leurs examens."
+    ]
+  },
+  "lieu": {
+    "lemma": "lieu",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "place",
+    "in_context": "In this sentence, 'lieu' is used to refer to a specific place that is essential or must-see for visitors to Montréal. It is a masculine noun, and here it emphasizes the importance of Mont-Royal as a destination.",
+    "examples": [
+      "C'est un lieu tranquille pour se reposer.",
+      "Nous avons choisi un lieu idéal pour notre pique-nique."
+    ]
+  },
+  "locaux": {
+    "lemma": "local",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "local",
+    "in_context": "In this sentence, 'locaux' is used to describe products that are sourced from the local area, emphasizing freshness and regional quality. It agrees in gender and number with 'produits', which is masculine plural, hence the plural form 'locaux' is used.",
+    "examples": [
+      "J'aime acheter des légumes locaux au marché.",
+      "Les restaurants de la ville servent des plats locaux."
+    ]
+  },
+  "longue": {
+    "lemma": "longue",
+    "pos": "adjective · fem.",
+    "level": "A2",
+    "translation": "long",
+    "in_context": "In this sentence, 'longue' is used to describe the noun 'promenade,' which is feminine and singular. The adjective agrees in gender and number with the noun it modifies, hence the feminine form 'longue' is used instead of the masculine 'long.'",
+    "examples": [
+      "J'ai fait une longue route pour arriver ici.",
+      "Nous avons eu une longue discussion sur le projet."
+    ]
+  },
+  "ma": {
+    "lemma": "ma",
+    "pos": "adjective · fem.",
+    "level": "A1",
+    "translation": "my",
+    "in_context": "In this sentence, 'ma' is used as a possessive adjective to indicate that the family belongs to the speaker. It agrees in gender and number with 'famille', which is a feminine singular noun.",
+    "examples": [
+      "J'ai pris ma voiture pour aller au travail.",
+      "Elle a oublié ma veste dans le restaurant."
+    ]
+  },
+  "magnifiques": {
+    "lemma": "magnifique",
+    "pos": "adjective",
+    "level": "B1",
+    "translation": "beautiful",
+    "in_context": "In this sentence, 'magnifiques' describes the landscapes of Mont-Royal, indicating their beauty, especially during sunset. The word is in the plural form to agree with 'paysages,' which is also plural.",
+    "examples": [
+      "Les fleurs dans le jardin sont magnifiques au printemps.",
+      "Cette peinture est vraiment magnifique, j'adore les couleurs."
+    ]
+  },
+  "main": {
+    "lemma": "main",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "hand",
+    "in_context": "In this sentence, 'main' is used in the phrase 'main dans la main,' which means 'hand in hand.' It describes how couples were walking closely together, symbolizing affection or companionship. The feminine form 'main' agrees with the article 'la' and fits the context of physical closeness between people.",
+    "examples": [
+      "Ils se sont promenés main dans la main au bord de la mer.",
+      "Les enfants ont pris leurs parents par la main pour traverser la rue."
+    ]
+  },
+  "mais": {
+    "lemma": "mais",
+    "pos": "conjunction",
+    "level": "A1",
+    "translation": "but",
+    "in_context": "In this sentence, 'mais' is used to introduce a contrast between the inconvenience of waiting at the station and the comfort experienced once on the metro. It connects two clauses that present opposing situations, which is a common usage of this conjunction in French.",
+    "examples": [
+      "Il pleut aujourd'hui, mais je vais quand même sortir.",
+      "J'aime le chocolat, mais je préfère les fruits."
+    ]
+  },
+  "maisons": {
+    "lemma": "maison",
+    "pos": "noun · fem.",
+    "level": "A1",
+    "translation": "houses",
+    "in_context": "In this sentence, 'maisons' is used in the plural form to refer to the homes where the speaker and her friend might decorate with flowers. The use of the plural indicates that they are talking about more than one house, which is common when discussing personal spaces or family homes.",
+    "examples": [
+      "Nous avons décoré nos maisons pour la fête.",
+      "Les maisons dans ce quartier sont très anciennes."
+    ]
+  },
+  "manteaux": {
+    "lemma": "manteau",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "coats",
+    "in_context": "In this sentence, 'manteaux' is used in the plural form to refer to the thick coats that many people wear in Montreal during the cold winter months. The word is masculine, and its plural form 'manteaux' is used to indicate that it is common for many people to wear them.",
+    "examples": [
+      "Les enfants portent des manteaux colorés pour jouer dehors.",
+      "Il a acheté deux manteaux pour l'hiver."
+    ]
+  },
+  "marché": {
+    "lemma": "marché",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "market",
+    "in_context": "In this context, 'marché' refers to a physical place where people gather to buy and sell goods, particularly fresh produce and local products. It is used in the masculine singular form, which is appropriate for this noun in French. The sentence describes the market as a vibrant and social place, especially during the autumn season.",
+    "examples": [
+      "Je vais au marché chaque samedi pour acheter des légumes.",
+      "Le marché de Noël attire beaucoup de visiteurs chaque année."
+    ]
+  },
+  "marchés": {
+    "lemma": "marché",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "market",
+    "in_context": "In this sentence, 'marché' refers to a specific type of market, particularly the Jean-Talon market in Montreal, which is known for its fresh and local products. The use of the masculine singular form 'marché' is appropriate here as it is the subject of the sentence and is being described as one of the largest markets.",
+    "examples": [
+      "Le marché de Noël attire beaucoup de visiteurs chaque année.",
+      "Nous avons acheté des légumes au marché ce matin."
+    ]
+  },
+  "matin": {
+    "lemma": "matin",
+    "pos": "noun · masc.",
+    "level": "A1",
+    "translation": "morning",
+    "in_context": "In this sentence, 'le matin' refers to the morning time when there are many people using the metro. It is used in the masculine singular form, which is appropriate as 'matin' is a masculine noun in French.",
+    "examples": [
+      "Je me lève tôt le matin pour aller courir.",
+      "Le matin, je prends mon café avant de commencer ma journée."
+    ]
+  },
+  "métro": {
+    "lemma": "métro",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "subway",
+    "in_context": "In this context, 'métro' refers to the subway system in Montreal, which is a common mode of transportation for residents, especially during the cold winter months. It is used in the masculine singular form, as indicated by the article 'le' before it.",
+    "examples": [
+      "Je prends le métro tous les matins pour aller à l'école.",
+      "Le métro de Paris est très célèbre et pratique."
+    ]
+  },
+  "moment": {
+    "lemma": "moment",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "time",
+    "in_context": "In this sentence, 'moment' refers to a period of time spent enjoying an activity with family. It is used in the context of having a good time, which is a common idiomatic expression in French.",
+    "examples": [
+      "Nous avons passé un bon moment au parc hier.",
+      "Ce film était un moment inoubliable."
+    ]
+  },
+  "mon": {
+    "lemma": "mon",
+    "pos": "adjective · possessive",
+    "level": "A1",
+    "translation": "my",
+    "in_context": "In this sentence, 'mon' is used as a possessive adjective to indicate that Sophie is the speaker's friend, showing ownership or relationship. It agrees in gender and number with the noun 'amie', which is feminine singular, hence 'mon' is used instead of 'ma' because it precedes a vowel sound.",
+    "examples": [
+      "J'ai pris mon livre préféré.",
+      "Elle a invité mon frère à sa fête."
+    ]
+  },
+  "monde": {
+    "lemma": "monde",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "people",
+    "in_context": "In this context, 'monde' refers to a crowd or a large number of people at the metro station, highlighting the busy atmosphere during peak hours. The use of 'beaucoup de monde' emphasizes the quantity of people present, which is common in urban settings.",
+    "examples": [
+      "Il y avait beaucoup de monde au concert hier soir.",
+      "Dans cette ville, le monde est toujours en mouvement."
+    ]
+  },
+  "mont-royal": {
+    "lemma": "Mont-Royal",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "Mount Royal",
+    "in_context": "In this context, 'Mont-Royal' refers to a specific location, a well-known park in Montreal. It is used as a proper noun, indicating a unique place where various activities take place, such as walking and enjoying nature.",
+    "examples": [
+      "Le Mont-Royal est magnifique au printemps.",
+      "Nous avons fait un pique-nique sur le Mont-Royal."
+    ]
+  },
+  "montréal": {
+    "lemma": "Montréal",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "Montreal",
+    "in_context": "In this sentence, 'Montréal' is used as a proper noun to specify the city where the described events take place. It is capitalized and indicates a specific geographical location, which is relevant to the context of discussing winter conditions and public transport in that city.",
+    "examples": [
+      "Montréal est connue pour son festival de jazz.",
+      "J'ai visité Montréal l'été dernier et j'ai adoré la cuisine locale."
+    ]
+  },
+  "montréalais": {
+    "lemma": "Montréalais",
+    "pos": "noun · masc.",
+    "level": "B1",
+    "translation": "Montrealer",
+    "in_context": "In this sentence, 'Montréalais' refers specifically to the people from Montréal, emphasizing their local identity and customs, such as wearing thick coats and boots to protect against the cold. The masculine form is used here because it is a general term that can refer to both men and women in this context.",
+    "examples": [
+      "Les Montréalais aiment beaucoup le festival de jazz en été.",
+      "Les Montréalais sont fiers de leur culture et de leur histoire."
+    ]
+  },
+  "musique": {
+    "lemma": "musique",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "music",
+    "in_context": "In this sentence, 'musique' is used to describe the type of performances (spectacles) offered at the market, indicating that there are musical shows to entertain visitors. The feminine singular form 'musique' agrees with the article 'des' used before it, which is plural, indicating multiple types of spectacles, including music.",
+    "examples": [
+      "J'adore écouter de la musique classique.",
+      "Ce festival de musique attire beaucoup de monde."
+    ]
+  },
+  "neige": {
+    "lemma": "neige",
+    "pos": "noun · fem.",
+    "level": "A1",
+    "translation": "snow",
+    "in_context": "In this sentence, 'neige' is used to describe the snow covering the city, emphasizing the winter atmosphere in Montréal. The feminine form 'la neige' is appropriate here as it refers to the natural phenomenon of snow, which is typically associated with winter scenes.",
+    "examples": [
+      "Il neige beaucoup en décembre à Paris.",
+      "Les enfants adorent jouer dans la neige en hiver."
+    ]
+  },
+  "nos": {
+    "lemma": "notre",
+    "pos": "adjective · poss. plural",
+    "level": "A2",
+    "translation": "our",
+    "in_context": "In this sentence, 'nos' is used to indicate possession, referring to the houses belonging to the speaker and their family. It is in the plural form to agree with 'maisons', which is also plural, showing that the houses belong to multiple people (the speaker and their family).",
+    "examples": [
+      "Nous avons décoré nos appartements pour les fêtes.",
+      "Ils ont invité leurs amis à visiter leurs nouveaux bureaux."
+    ]
+  },
+  "nous": {
+    "lemma": "nous",
+    "pos": "pronoun · 1st person plural",
+    "level": "A1",
+    "translation": "we",
+    "in_context": "In this sentence, 'nous' is used as the subject pronoun for the first person plural, indicating that the speaker is referring to themselves and their family as a group. It is the standard way to express 'we' in French, and it agrees with the plural verb form 'avons fait' that follows it.",
+    "examples": [
+      "Nous allons au cinéma ce soir.",
+      "Nous avons mangé au restaurant hier."
+    ]
+  },
+  "offre": {
+    "lemma": "offrir",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "provides",
+    "in_context": "In this sentence, 'offre' is the third person singular form of the verb 'offrir', used to indicate that the market provides special activities during autumn. The use of 'offre' here shows the market's role in offering services or events to visitors, highlighting its dynamic nature in the fall.",
+    "examples": [
+      "Le restaurant offre un menu spécial pour les fêtes.",
+      "Cette boutique offre des réductions sur tous les produits."
+    ]
+  },
+  "on": {
+    "lemma": "on",
+    "pos": "pronoun",
+    "level": "A2",
+    "translation": "one",
+    "in_context": "In this sentence, 'on' is used as an indefinite pronoun to refer to people in general, similar to the English 'one' or 'people'. It is commonly used in French to express general statements or actions without specifying who is performing them.",
+    "examples": [
+      "On mange souvent des crêpes en Bretagne.",
+      "Quand on voyage, on découvre de nouvelles cultures."
+    ]
+  },
+  "orange": {
+    "lemma": "orange",
+    "pos": "noun · fem.",
+    "level": "A1",
+    "translation": "orange",
+    "in_context": "In this sentence, 'orange' is used as a color to describe the beautiful colors of the market's produce. It is part of a list of colors (rouge, orange, et jaune) that are used to create a vivid image of the market's atmosphere in autumn.",
+    "examples": [
+      "Les feuilles des arbres deviennent orange en automne.",
+      "J'ai acheté une orange au marché."
+    ]
+  },
+  "ou": {
+    "lemma": "ou",
+    "pos": "conjunction",
+    "level": "A1",
+    "translation": "or",
+    "in_context": "In this sentence, 'ou' is used to connect two options: 'les personnes âgées' and 'les femmes enceintes'. This indicates that the action of giving up a seat applies to either group, showing politeness towards both.",
+    "examples": [
+      "Je vais au cinéma ou au théâtre ce soir.",
+      "Tu veux du café ou du thé ?"
+    ]
+  },
+  "où": {
+    "lemma": "où",
+    "pos": "adverb",
+    "level": "A2",
+    "translation": "where",
+    "in_context": "In this sentence, 'où' is used to introduce a relative clause that specifies the type of place being referred to. It connects the idea of 'un endroit' (a place) with the action of people enjoying themselves, indicating the location where this happens.",
+    "examples": [
+      "C'est un restaurant où on mange très bien.",
+      "Voici l'endroit où j'ai rencontré mon ami."
+    ]
+  },
+  "par": {
+    "lemma": "par",
+    "pos": "preposition",
+    "level": "A2",
+    "translation": "for example",
+    "in_context": "In this sentence, 'par' is used to introduce an example of the activities available at the market, specifically workshops. It is a common construction in French to use 'par exemple' to clarify or provide specific instances related to a general statement.",
+    "examples": [
+      "Il y a plusieurs fruits de saison, par exemple, des fraises et des cerises.",
+      "Nous avons visité plusieurs musées, par exemple, le Louvre et le musée d'Orsay."
+    ]
+  },
+  "parc": {
+    "lemma": "parc",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "park",
+    "in_context": "In this sentence, 'parc' refers specifically to a public space designed for recreation and leisure activities, which is a common context for this noun. It is used in the masculine singular form as it is the subject of the sentence, describing a popular location in Montreal.",
+    "examples": [
+      "Le parc est plein de fleurs au printemps.",
+      "Nous avons organisé un pique-nique dans le parc."
+    ]
+  },
+  "parce": {
+    "lemma": "parce",
+    "pos": "conjunction",
+    "level": "A2",
+    "translation": "because",
+    "in_context": "In this sentence, 'parce' introduces a reason for having to wait at the station, linking the two clauses. It is used to explain why the speaker experienced a delay, which is a common usage for this conjunction in French.",
+    "examples": [
+      "Je suis en retard parce que j'ai raté le bus.",
+      "Elle ne vient pas à la fête parce qu'elle est malade."
+    ]
+  },
+  "parfait": {
+    "lemma": "parfait",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "perfect",
+    "in_context": "In this sentence, 'parfait' describes the place as ideal for photography, indicating that it meets all the necessary qualities for taking beautiful pictures. The adjective agrees in gender and number with 'endroit', which is masculine singular, hence 'parfait' is used in its masculine singular form.",
+    "examples": [
+      "C'est un restaurant parfait pour un rendez-vous.",
+      "Cette robe est parfaite pour l'été."
+    ]
+  },
+  "parfois": {
+    "lemma": "parfois",
+    "pos": "adverb",
+    "level": "A2",
+    "translation": "sometimes",
+    "in_context": "In this sentence, 'parfois' is used to indicate that finding a seat in the metro is not always easy, but it happens occasionally. The adverb modifies the verb 'est' to express frequency, showing that this situation can vary.",
+    "examples": [
+      "Parfois, je vais au cinéma le week-end.",
+      "Il pleut parfois en été."
+    ]
+  },
+  "parler": {
+    "lemma": "parler",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "to talk",
+    "in_context": "In this sentence, 'parler' is used in the infinitive form after the verb 'aiment', which requires an infinitive to express what the sellers enjoy doing. This construction is common in French, where verbs of liking are often followed by another verb in the infinitive.",
+    "examples": [
+      "Les enfants aiment parler de leurs jeux préférés.",
+      "J'adore parler français avec mes amis."
+    ]
+  },
+  "particulièrement": {
+    "lemma": "particulièrement",
+    "pos": "adverb",
+    "level": "B1",
+    "translation": "particularly",
+    "in_context": "In this sentence, \"particulièrement\" is used to emphasize how lively the market is during autumn, indicating that it is not just lively, but especially so during this season. This adverb modifies the adjective \"animé\" (lively), enhancing the description of the market's atmosphere.",
+    "examples": [
+      "Ce plat est particulièrement délicieux en été.",
+      "Elle est particulièrement talentueuse en peinture."
+    ]
+  },
+  "passagers": {
+    "lemma": "passager",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "passenger",
+    "in_context": "In this sentence, 'passagers' refers to the people using the metro, highlighting the social etiquette of allowing passengers to exit before entering. The plural form is used here to indicate that there are multiple individuals involved in this action.",
+    "examples": [
+      "Les passagers doivent montrer leur ticket avant d'entrer dans le train.",
+      "Les passagers ont été informés du retard du vol."
+    ]
+  },
+  "passé": {
+    "lemma": "passer",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "spent",
+    "in_context": "In this sentence, 'passé' is the past participle of the verb 'passer' and is used with the auxiliary verb 'avoir' to form the passé composé, indicating a completed action in the past. It agrees with the feminine singular subject 'la journée', hence it takes the form 'passée'.",
+    "examples": [
+      "Hier, j'ai passé une excellente soirée avec mes amis.",
+      "Elle a passé ses vacances à la plage."
+    ]
+  },
+  "passer": {
+    "lemma": "passer",
+    "pos": "verb · trans.",
+    "level": "B1",
+    "translation": "to spend",
+    "in_context": "In this sentence, 'passer' is used in the context of spending time, specifically referring to enjoying a good time with family at the market. The infinitive form is appropriate here as it follows the structure 'pour + infinitive' which indicates purpose.",
+    "examples": [
+      "Nous avons passé une belle journée à la plage.",
+      "Ils passent souvent leurs vacances à la montagne."
+    ]
+  },
+  "paysages": {
+    "lemma": "paysage",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "landscapes",
+    "in_context": "In this sentence, 'paysages' is used in the plural form to refer to the various beautiful views or landscapes that can be seen from Mont-Royal, particularly at sunset. The plural form is appropriate here as it suggests multiple scenic views rather than just one.",
+    "examples": [
+      "Les paysages de la montagne sont époustouflants au printemps.",
+      "J'adore photographier les paysages de la campagne française."
+    ]
+  },
+  "personnes": {
+    "lemma": "personne",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "people",
+    "in_context": "In this sentence, 'personnes' is used to refer to elderly people or pregnant women who are given priority in the metro. The plural form 'personnes' agrees in number with the context of referring to multiple individuals in a respectful manner.",
+    "examples": [
+      "Les personnes qui attendent à l'arrêt de bus sont impatientes.",
+      "Il y a beaucoup de personnes intéressées par ce projet."
+    ]
+  },
+  "peu": {
+    "lemma": "peu",
+    "pos": "adverb",
+    "level": "A2",
+    "translation": "a little",
+    "in_context": "In this sentence, 'un peu' means 'a little' and is used to indicate a small amount of time that the speaker had to wait. It is a common expression to describe a short duration in everyday conversation.",
+    "examples": [
+      "J'ai attendu un peu avant de partir.",
+      "Il fait un peu froid aujourd'hui."
+    ]
+  },
+  "peut": {
+    "lemma": "pouvoir",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "can",
+    "in_context": "In this sentence, 'on peut' is used to express the possibility of doing activities in the park, specifically skiing or snowshoeing. The verb 'pouvoir' is conjugated in the present tense for the pronoun 'on', which is often used in French to refer to people in general.",
+    "examples": [
+      "On peut aller au cinéma ce soir.",
+      "Les étudiants peuvent étudier à la bibliothèque."
+    ]
+  },
+  "peuvent": {
+    "lemma": "pouvoir",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "can",
+    "in_context": "In this sentence, \"peuvent\" is the third person plural form of the verb \"pouvoir\" (to be able to/can), indicating that the temperatures have the ability to drop to -20 degrees. It is used in the present tense to describe a general fact about winter temperatures in Montréal.",
+    "examples": [
+      "Les enfants peuvent jouer dehors en été.",
+      "Les étudiants peuvent choisir leurs cours en ligne."
+    ]
+  },
+  "photographie": {
+    "lemma": "photographie",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "photography",
+    "in_context": "In this sentence, 'photographie' is used as a noun to refer to the activity of taking photographs, highlighting that Mont-Royal is an ideal location for this activity due to its beautiful landscapes. The feminine form 'la photographie' is used here to indicate the general concept of photography, which is a common interest for visitors.",
+    "examples": [
+      "J'aime faire de la photographie pendant mes vacances.",
+      "Elle a pris un cours de photographie pour améliorer ses compétences."
+    ]
+  },
+  "place": {
+    "lemma": "place",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "seat",
+    "in_context": "In this sentence, 'place' refers specifically to a seat on the metro. The feminine form 'place' is used here to indicate that it is a noun representing a physical location where one can sit, which is relevant in the context of crowded public transport.",
+    "examples": [
+      "Il n'y avait pas de place dans le bus ce matin.",
+      "J'ai trouvé une place près de la fenêtre au café."
+    ]
+  },
+  "plus": {
+    "lemma": "plus",
+    "pos": "adverb",
+    "level": "A2",
+    "translation": "more",
+    "in_context": "In this sentence, 'plus' is used to indicate the comparative degree of the adjective 'grand' (big), meaning that the market is one of the 'biggest' in Montreal. It shows a comparison between this market and others, emphasizing its size.",
+    "examples": [
+      "Ce gâteau est plus délicieux que l'autre.",
+      "Il y a plus de personnes dans ce parc aujourd'hui."
+    ]
+  },
+  "polis": {
+    "lemma": "poli",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "polite",
+    "in_context": "In this sentence, 'polis' is used to describe the behavior of people in the metro, indicating that they are courteous and considerate towards others. The word is in plural form to agree with 'les gens', which is also plural, showing that it describes multiple individuals.",
+    "examples": [
+      "Les enfants doivent être polis avec leurs enseignants.",
+      "Dans un restaurant, il est important d'être poli avec le personnel."
+    ]
+  },
+  "pommes": {
+    "lemma": "pomme",
+    "pos": "noun · fem.",
+    "level": "A1",
+    "translation": "apples",
+    "in_context": "In this sentence, 'pommes' is used in the plural form to refer to multiple apples, which fits the context of a market filled with seasonal produce. The noun is feminine in gender, and its plural form 'pommes' agrees with the other items listed, such as 'citrouilles' and 'courges'.",
+    "examples": [
+      "J'aime manger des pommes au goûter.",
+      "Les pommes de ce verger sont délicieuses."
+    ]
+  },
+  "populaire": {
+    "lemma": "populaire",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "popular",
+    "in_context": "The word 'populaire' describes the park as being well-liked or favored by many people, indicating its appeal and frequent visitation. It is used in the masculine singular form to agree with 'parc', which is also masculine singular.",
+    "examples": [
+      "Ce restaurant est très populaire parmi les étudiants.",
+      "Les festivals de musique sont populaires en été."
+    ]
+  },
+  "portent": {
+    "lemma": "porter",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "to wear",
+    "in_context": "In this sentence, 'portent' is the third person plural form of the verb 'porter', meaning 'to wear'. It is used to describe what many Montrealers typically wear during the cold winter months, indicating a habitual action.",
+    "examples": [
+      "Les enfants portent des gants et des écharpes en hiver.",
+      "Elle porte toujours une robe élégante pour les soirées."
+    ]
+  },
+  "pour": {
+    "lemma": "pour",
+    "pos": "phrase",
+    "level": "A1",
+    "translation": "to",
+    "in_context": "In this context, 'pour' is used to indicate the purpose of taking the metro, which is to get to work. It introduces an infinitive verb ('aller') that explains the action intended by the subject.",
+    "examples": [
+      "Je vais au marché pour acheter des fruits.",
+      "Elle étudie pour réussir ses examens."
+    ]
+  },
+  "pratique": {
+    "lemma": "pratique",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "convenient",
+    "in_context": "In this sentence, 'pratique' describes the metro as a convenient means of transportation during the cold winter months in Montreal. It is used in its masculine singular form to agree with 'c'est', referring to the metro, which is implicitly understood as a masculine noun.",
+    "examples": [
+      "Le bus est pratique pour aller au centre-ville.",
+      "Cette application est très pratique pour organiser mes tâches."
+    ]
+  },
+  "prendre": {
+    "lemma": "prendre",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "to take",
+    "in_context": "In this sentence, 'pris' is the past participle of the verb 'prendre' and is used in the passé composé tense, which indicates a completed action in the past. The auxiliary verb 'avoir' is implied here, as it is commonly used with 'prendre' to form this tense.",
+    "examples": [
+      "J'ai pris un café avant de partir.",
+      "Elle prend toujours le bus pour aller à l'école."
+    ]
+  },
+  "préparer": {
+    "lemma": "préparer",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "to prepare",
+    "in_context": "In this sentence, 'préparer' is used in the infinitive form as part of the phrase 'apprendre à préparer,' indicating the action of learning how to prepare recipes. This construction is common in French to express the purpose of learning something.",
+    "examples": [
+      "J'aime préparer des plats pour mes amis.",
+      "Elle va préparer un gâteau pour l'anniversaire de son frère."
+    ]
+  },
+  "près": {
+    "lemma": "près",
+    "pos": "adverb",
+    "level": "A2",
+    "translation": "near",
+    "in_context": "In this sentence, 'près' is used to indicate the proximity of the café to the 'lac aux Castors'. It functions as an adverb to describe the location of the café in relation to the lake, which is a common usage in French to express closeness.",
+    "examples": [
+      "Il y a un restaurant près de chez moi.",
+      "Nous avons trouvé un hôtel près de la plage."
+    ]
+  },
+  "pris": {
+    "lemma": "prendre",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "took",
+    "in_context": "In this sentence, 'pris' is the past participle of the verb 'prendre' (to take), used here in the passé composé tense to indicate that the action of taking the metro happened in the past. It is combined with the auxiliary verb 'avoir' (j'ai) to form the past tense.",
+    "examples": [
+      "Hier, j'ai pris un café avant de partir.",
+      "Elle a pris le bus pour aller à l'école."
+    ]
+  },
+  "produits": {
+    "lemma": "produit",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "fresh items",
+    "in_context": "In this context, 'produits' refers to fresh and local items available for purchase at the market, emphasizing the quality and origin of the goods. The plural form is used because it encompasses various types of items, such as fruits, vegetables, and flowers, that people can buy at the market.",
+    "examples": [
+      "J'aime acheter des produits bio au supermarché.",
+      "Les produits laitiers sont très importants dans notre alimentation."
+    ]
+  },
+  "promenade": {
+    "lemma": "promenade",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "walk",
+    "in_context": "In this sentence, 'promenade' refers to a leisurely walk taken to enjoy the scenery, which fits the context of spending a pleasant day outdoors with family. The feminine form 'la promenade' is used here to indicate that it is a noun referring to the activity of walking.",
+    "examples": [
+      "Nous avons fait une promenade au parc dimanche dernier.",
+      "Elle aime se promener le long de la rivière."
+    ]
+  },
+  "promenaient": {
+    "lemma": "promener",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "were walking",
+    "in_context": "In this sentence, 'se promenaient' is the imperfect tense of the reflexive verb 'se promener', indicating an ongoing action in the past. It describes couples who were walking together, emphasizing the habitual nature of the action during that day.",
+    "examples": [
+      "Les enfants se promenaient dans le parc après l'école.",
+      "Nous nous promenions le long de la plage au coucher du soleil."
+    ]
+  },
+  "protéger": {
+    "lemma": "protéger",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "to protect",
+    "in_context": "In this sentence, 'protéger' is used in the infinitive form to express the purpose of wearing thick coats and boots, which is to protect oneself from the cold. This construction is common in French when explaining reasons or purposes for actions.",
+    "examples": [
+      "Il faut porter un chapeau pour protéger sa tête du soleil.",
+      "Les parents protègent leurs enfants des dangers."
+    ]
+  },
+  "quand": {
+    "lemma": "quand",
+    "pos": "adverb",
+    "level": "A2",
+    "translation": "when",
+    "in_context": "In this sentence, 'quand' is used to introduce a temporal clause, indicating a specific time or condition under which the action occurs. It connects the action of exiting the station with the experience of discovering the snowy city, emphasizing the timing of this experience.",
+    "examples": [
+      "Quand il pleut, je prends un parapluie.",
+      "Je vais au cinéma quand j'ai du temps libre."
+    ]
+  },
+  "quelques": {
+    "lemma": "quelques",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "some",
+    "in_context": "In this sentence, 'quelques' is used to indicate an indefinite quantity of flowers that were bought, suggesting that it was not a large number but rather a few. This usage is typical for expressing a small, unspecified amount in French.",
+    "examples": [
+      "J'ai acheté quelques livres à la librairie.",
+      "Il y a quelques enfants dans le parc."
+    ]
+  },
+  "qui": {
+    "lemma": "qui",
+    "pos": "pronoun",
+    "level": "A2",
+    "translation": "who",
+    "in_context": "In this sentence, 'qui' is used as a relative pronoun to introduce a clause that provides more information about 'tous ceux', meaning 'all those'. It connects the main clause to the relative clause, indicating that the people being referred to are the ones who visit Montréal.",
+    "examples": [
+      "Il y a des amis qui viennent ce soir.",
+      "C'est une personne qui aime voyager."
+    ]
+  },
+  "rame": {
+    "lemma": "rame",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "train car",
+    "in_context": "In this context, 'rame' refers to a train car of the metro system. It is used in the feminine form 'la rame' to indicate a specific compartment of the metro where passengers sit, emphasizing comfort during the ride.",
+    "examples": [
+      "J'ai pris la rame pour aller au centre-ville.",
+      "La rame était pleine de passagers ce matin."
+    ]
+  },
+  "rapide": {
+    "lemma": "rapide",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "fast",
+    "in_context": "In this sentence, 'rapide' describes the metro as a means of transportation that allows people to travel quickly in the city. It agrees in gender and number with 'c'est', which is a neutral expression referring to the metro, thus using the masculine form of the adjective.",
+    "examples": [
+      "Le train est rapide et arrive à l'heure.",
+      "Elle a besoin d'une solution rapide pour son problème."
+    ]
+  },
+  "raquette": {
+    "lemma": "raquette",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "snowshoeing",
+    "in_context": "In this sentence, 'raquette' refers to the activity of snowshoeing, which is a popular winter sport in snowy areas like Mont-Royal. The use of 'de la' indicates that it is an activity one can do, similar to 'faire du ski de fond' (cross-country skiing).",
+    "examples": [
+      "J'aime faire de la raquette dans les montagnes en hiver.",
+      "Nous avons loué des raquettes pour explorer le parc enneigé."
+    ]
+  },
+  "recettes": {
+    "lemma": "recette",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "recipes",
+    "in_context": "In this sentence, 'recettes' refers to specific recipes that can be prepared using seasonal products, highlighting the market's focus on local and fresh ingredients. The feminine singular form 'recette' is used in the plural to indicate multiple recipes being taught in the cooking workshops.",
+    "examples": [
+      "J'ai trouvé une recette délicieuse pour le gâteau au chocolat.",
+      "Elle a partagé sa recette de soupe aux légumes avec moi."
+    ]
+  },
+  "remplis": {
+    "lemma": "remplir",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "filled",
+    "in_context": "In this sentence, 'remplis' is the second person plural form of the verb 'remplir' in the present tense, indicating that the stalls are currently filled with various items. The subject 'les étals' (the stalls) is plural, which matches the plural verb form 'remplis'.",
+    "examples": [
+      "Les paniers sont remplis de fruits frais.",
+      "Les étagères sont remplies de livres intéressants."
+    ]
+  },
+  "rencontrer": {
+    "lemma": "rencontrer",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "to meet",
+    "in_context": "In this sentence, 'rencontrer' is used in the infinitive form to express the idea of meeting people as a general action or experience that occurs when taking the metro. It is not conjugated because it follows the phrase 'une bonne façon de', which requires the infinitive.",
+    "examples": [
+      "J'aime rencontrer de nouvelles personnes lors de mes voyages.",
+      "Il est important de rencontrer ses voisins pour créer des liens."
+    ]
+  },
+  "reste": {
+    "lemma": "rester",
+    "pos": "verb · intrans.",
+    "level": "A2",
+    "translation": "to stay",
+    "in_context": "In this sentence, 'reste' is used in the expression 'on reste au chaud', meaning 'we stay warm'. The verb is conjugated in the present tense for the pronoun 'on', which is commonly used in French to refer to people in general or to indicate an unspecified subject.",
+    "examples": [
+      "Il fait froid dehors, mais à l'intérieur, on reste au chaud.",
+      "Après le dîner, nous restons un moment pour discuter."
+    ]
+  },
+  "rouge": {
+    "lemma": "rouge",
+    "pos": "adjective",
+    "level": "A1",
+    "translation": "red",
+    "in_context": "In this sentence, 'rouge' is used as an adjective to describe the colors of the items at the market, specifically apples and pumpkins. It is in its base form and agrees in gender and number with the plural noun 'couleurs' (colors), which is why it is listed among other colors without any additional agreement markers.",
+    "examples": [
+      "Les fleurs sont rouges et jaunes dans le jardin.",
+      "Elle porte une robe rouge pour la fête."
+    ]
+  },
+  "saison": {
+    "lemma": "saison",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "season",
+    "in_context": "In this sentence, 'saison' refers specifically to the time of year when certain products are available, highlighting the seasonal aspect of the market's offerings. It is used in the context of discussing activities and recipes that are relevant to the autumn season, indicating the freshness and availability of local produce during that time.",
+    "examples": [
+      "Les fruits de saison sont souvent moins chers au marché.",
+      "Nous avons décidé de partir en vacances pendant la saison estivale."
+    ]
+  },
+  "samedi": {
+    "lemma": "samedi",
+    "pos": "noun · masc.",
+    "level": "A1",
+    "translation": "Saturday",
+    "in_context": "In this sentence, 'Samedi' is used to specify the day of the week when the events took place. It is in the masculine singular form, which is standard for days of the week in French, and it indicates that the speaker is referring to the previous Saturday.",
+    "examples": [
+      "Samedi prochain, nous allons au cinéma.",
+      "Il fait beau ce samedi, parfait pour une sortie."
+    ]
+  },
+  "se": {
+    "lemma": "se",
+    "pos": "pronoun · reflexive",
+    "level": "A2",
+    "translation": "to (oneself)",
+    "in_context": "In this sentence, 'se' is used as a reflexive pronoun that indicates that the action of protecting is directed towards oneself. It is part of the verb phrase 'se protéger', which means 'to protect oneself'. This construction is common in French to express actions that individuals do for their own benefit.",
+    "examples": [
+      "Il faut se laver les mains avant de manger.",
+      "Elle a décidé de se reposer après une longue journée."
+    ]
+  },
+  "ski": {
+    "lemma": "ski",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "skiing",
+    "in_context": "In this sentence, 'ski' is used in the phrase 'faire du ski de fond', which means 'to go cross-country skiing'. The phrase 'faire du' is a common construction in French used to indicate engaging in a sport or activity, and 'ski' is in its base form as a noun, referring specifically to the sport.",
+    "examples": [
+      "J'adore faire du ski en hiver.",
+      "Nous allons faire du ski à la montagne ce week-end."
+    ]
+  },
+  "soir": {
+    "lemma": "soir",
+    "pos": "noun · masc.",
+    "level": "A1",
+    "translation": "evening",
+    "in_context": "In this sentence, 'soir' refers to the time of day when people are commuting home after work. It is used in the context of describing the busy times in the metro, indicating that there is a lot of people both in the morning and in the evening.",
+    "examples": [
+      "Je vais au cinéma ce soir.",
+      "Nous avons un rendez-vous ce soir."
+    ]
+  },
+  "soleil": {
+    "lemma": "soleil",
+    "pos": "noun · masc.",
+    "level": "A1",
+    "translation": "sunset",
+    "in_context": "In this sentence, 'coucher du soleil' refers to the time of day when the sun sets, creating beautiful views that are ideal for photography. The phrase 'coucher du soleil' is a common expression in French, where 'coucher' means 'to set' and 'soleil' means 'sun', forming a fixed expression that describes this specific moment in the day.",
+    "examples": [
+      "Nous avons regardé le coucher du soleil sur la plage.",
+      "Le coucher du soleil était magnifique ce soir."
+    ]
+  },
+  "sont": {
+    "lemma": "être",
+    "pos": "verb · intrans.",
+    "level": "A1",
+    "translation": "are",
+    "in_context": "In this sentence, 'sont' is the third person plural form of the verb 'être', used to describe the general behavior of people in the metro. It agrees with the plural subject 'les gens', indicating that the statement is about multiple individuals.",
+    "examples": [
+      "Les enfants sont heureux de jouer dehors.",
+      "Les fleurs sont belles au printemps."
+    ]
+  },
+  "sophie": {
+    "lemma": "sophie",
+    "pos": "noun · fem.",
+    "level": "A1",
+    "translation": "Sophie",
+    "in_context": "In this sentence, 'Sophie' is used as a proper noun to refer to the speaker's friend. It is capitalized because it is a name, and it does not require any agreement or conjugation.",
+    "examples": [
+      "J'ai rencontré Sophie au café hier.",
+      "Sophie adore les fleurs et les plantes."
+    ]
+  },
+  "sort": {
+    "lemma": "sortir",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "to go out",
+    "in_context": "In this sentence, 'sortir' is used in the infinitive form after the expression 'quand on', indicating an action that happens when one leaves the station. This construction is common in French to describe conditions or situations.",
+    "examples": [
+      "Il est temps de sortir avec des amis.",
+      "Nous sortons souvent le week-end."
+    ]
+  },
+  "sortir": {
+    "lemma": "sortir",
+    "pos": "verb · intrans.",
+    "level": "A2",
+    "translation": "to go out",
+    "in_context": "In this sentence, 'sortir' is used in the context of exiting the metro station. The verb is in the infinitive form because it follows the structure 'quand on sort', which translates to 'when one goes out'. This construction indicates a general action that happens regularly, hence the use of the infinitive.",
+    "examples": [
+      "Il faut sortir avant que le métro ne ferme.",
+      "Nous allons sortir ce soir pour dîner."
+    ]
+  },
+  "sous": {
+    "lemma": "sous",
+    "pos": "preposition",
+    "level": "A1",
+    "translation": "under",
+    "in_context": "In this sentence, 'sous' is used to indicate the position of the city being covered by snow, emphasizing the visual image of the snow lying underneath or on top of the city. It is a common preposition in French used to describe location.",
+    "examples": [
+      "Le chat est sous la table.",
+      "Les enfants jouent sous les arbres."
+    ]
+  },
+  "souvent": {
+    "lemma": "souvent",
+    "pos": "adverb",
+    "level": "A2",
+    "translation": "often",
+    "in_context": "In this sentence, 'souvent' is used to describe how frequently Montrealers wear thick coats and boots during winter. It modifies the verb 'portent' to indicate the regularity of this action in the context of cold weather.",
+    "examples": [
+      "Il pleut souvent en automne.",
+      "Nous allons souvent au cinéma le week-end."
+    ]
+  },
+  "spéciales": {
+    "lemma": "spécial",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "special",
+    "in_context": "In this sentence, 'spéciales' is used to describe activities that are unique or specific to the autumn season at the market. The feminine plural form agrees with 'activités', which is also feminine plural, highlighting that these activities are not regular but rather unique to this time of year.",
+    "examples": [
+      "Les offres spéciales du magasin attirent beaucoup de clients.",
+      "Nous avons organisé une soirée spéciale pour célébrer son anniversaire."
+    ]
+  },
+  "spectacles": {
+    "lemma": "spectacle",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "shows",
+    "in_context": "In this sentence, 'spectacles' refers to music shows or performances that take place at the market, highlighting the entertainment aspect of the venue. The use of the plural form indicates that there are multiple performances available for visitors to enjoy.",
+    "examples": [
+      "Le festival propose plusieurs spectacles de danse chaque été.",
+      "Nous avons assisté à des spectacles de théâtre dans le parc."
+    ]
+  },
+  "sport": {
+    "lemma": "sport",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "sport",
+    "in_context": "In this sentence, 'sport' is used in the general sense to refer to physical activities that people enjoy doing, particularly in a recreational context. It is a masculine singular noun, and here it is part of the phrase 'faire du sport', which means 'to play sports' or 'to do sports'.",
+    "examples": [
+      "J'aime faire du sport le week-end.",
+      "Il pratique un sport différent chaque saison."
+    ]
+  },
+  "station": {
+    "lemma": "station",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "station",
+    "in_context": "In this sentence, 'station' refers specifically to a subway station where people wait for the metro. It is used in the feminine form 'la station' to agree with the gender of the noun in French, which is important for grammatical accuracy.",
+    "examples": [
+      "J'attends mon ami à la station de bus.",
+      "La station de train est très fréquentée le matin."
+    ]
+  },
+  "sur": {
+    "lemma": "sur",
+    "pos": "preposition",
+    "level": "A1",
+    "translation": "on",
+    "in_context": "In this sentence, 'sur' is used to indicate the location where the speaker spent the day, specifically 'on Mount Royal'. It shows a physical position on a surface or place, which is a common usage of the preposition in French.",
+    "examples": [
+      "Il y a un chat sur le toit.",
+      "Les livres sont sur la table."
+    ]
+  },
+  "surtout": {
+    "lemma": "surtout",
+    "pos": "adverb",
+    "level": "A2",
+    "translation": "especially",
+    "in_context": "In this sentence, 'surtout' is used to emphasize the beauty of the landscapes at sunset, indicating that this time of day is particularly noteworthy for photography. It highlights the exceptional quality of the scenery during that specific moment.",
+    "examples": [
+      "J'aime les fruits, surtout les fraises.",
+      "Il est très talentueux, surtout en peinture."
+    ]
+  },
+  "sympathiques": {
+    "lemma": "sympathique",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "friendly",
+    "in_context": "In this sentence, 'sympathiques' describes the sellers at the market, indicating that they are friendly and approachable. The word is in its plural form to agree with 'vendeurs', which is also plural.",
+    "examples": [
+      "Les voisins sont très sympathiques et toujours prêts à aider.",
+      "J'aime aller dans ce café parce que le personnel est sympathique."
+    ]
+  },
+  "tartes": {
+    "lemma": "tarte",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "pies",
+    "in_context": "In this sentence, 'tartes' is used in the plural form to refer to multiple types of pies, specifically apple pies, which are a popular seasonal treat at the market. The feminine singular noun 'tarte' is made plural by adding 's', and it fits the context of discussing food items available at the market.",
+    "examples": [
+      "J'adore les tartes aux fruits en été.",
+      "Elle a préparé une tarte au chocolat pour le dessert."
+    ]
+  },
+  "températures": {
+    "lemma": "température",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "temperatures",
+    "in_context": "The word 'températures' is used in the plural form to refer to the varying degrees of cold in winter, specifically highlighting that they can drop to very low levels, which is a common concern in Montreal's winter climate. The context emphasizes the extreme cold, making the plural form appropriate to indicate the range of temperatures experienced.",
+    "examples": [
+      "Les températures varient beaucoup en été.",
+      "Les températures sont plus élevées dans le sud du pays."
+    ]
+  },
+  "tous": {
+    "lemma": "tout",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "from all backgrounds",
+    "in_context": "In this sentence, 'tous' is used to describe 'les gens' (the people) and indicates that they come from various backgrounds. It is in the plural form to agree with 'gens', which is also plural.",
+    "examples": [
+      "Les étudiants viennent de tous les pays.",
+      "Il y a des spécialités culinaires de tous les coins du monde."
+    ]
+  },
+  "toute": {
+    "lemma": "tout",
+    "pos": "adjective",
+    "level": "A2",
+    "translation": "all",
+    "in_context": "In this sentence, 'toute' agrees with the feminine noun 'ville' (city), indicating that the entire city is covered in snow. The adjective 'toute' is used to emphasize the completeness of the description, highlighting the beauty of the snowy landscape.",
+    "examples": [
+      "La maison est toute blanche en hiver.",
+      "Elle a lu toute la journée."
+    ]
+  },
+  "travail": {
+    "lemma": "travail",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "work",
+    "in_context": "In this sentence, 'travail' refers to the place where the speaker goes to work, indicating a specific context of commuting. It is used in the expression 'aller au travail,' which is a common phrase in French to mean going to one's job or workplace.",
+    "examples": [
+      "Je vais au travail tous les jours en bus.",
+      "Elle a beaucoup de travail à faire cette semaine."
+    ]
+  },
+  "très": {
+    "lemma": "très",
+    "pos": "adverb",
+    "level": "A1",
+    "translation": "very",
+    "in_context": "In this sentence, 'très' is used to intensify the adjective 'froid' (cold), indicating that the winter in Montreal is not just cold, but very cold. This usage is common in French to emphasize the degree of an adjective.",
+    "examples": [
+      "Il fait très chaud aujourd'hui.",
+      "Cette robe est très belle."
+    ]
+  },
+  "trouver": {
+    "lemma": "trouver",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "to find",
+    "in_context": "In this sentence, 'trouver' is used in the infinitive form following the phrase 'il est difficile de', which is a common construction in French to express difficulty in doing something. The infinitive 'trouver' indicates the action of finding a seat, which is the subject of the difficulty mentioned.",
+    "examples": [
+      "Il est facile de trouver un bon restaurant à Paris.",
+      "J'ai du mal à trouver mes clés ce matin."
+    ]
+  },
+  "un": {
+    "lemma": "un",
+    "pos": "noun · masc.",
+    "level": "A1",
+    "translation": "a (one)",
+    "in_context": "In this sentence, 'un' is used as an indefinite article to refer to a non-specific quantity of people ('beaucoup de monde'), indicating that there were many people at the station without specifying how many. This usage is typical in French to denote an unspecified singular noun, which in this case is 'monde' (world/people).",
+    "examples": [
+      "Il y a un chat dans le jardin.",
+      "J'ai acheté un livre hier."
+    ]
+  },
+  "une": {
+    "lemma": "une",
+    "pos": "noun · fem.",
+    "level": "A1",
+    "translation": "a (feminine)",
+    "in_context": "In this sentence, 'une' is used as the feminine singular indefinite article before 'expérience', indicating that it refers to one non-specific experience. The article agrees in gender and number with the noun it modifies, which is feminine.",
+    "examples": [
+      "J'ai acheté une nouvelle robe.",
+      "C'est une belle journée aujourd'hui."
+    ]
+  },
+  "unique": {
+    "lemma": "unique",
+    "pos": "adjective",
+    "level": "B1",
+    "translation": "unique",
+    "in_context": "In this sentence, 'unique' describes the experience of taking the metro in winter, emphasizing that it is a special or one-of-a-kind experience due to the snowy cityscape. The adjective agrees in gender and number with 'expérience', which is feminine singular in French.",
+    "examples": [
+      "C'est une occasion unique de visiter ce musée.",
+      "Cette recette est unique et délicieuse."
+    ]
+  },
+  "utilisent": {
+    "lemma": "utiliser",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "use",
+    "in_context": "In this sentence, 'utilisent' is the third person plural present tense form of the verb 'utiliser', indicating that many people (subject) are currently using the metro as a means of transportation. The verb is conjugated to agree with the plural subject 'beaucoup de gens'.",
+    "examples": [
+      "Ils utilisent souvent leur voiture pour aller au travail.",
+      "Les étudiants utilisent des ordinateurs pour faire leurs devoirs."
+    ]
+  },
+  "vendeurs": {
+    "lemma": "vendeur",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "vendors",
+    "in_context": "In this sentence, 'vendeurs' refers to the people selling products at the market. It is in the plural form to indicate that there are multiple vendors, and it agrees in gender and number with the masculine noun 'vendeur.'",
+    "examples": [
+      "Les vendeurs au marché sont toujours très accueillants.",
+      "J'ai acheté des légumes frais chez les vendeurs du marché."
+    ]
+  },
+  "viennent": {
+    "lemma": "venir",
+    "pos": "verb · intrans.",
+    "level": "A2",
+    "translation": "come",
+    "in_context": "In this sentence, 'viennent' is the third person plural form of the verb 'venir' in the present tense, indicating that 'the people' (les gens) are currently coming to the market. The use of the present tense emphasizes the habitual action of families visiting the market, especially during autumn.",
+    "examples": [
+      "Les enfants viennent jouer dans le parc.",
+      "Mes amis viennent souvent chez moi le week-end."
+    ]
+  },
+  "ville": {
+    "lemma": "ville",
+    "pos": "noun · fem.",
+    "level": "A1",
+    "translation": "city",
+    "in_context": "In this sentence, 'ville' refers to the urban area of Montreal, emphasizing the environment where people live and interact, especially in the context of winter and public transport. It is used in the phrase 'la ville toute blanche sous la neige,' illustrating the picturesque scene of the city covered in snow.",
+    "examples": [
+      "J'aime me promener dans la ville le week-end.",
+      "La ville est très animée pendant les fêtes."
+    ]
+  },
+  "visité": {
+    "lemma": "visiter",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "visited",
+    "in_context": "In this sentence, 'visité' is the past participle form of the verb 'visiter', used here with the auxiliary verb 'avoir' to indicate a completed action in the past (passé composé). The subject 'j' (I) indicates that the speaker is talking about their own experience visiting the market.",
+    "examples": [
+      "Hier, j'ai visité un musée intéressant.",
+      "Nous avons visité Paris l'été dernier."
+    ]
+  },
+  "visitent": {
+    "lemma": "visiter",
+    "pos": "verb · trans.",
+    "level": "A2",
+    "translation": "visit",
+    "in_context": "In this sentence, 'visitent' is the third person plural form of the verb 'visiter' in the present tense, indicating that 'those who visit' are the subject of the action. It is used here to describe people who come to Montreal, emphasizing the park's popularity among visitors.",
+    "examples": [
+      "Les touristes visitent le musée chaque année.",
+      "Nous visitons souvent nos grands-parents le week-end."
+    ]
+  },
+  "visiteurs": {
+    "lemma": "visiteur",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "visitors",
+    "in_context": "In this sentence, 'visiteurs' refers to the people who come to the market to enjoy the activities and entertainment offered. It is used in the plural form to indicate multiple individuals participating in the events at the market.",
+    "examples": [
+      "Les visiteurs du musée ont été impressionnés par l'exposition.",
+      "Les visiteurs de la foire ont pu déguster des plats locaux."
+    ]
+  },
+  "vue": {
+    "lemma": "vue",
+    "pos": "noun · fem.",
+    "level": "A2",
+    "translation": "view",
+    "in_context": "In this sentence, 'vue' refers to the visual perspective or scenery that one can admire from a specific location, in this case, from Mont-Royal overlooking the city. The use of the feminine form 'la vue' is appropriate as it is a feminine noun in French, and it fits the context of appreciating the scenery during a walk.",
+    "examples": [
+      "Nous avons une belle vue depuis notre balcon.",
+      "La vue sur la mer est incroyable depuis cet hôtel."
+    ]
+  },
+  "week-end": {
+    "lemma": "week-end",
+    "pos": "noun · masc.",
+    "level": "A2",
+    "translation": "last weekend",
+    "in_context": "In this sentence, 'le week-end dernier' refers specifically to the last weekend, indicating when the speaker visited the market. The noun 'week-end' is used in the masculine singular form and is preceded by the definite article 'le' to specify which weekend is being discussed.",
+    "examples": [
+      "Le week-end prochain, nous allons au cinéma.",
+      "J'adore me reposer le week-end."
+    ]
+  }
+}

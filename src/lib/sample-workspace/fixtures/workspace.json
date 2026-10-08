@@ -1,6 +1,2483 @@
 {
   "version": 1,
-  "exportedAt": "1970-01-01T00:00:00.000Z",
-  "shared": { "vocabularyLookups": [] },
-  "tables": {}
+  "exportedAt": "2026-10-08T19:15:16.799Z",
+  "shared": {
+    "vocabularyLookups": [
+      {
+        "lemma": "étal",
+        "surface": "étals"
+      },
+      {
+        "lemma": "citrouille",
+        "surface": "citrouilles"
+      },
+      {
+        "lemma": "courge",
+        "surface": "courges"
+      },
+      {
+        "lemma": "goûter",
+        "surface": "goûté"
+      },
+      {
+        "lemma": "atelier",
+        "surface": "ateliers"
+      },
+      {
+        "lemma": "déplacer",
+        "surface": "déplacer"
+      },
+      {
+        "lemma": "rame",
+        "surface": "rame"
+      },
+      {
+        "lemma": "épais",
+        "surface": "épais"
+      },
+      {
+        "lemma": "enceinte",
+        "surface": "enceintes"
+      },
+      {
+        "lemma": "horizon",
+        "surface": "horizons"
+      },
+      {
+        "lemma": "détendre",
+        "surface": "détendre"
+      },
+      {
+        "lemma": "raquette",
+        "surface": "raquette"
+      },
+      {
+        "lemma": "promenade",
+        "surface": "promenade"
+      },
+      {
+        "lemma": "incontournable",
+        "surface": "incontournable"
+      },
+      {
+        "lemma": "coucher",
+        "surface": "coucher"
+      },
+      {
+        "lemma": "rester",
+        "surface": "rester"
+      }
+    ]
+  },
+  "tables": {
+    "documents": [
+      {
+        "id": "documents#1",
+        "title": "Un marché de quartier en automne",
+        "source": "Sundew sample",
+        "sourceUrl": null,
+        "type": "other",
+        "content": "Le marché Jean-Talon est l'un des plus grands marchés de Montréal. En automne, il est particulièrement animé. Les étals sont remplis de pommes, de citrouilles, et de courges. Les couleurs sont magnifiques : rouge, orange, et jaune. Les gens viennent en famille pour acheter des produits frais et locaux.\r\n\r\nLe week-end dernier, j'ai visité ce marché avec mon amie Sophie. Nous avons goûté des tartes aux pommes et des cidres locaux. Les vendeurs sont très sympathiques et aiment parler de leurs produits. Nous avons aussi acheté quelques fleurs pour décorer nos maisons.\r\n\r\nEn automne, le marché offre aussi des activités spéciales. Par exemple, il y a des ateliers de cuisine pour apprendre à préparer des recettes avec des produits de saison. Il y a aussi des spectacles de musique pour divertir les visiteurs. C'est un endroit idéal pour passer un bon moment en famille.",
+        "language": "fr",
+        "estimatedLevel": "B1",
+        "wordCount": 144,
+        "createdAt": -369403,
+        "lastReadAt": null,
+        "readingProgress": 100
+      },
+      {
+        "id": "documents#2",
+        "title": "Un week-end sur le Mont-Royal",
+        "source": "Sundew sample",
+        "sourceUrl": null,
+        "type": "other",
+        "content": "Le Mont-Royal est un parc très populaire à Montréal. En été comme en hiver, c'est un endroit où les gens aiment se détendre et faire du sport. En hiver, le parc est couvert de neige et on peut y faire du ski de fond ou de la raquette.\r\n\r\nSamedi dernier, j'ai passé la journée sur le Mont-Royal avec ma famille. Nous avons fait une longue promenade pour admirer la vue sur la ville. Ensuite, nous avons pris un chocolat chaud dans un café près du lac aux Castors.\r\n\r\nIl y avait beaucoup de monde, mais l'ambiance était très agréable. Les enfants jouaient dans la neige et les couples se promenaient main dans la main. C'était une belle journée d'hiver.\r\n\r\nLe Mont-Royal est aussi un endroit parfait pour faire de la photographie. Les paysages sont magnifiques, surtout au coucher du soleil. C'est un lieu incontournable pour tous ceux qui visitent Montréal.",
+        "language": "fr",
+        "estimatedLevel": "B1",
+        "wordCount": 150,
+        "createdAt": -357802,
+        "lastReadAt": null,
+        "readingProgress": 100
+      },
+      {
+        "id": "documents#3",
+        "title": "Prendre le métro en hiver",
+        "source": "Sundew sample",
+        "sourceUrl": null,
+        "type": "other",
+        "content": "À Montréal, l'hiver est très froid. Les températures peuvent descendre jusqu'à -20 degrés. Pour se déplacer en ville, beaucoup de gens utilisent le métro. C'est rapide, pratique, et on reste au chaud.\r\n\r\nHier, j'ai pris le métro pour aller au travail. J'ai dû attendre un peu parce qu'il y avait beaucoup de monde à la station Berri-UQAM. Mais, une fois dans la rame, c'était confortable. Les Montréalais portent souvent des manteaux épais et des bottes pour se protéger du froid.\r\n\r\nDans le métro, il y a beaucoup de monde le matin et le soir. Parfois, il est difficile de trouver une place assise. Mais les gens sont généralement polis. Ils laissent sortir les passagers avant d'entrer et ils laissent leur place aux personnes âgées ou aux femmes enceintes.\r\n\r\nPrendre le métro en hiver est une expérience unique. Quand on sort de la station, on découvre parfois la ville toute blanche sous la neige. C'est aussi une bonne façon de rencontrer des gens de tous les horizons.",
+        "language": "fr",
+        "estimatedLevel": "B1",
+        "wordCount": 166,
+        "createdAt": -363612,
+        "lastReadAt": null,
+        "readingProgress": 100
+      }
+    ],
+    "user_settings": [
+      {
+        "key": "cefr_level",
+        "value": "A2",
+        "updatedAt": -409294
+      },
+      {
+        "key": "learning_mode",
+        "value": "general",
+        "updatedAt": -407474
+      },
+      {
+        "key": "target_clb",
+        "value": "",
+        "updatedAt": -407474
+      },
+      {
+        "key": "exam_date",
+        "value": "",
+        "updatedAt": -407474
+      },
+      {
+        "key": "time_zone",
+        "value": "UTC",
+        "updatedAt": -407474
+      }
+    ],
+    "user_vocabulary": [
+      {
+        "lemma": "étal",
+        "surface": "étals",
+        "pos": "noun · masc.",
+        "translation": "stalls",
+        "cefrLevel": "A2",
+        "inContext": "In this sentence, 'étals' refers to the stalls at the market where various products are displayed for sale. It is in the plural form to indicate that there are multiple stalls filled with different items, which is typical in a market setting.",
+        "examples": [
+          "Les étals du marché sont toujours bien garnis.",
+          "Nous avons choisi des fruits frais sur les étals."
+        ],
+        "conjugation": null,
+        "sentenceContext": null,
+        "richEntry": {
+          "id": "fr_etal",
+          "pos": "noun",
+          "note": "Used primarily in markets or shops to refer to a stand where products are displayed.",
+          "noun": {
+            "gender": "m",
+            "plural": "étals",
+            "gender_hint": "ends in -al, typically masculine"
+          },
+          "verb": null,
+          "word": "étal",
+          "level": "A1",
+          "adverb": null,
+          "example": {
+            "en": "The fruits are on the display stand.",
+            "fr": "Les fruits sont sur l'étal."
+          },
+          "register": null,
+          "adjective": null,
+          "expression": null,
+          "meaning_en": "display stand (for goods)",
+          "canada_note": "",
+          "preposition": null,
+          "collocations": []
+        },
+        "enrichedAt": -311072,
+        "lookedUpAt": -314071,
+        "savedAt": -313751
+      },
+      {
+        "lemma": "citrouille",
+        "surface": "citrouilles",
+        "pos": "noun · fem.",
+        "translation": "pumpkins",
+        "cefrLevel": "A2",
+        "inContext": "In this sentence, 'citrouilles' is used in the plural form to refer to multiple pumpkins that are available at the market during the autumn season. The sentence describes the variety of products found at the market, and 'citrouilles' is included among other seasonal produce.",
+        "examples": [
+          "Les enfants aiment décorer des citrouilles pour Halloween.",
+          "Nous avons acheté des citrouilles au marché pour faire de la soupe."
+        ],
+        "conjugation": null,
+        "sentenceContext": null,
+        "richEntry": {
+          "id": "fr_citrouille",
+          "pos": "noun",
+          "note": "Used commonly in cooking and decoration, especially during Halloween.",
+          "noun": {
+            "gender": "f",
+            "plural": "",
+            "gender_hint": "ends in -ille"
+          },
+          "verb": null,
+          "word": "citrouille",
+          "level": "A1",
+          "adverb": null,
+          "example": {
+            "en": "A pumpkin is often used to make soups.",
+            "fr": "Une citrouille est souvent utilisée pour faire des soupes."
+          },
+          "register": null,
+          "adjective": null,
+          "expression": null,
+          "meaning_en": "pumpkin",
+          "canada_note": "",
+          "preposition": null,
+          "collocations": []
+        },
+        "enrichedAt": -305641,
+        "lookedUpAt": -310005,
+        "savedAt": -309239
+      },
+      {
+        "lemma": "courge",
+        "surface": "courges",
+        "pos": "noun · fem.",
+        "translation": "squashes",
+        "cefrLevel": "A2",
+        "inContext": "In this sentence, 'courges' is used in the plural form to refer to various types of squashes that are typically available at the market during the autumn season. The feminine singular form 'courge' agrees with the plural ending '-es' in 'courges' to indicate multiple items.",
+        "examples": [
+          "J'ai acheté des courges pour préparer une soupe.",
+          "Les courges d'hiver sont délicieuses en purée."
+        ],
+        "conjugation": null,
+        "sentenceContext": null,
+        "richEntry": {
+          "id": "fr_courge",
+          "pos": "noun",
+          "note": "Used to refer to various types of squash or gourds.",
+          "noun": {
+            "gender": "f",
+            "plural": "",
+            "gender_hint": "ends in -e"
+          },
+          "verb": null,
+          "word": "courge",
+          "level": "A1",
+          "adverb": null,
+          "example": {
+            "en": "I like to eat roasted squash.",
+            "fr": "J'aime manger de la courge rôtie."
+          },
+          "register": null,
+          "adjective": null,
+          "expression": null,
+          "meaning_en": "squash",
+          "canada_note": "/",
+          "preposition": null,
+          "collocations": []
+        },
+        "enrichedAt": -301929,
+        "lookedUpAt": -305033,
+        "savedAt": -304735
+      },
+      {
+        "lemma": "atelier",
+        "surface": "ateliers",
+        "pos": "noun · masc.",
+        "translation": "workshops",
+        "cefrLevel": "A2",
+        "inContext": "In this sentence, 'ateliers' is used in the plural form to refer to multiple workshops focused on cooking. The context indicates that these workshops are part of special activities offered at the market during autumn, highlighting their role in teaching visitors about seasonal recipes.",
+        "examples": [
+          "Les ateliers de peinture sont très populaires dans cette école.",
+          "Nous avons participé à des ateliers de danse le week-end dernier."
+        ],
+        "conjugation": null,
+        "sentenceContext": null,
+        "richEntry": {
+          "id": "fr_atelier",
+          "pos": "noun",
+          "note": "Used to refer to a place where work is done, especially in arts or crafts.",
+          "noun": {
+            "gender": "m",
+            "plural": "",
+            "gender_hint": "ends in -ier"
+          },
+          "verb": null,
+          "word": "atelier",
+          "level": "A1",
+          "adverb": null,
+          "example": {
+            "en": "I am going to the painting workshop.",
+            "fr": "Je vais à l'atelier de peinture."
+          },
+          "register": null,
+          "adjective": null,
+          "expression": null,
+          "meaning_en": "workshop",
+          "canada_note": "",
+          "preposition": null,
+          "collocations": []
+        },
+        "enrichedAt": -294597,
+        "lookedUpAt": -297095,
+        "savedAt": -296699
+      },
+      {
+        "lemma": "épais",
+        "surface": "épais",
+        "pos": "adjective",
+        "translation": "thick",
+        "cefrLevel": "A2",
+        "inContext": "In this sentence, 'épais' describes the type of coats ('manteaux') that Montrealers wear, indicating that they are designed to provide warmth in cold weather. The adjective agrees in gender and number with the noun it modifies, which is masculine plural ('manteaux épais').",
+        "examples": [
+          "Il fait froid, alors je mets un pull épais.",
+          "Les murs de cette maison sont très épais."
+        ],
+        "conjugation": null,
+        "sentenceContext": null,
+        "richEntry": {
+          "id": "fr_epais",
+          "pos": "adjective",
+          "note": "Used to describe the thickness of objects or materials.",
+          "noun": null,
+          "verb": null,
+          "word": "épais",
+          "level": "A1",
+          "adverb": null,
+          "example": {
+            "en": "a thick book",
+            "fr": "un livre épais"
+          },
+          "register": null,
+          "adjective": {
+            "forms": {
+              "fp": "épaisses",
+              "fs": "épaisse",
+              "mp": "épais",
+              "ms": "épais"
+            },
+            "placement": "after",
+            "comparison": ""
+          },
+          "expression": null,
+          "meaning_en": "thick",
+          "canada_note": "",
+          "preposition": null,
+          "collocations": []
+        },
+        "enrichedAt": -272581,
+        "lookedUpAt": -274787,
+        "savedAt": -274465
+      },
+      {
+        "lemma": "horizon",
+        "surface": "horizons",
+        "pos": "noun · masc.",
+        "translation": "backgrounds",
+        "cefrLevel": "B1",
+        "inContext": "In this sentence, 'horizons' refers to the diverse backgrounds or experiences of people. The plural form is used here to emphasize the variety of people one might meet, indicating a range of different social, cultural, or personal backgrounds.",
+        "examples": [
+          "Il y a des artistes de tous les horizons dans cette exposition.",
+          "Les étudiants viennent de différents horizons pour étudier ici."
+        ],
+        "conjugation": null,
+        "sentenceContext": null,
+        "richEntry": {
+          "id": "fr_horizon",
+          "pos": "noun",
+          "note": "Used to refer to the line where the earth's surface and the sky appear to meet.",
+          "noun": {
+            "gender": "m",
+            "plural": "",
+            "gender_hint": "ends in -on"
+          },
+          "verb": null,
+          "word": "horizon",
+          "level": "A1",
+          "adverb": null,
+          "example": {
+            "en": "The sun rises on the horizon.",
+            "fr": "Le soleil se lève à l'horizon."
+          },
+          "register": null,
+          "adjective": null,
+          "expression": null,
+          "meaning_en": "horizon",
+          "canada_note": "",
+          "preposition": null,
+          "collocations": []
+        },
+        "enrichedAt": -264549,
+        "lookedUpAt": -266902,
+        "savedAt": -266449
+      },
+      {
+        "lemma": "raquette",
+        "surface": "raquette",
+        "pos": "noun · fem.",
+        "translation": "snowshoeing",
+        "cefrLevel": "A2",
+        "inContext": "In this sentence, 'raquette' refers to the activity of snowshoeing, which is a popular winter sport in snowy areas. The feminine form 'raquette' is used here as it is a feminine noun in French, and it is paired with the verb 'faire' to indicate the action of participating in this sport.",
+        "examples": [
+          "J'adore faire de la raquette dans les montagnes.",
+          "En hiver, nous faisons souvent de la raquette avec des amis."
+        ],
+        "conjugation": null,
+        "sentenceContext": null,
+        "richEntry": {
+          "id": "fr_raquette",
+          "pos": "noun",
+          "note": "Used in sports like tennis or badminton.",
+          "noun": {
+            "gender": "f",
+            "plural": "",
+            "gender_hint": "ends in -ette"
+          },
+          "verb": null,
+          "word": "raquette",
+          "level": "A1",
+          "adverb": null,
+          "example": {
+            "en": "I bought a new racket.",
+            "fr": "J'ai acheté une nouvelle raquette."
+          },
+          "register": null,
+          "adjective": null,
+          "expression": null,
+          "meaning_en": "racket",
+          "canada_note": "",
+          "preposition": null,
+          "collocations": []
+        },
+        "enrichedAt": -245922,
+        "lookedUpAt": -248523,
+        "savedAt": -248231
+      },
+      {
+        "lemma": "goûter",
+        "surface": "goûté",
+        "pos": "verb · trans.",
+        "translation": "tasted",
+        "cefrLevel": "A2",
+        "inContext": "In this sentence, 'goûté' is the past participle of the verb 'goûter' used in the passé composé tense, which is formed with the auxiliary verb 'avoir' (in this case, 'avons') and the past participle. It indicates that the action of tasting happened in the past.",
+        "examples": [
+          "Hier, j'ai goûté un plat délicieux au restaurant.",
+          "La semaine dernière, nous avons goûté des fromages différents lors de la dégustation."
+        ],
+        "conjugation": null,
+        "sentenceContext": null,
+        "richEntry": {
+          "id": "fr_gouter",
+          "pos": "verb",
+          "note": "Use when trying food or drink for the first time.",
+          "noun": null,
+          "verb": {
+            "aux": "avoir",
+            "tenses": {
+              "present": {
+                "type": "simple",
+                "forms": {
+                  "il": "goûte",
+                  "je": "goûte",
+                  "tu": "goûtes",
+                  "ils": "goûtent",
+                  "nous": "goûtons",
+                  "vous": "goûtez"
+                },
+                "level": "A1",
+                "sample": "",
+                "aux_tense": "",
+                "recognition_only": false
+              },
+              "imparfait": {
+                "type": "simple",
+                "forms": {
+                  "il": "goûtait",
+                  "je": "goûtais",
+                  "tu": "goûtais",
+                  "ils": "goûtaient",
+                  "nous": "goûtions",
+                  "vous": "goûtiez"
+                },
+                "level": "A1",
+                "sample": "",
+                "aux_tense": "",
+                "recognition_only": false
+              },
+              "futur_simple": {
+                "type": "simple",
+                "forms": {
+                  "il": "goûtera",
+                  "je": "goûterai",
+                  "tu": "goûteras",
+                  "ils": "goûteront",
+                  "nous": "goûterons",
+                  "vous": "goûterez"
+                },
+                "level": "A1",
+                "sample": "",
+                "aux_tense": "",
+                "recognition_only": false
+              },
+              "passe_simple": {
+                "type": "simple",
+                "forms": {
+                  "il": "",
+                  "je": "",
+                  "tu": "",
+                  "ils": "goûtèrent",
+                  "nous": "",
+                  "vous": ""
+                },
+                "level": "A1",
+                "sample": "",
+                "aux_tense": "",
+                "recognition_only": true
+              },
+              "passe_compose": {
+                "type": "compound",
+                "forms": null,
+                "level": "A1",
+                "sample": "J'ai goûté.",
+                "aux_tense": "avoir",
+                "recognition_only": false
+              },
+              "plus_que_parfait": {
+                "type": "compound",
+                "forms": null,
+                "level": "A1",
+                "sample": "J'avais goûté.",
+                "aux_tense": "avoir",
+                "recognition_only": false
+              },
+              "subjonctif_passe": {
+                "type": "compound",
+                "forms": null,
+                "level": "A1",
+                "sample": "Que j'aie goûté.",
+                "aux_tense": "avoir",
+                "recognition_only": false
+              },
+              "conditionnel_passe": {
+                "type": "compound",
+                "forms": null,
+                "level": "A1",
+                "sample": "J'aurais goûté.",
+                "aux_tense": "avoir",
+                "recognition_only": false
+              },
+              "subjonctif_present": {
+                "type": "simple",
+                "forms": {
+                  "il": "goûte",
+                  "je": "goûte",
+                  "tu": "goûtes",
+                  "ils": "goûtent",
+                  "nous": "goûtions",
+                  "vous": "goûtiez"
+                },
+                "level": "A1",
+                "sample": "",
+                "aux_tense": "",
+                "recognition_only": false
+              },
+              "conditionnel_present": {
+                "type": "simple",
+                "forms": {
+                  "il": "goûterait",
+                  "je": "goûterais",
+                  "tu": "goûterais",
+                  "ils": "goûteraient",
+                  "nous": "goûterions",
+                  "vous": "goûteriez"
+                },
+                "level": "A1",
+                "sample": "",
+                "aux_tense": "",
+                "recognition_only": false
+              }
+            },
+            "pp_agrees": false,
+            "focus_reason": "Basic verb for expressing tasting in various contexts.",
+            "focus_tenses": [
+              "present",
+              "imparfait",
+              "futur_simple",
+              "conditionnel_present",
+              "subjonctif_present"
+            ],
+            "past_participle": "goûté"
+          },
+          "word": "goûter",
+          "level": "A1",
+          "adverb": null,
+          "example": {
+            "en": "I taste the cake.",
+            "fr": "Je goûte le gâteau."
+          },
+          "register": null,
+          "adjective": null,
+          "expression": null,
+          "meaning_en": "to taste",
+          "canada_note": "/",
+          "preposition": null,
+          "collocations": []
+        },
+        "enrichedAt": -291403,
+        "lookedUpAt": -301031,
+        "savedAt": -300715
+      },
+      {
+        "lemma": "rame",
+        "surface": "rame",
+        "pos": "noun · fem.",
+        "translation": "train car",
+        "cefrLevel": "A2",
+        "inContext": "In this sentence, 'rame' refers specifically to a train car within the metro system. It is used in the feminine form 'la rame' to agree with the gender of the noun in French, and it is a common term used in the context of public transportation.",
+        "examples": [
+          "La rame est pleine de passagers pendant les heures de pointe.",
+          "Nous avons pris la rame pour aller au centre-ville."
+        ],
+        "conjugation": null,
+        "sentenceContext": null,
+        "richEntry": {
+          "id": "fr_rame",
+          "pos": "noun",
+          "note": "Used primarily in the context of rowing or boating.",
+          "noun": {
+            "gender": "f",
+            "plural": "",
+            "gender_hint": "ends in -e"
+          },
+          "verb": null,
+          "word": "rame",
+          "level": "A1",
+          "adverb": null,
+          "example": {
+            "en": "He uses an oar to move the boat.",
+            "fr": "Il utilise une rame pour faire avancer le bateau."
+          },
+          "register": null,
+          "adjective": null,
+          "expression": null,
+          "meaning_en": "oar",
+          "canada_note": "",
+          "preposition": null,
+          "collocations": []
+        },
+        "enrichedAt": -275389,
+        "lookedUpAt": -278787,
+        "savedAt": -278473
+      },
+      {
+        "lemma": "déplacer",
+        "surface": "déplacer",
+        "pos": "verb · trans.",
+        "translation": "to move around",
+        "cefrLevel": "A2",
+        "inContext": "In this sentence, 'se déplacer' is used reflexively to indicate the action of moving around in the city. The reflexive form emphasizes that the subject (people) is performing the action on themselves, which is common in French when discussing modes of transportation.",
+        "examples": [
+          "Il faut se déplacer rapidement pour arriver à l'heure.",
+          "Pour se déplacer dans la campagne, il est préférable d'avoir une voiture."
+        ],
+        "conjugation": null,
+        "sentenceContext": null,
+        "richEntry": {
+          "id": "fr_deplacer",
+          "pos": "verb",
+          "note": "Use when referring to changing the position of something.",
+          "noun": null,
+          "verb": {
+            "aux": "avoir",
+            "tenses": {
+              "present": {
+                "type": "simple",
+                "forms": {
+                  "il": "déplace",
+                  "je": "déplace",
+                  "tu": "déplaces",
+                  "ils": "déplacent",
+                  "nous": "déplaçons",
+                  "vous": "déplacez"
+                },
+                "level": "A1",
+                "sample": "Je déplace la chaise.",
+                "aux_tense": "",
+                "recognition_only": false
+              },
+              "imparfait": {
+                "type": "simple",
+                "forms": {
+                  "il": "déplacait",
+                  "je": "déplacais",
+                  "tu": "déplacais",
+                  "ils": "déplacaient",
+                  "nous": "déplacions",
+                  "vous": "déplaciez"
+                },
+                "level": "A1",
+                "sample": "Je déplaçais la chaise.",
+                "aux_tense": "",
+                "recognition_only": false
+              },
+              "futur_simple": {
+                "type": "simple",
+                "forms": {
+                  "il": "déplacera",
+                  "je": "déplacerai",
+                  "tu": "déplaceras",
+                  "ils": "déplaceront",
+                  "nous": "déplacerons",
+                  "vous": "déplacerez"
+                },
+                "level": "A1",
+                "sample": "Je déplacerai la chaise.",
+                "aux_tense": "",
+                "recognition_only": false
+              },
+              "passe_simple": {
+                "type": "simple",
+                "forms": {
+                  "il": "déplaça",
+                  "je": "",
+                  "tu": "",
+                  "ils": "déplacèrent",
+                  "nous": "",
+                  "vous": ""
+                },
+                "level": "B2",
+                "sample": "",
+                "aux_tense": "",
+                "recognition_only": true
+              },
+              "passe_compose": {
+                "type": "compound",
+                "forms": null,
+                "level": "A1",
+                "sample": "J'ai déplacé la chaise.",
+                "aux_tense": "avoir",
+                "recognition_only": false
+              },
+              "plus_que_parfait": {
+                "type": "compound",
+                "forms": null,
+                "level": "B1",
+                "sample": "J'avais déplacé la chaise.",
+                "aux_tense": "avoir",
+                "recognition_only": false
+              },
+              "subjonctif_passe": {
+                "type": "compound",
+                "forms": null,
+                "level": "B2",
+                "sample": "Il faut que j'aie déplacé la chaise.",
+                "aux_tense": "avoir",
+                "recognition_only": false
+              },
+              "conditionnel_passe": {
+                "type": "compound",
+                "forms": null,
+                "level": "B2",
+                "sample": "J'aurais déplacé la chaise.",
+                "aux_tense": "avoir",
+                "recognition_only": false
+              },
+              "subjonctif_present": {
+                "type": "simple",
+                "forms": {
+                  "il": "déplace",
+                  "je": "déplace",
+                  "tu": "déplaces",
+                  "ils": "déplacent",
+                  "nous": "déplacions",
+                  "vous": "déplaciez"
+                },
+                "level": "B1",
+                "sample": "Il faut que je déplace la chaise.",
+                "aux_tense": "",
+                "recognition_only": false
+              },
+              "conditionnel_present": {
+                "type": "simple",
+                "forms": {
+                  "il": "déplacerait",
+                  "je": "déplacerais",
+                  "tu": "déplacerais",
+                  "ils": "déplaceraient",
+                  "nous": "déplacerions",
+                  "vous": "déplaceriez"
+                },
+                "level": "A2",
+                "sample": "Je déplacerais la chaise.",
+                "aux_tense": "",
+                "recognition_only": false
+              }
+            },
+            "pp_agrees": false,
+            "focus_reason": "Commonly used in everyday contexts.",
+            "focus_tenses": [
+              "present",
+              "imparfait",
+              "futur_simple",
+              "conditionnel_present",
+              "subjonctif_present"
+            ],
+            "past_participle": "déplacé"
+          },
+          "word": "déplacer",
+          "level": "A1",
+          "adverb": null,
+          "example": {
+            "en": "I move the table.",
+            "fr": "Je déplace la table."
+          },
+          "register": null,
+          "adjective": null,
+          "expression": null,
+          "meaning_en": "to move",
+          "canada_note": "",
+          "preposition": null,
+          "collocations": []
+        },
+        "enrichedAt": -274819,
+        "lookedUpAt": -283491,
+        "savedAt": -282973
+      },
+      {
+        "lemma": "enceinte",
+        "surface": "enceintes",
+        "pos": "adjective · fem.",
+        "translation": "pregnant",
+        "cefrLevel": "A2",
+        "inContext": "In this sentence, 'enceintes' is used to describe women who are pregnant. It is in the feminine plural form to agree with 'femmes', which is also feminine plural. This shows the grammatical agreement between the adjective and the noun it modifies.",
+        "examples": [
+          "Les femmes enceintes doivent prendre soin d'elles.",
+          "Il est important de soutenir les femmes enceintes pendant leur grossesse."
+        ],
+        "conjugation": null,
+        "sentenceContext": null,
+        "richEntry": {
+          "id": "fr_enceinte",
+          "pos": "adjective",
+          "note": "Used to describe a woman who is expecting a baby.",
+          "noun": null,
+          "verb": null,
+          "word": "enceinte",
+          "level": "A1",
+          "adverb": null,
+          "example": {
+            "en": "She is three months pregnant.",
+            "fr": "Elle est enceinte de trois mois."
+          },
+          "register": null,
+          "adjective": {
+            "forms": {
+              "fp": "enceintes",
+              "fs": "enceinte",
+              "mp": "enceints",
+              "ms": "enceint"
+            },
+            "placement": "after",
+            "comparison": ""
+          },
+          "expression": null,
+          "meaning_en": "pregnant",
+          "canada_note": "",
+          "preposition": null,
+          "collocations": []
+        },
+        "enrichedAt": -267873,
+        "lookedUpAt": -270903,
+        "savedAt": -270467
+      },
+      {
+        "lemma": "promenade",
+        "surface": "promenade",
+        "pos": "noun · fem.",
+        "translation": "walk",
+        "cefrLevel": "A2",
+        "inContext": "In this sentence, 'promenade' is used in the feminine singular form to refer to a leisurely walk taken by the speaker and their family. The context indicates that it was a specific activity they enjoyed together, emphasizing the nature of the outing.",
+        "examples": [
+          "Nous avons fait une promenade au parc dimanche dernier.",
+          "Elle aime faire une promenade sur la plage le soir."
+        ],
+        "conjugation": null,
+        "sentenceContext": null,
+        "richEntry": {
+          "id": "fr_promenade",
+          "pos": "noun",
+          "note": "Used to describe a leisurely walk, often in a park or along a street.",
+          "noun": {
+            "gender": "f",
+            "plural": "",
+            "gender_hint": "feminine nouns often end in -e"
+          },
+          "verb": null,
+          "word": "promenade",
+          "level": "A1",
+          "adverb": null,
+          "example": {
+            "en": "to take a walk",
+            "fr": "faire une promenade"
+          },
+          "register": null,
+          "adjective": null,
+          "expression": null,
+          "meaning_en": "walk, stroll",
+          "canada_note": "",
+          "preposition": null,
+          "collocations": []
+        },
+        "enrichedAt": -242339,
+        "lookedUpAt": -244575,
+        "savedAt": -244222
+      },
+      {
+        "lemma": "détendre",
+        "surface": "détendre",
+        "pos": "verb · trans.",
+        "translation": "to relax",
+        "cefrLevel": "B1",
+        "inContext": "In this sentence, 'se détendre' is used reflexively to express the action of relaxing, indicating that people enjoy this activity in the park. The reflexive form 'se' shows that the subject (les gens) is performing the action on themselves.",
+        "examples": [
+          "Après une longue journée de travail, j'aime me détendre avec un bon livre.",
+          "Il est important de se détendre pendant les vacances."
+        ],
+        "conjugation": null,
+        "sentenceContext": null,
+        "richEntry": {
+          "id": "fr_detendre",
+          "pos": "verb",
+          "note": "Use when referring to making something less tense or stressful.",
+          "noun": null,
+          "verb": {
+            "aux": "avoir",
+            "tenses": {
+              "present": {
+                "type": "simple",
+                "forms": {
+                  "il": "détend",
+                  "je": "détends",
+                  "tu": "détends",
+                  "ils": "détendent",
+                  "nous": "détendons",
+                  "vous": "détendez"
+                },
+                "level": "A2",
+                "sample": "",
+                "aux_tense": "",
+                "recognition_only": false
+              },
+              "imparfait": {
+                "type": "simple",
+                "forms": {
+                  "il": "détendait",
+                  "je": "détendais",
+                  "tu": "détendais",
+                  "ils": "détendaient",
+                  "nous": "détendions",
+                  "vous": "détendiez"
+                },
+                "level": "A2",
+                "sample": "",
+                "aux_tense": "",
+                "recognition_only": false
+              },
+              "futur_simple": {
+                "type": "simple",
+                "forms": {
+                  "il": "détendra",
+                  "je": "détendrai",
+                  "tu": "détendras",
+                  "ils": "détendront",
+                  "nous": "détendrons",
+                  "vous": "détendrez"
+                },
+                "level": "A2",
+                "sample": "",
+                "aux_tense": "",
+                "recognition_only": false
+              },
+              "passe_simple": {
+                "type": "simple",
+                "forms": {
+                  "il": "",
+                  "je": "",
+                  "tu": "",
+                  "ils": "détendirent",
+                  "nous": "",
+                  "vous": ""
+                },
+                "level": "B2",
+                "sample": "",
+                "aux_tense": "",
+                "recognition_only": true
+              },
+              "passe_compose": {
+                "type": "compound",
+                "forms": null,
+                "level": "A2",
+                "sample": "J'ai détendu les muscles.",
+                "aux_tense": "avoir",
+                "recognition_only": false
+              },
+              "plus_que_parfait": {
+                "type": "compound",
+                "forms": null,
+                "level": "B1",
+                "sample": "J'avais détendu les muscles.",
+                "aux_tense": "avoir",
+                "recognition_only": false
+              },
+              "subjonctif_passe": {
+                "type": "compound",
+                "forms": null,
+                "level": "B2",
+                "sample": "Il faut que j'aie détendu les muscles.",
+                "aux_tense": "avoir",
+                "recognition_only": false
+              },
+              "conditionnel_passe": {
+                "type": "compound",
+                "forms": null,
+                "level": "B2",
+                "sample": "J'aurais détendu les muscles.",
+                "aux_tense": "avoir",
+                "recognition_only": false
+              },
+              "subjonctif_present": {
+                "type": "simple",
+                "forms": {
+                  "il": "détende",
+                  "je": "détende",
+                  "tu": "détendes",
+                  "ils": "détendent",
+                  "nous": "détendions",
+                  "vous": "détendiez"
+                },
+                "level": "B1",
+                "sample": "",
+                "aux_tense": "",
+                "recognition_only": false
+              },
+              "conditionnel_present": {
+                "type": "simple",
+                "forms": {
+                  "il": "détendrait",
+                  "je": "détendrais",
+                  "tu": "détendrais",
+                  "ils": "détendraient",
+                  "nous": "détendrions",
+                  "vous": "détendriez"
+                },
+                "level": "A2",
+                "sample": "",
+                "aux_tense": "",
+                "recognition_only": false
+              }
+            },
+            "pp_agrees": false,
+            "focus_reason": "Commonly used in everyday conversation.",
+            "focus_tenses": [
+              "present",
+              "imparfait",
+              "futur_simple",
+              "conditionnel_present",
+              "subjonctif_present"
+            ],
+            "past_participle": "détendu"
+          },
+          "word": "détendre",
+          "level": "A2",
+          "adverb": null,
+          "example": {
+            "en": "You need to relax after a long day.",
+            "fr": "Il faut se détendre après une longue journée."
+          },
+          "register": null,
+          "adjective": null,
+          "expression": null,
+          "meaning_en": "to relax",
+          "canada_note": "/",
+          "preposition": null,
+          "collocations": []
+        },
+        "enrichedAt": -244213,
+        "lookedUpAt": -252567,
+        "savedAt": -252219
+      },
+      {
+        "lemma": "incontournable",
+        "surface": "incontournable",
+        "pos": "adjective",
+        "translation": "unmissable",
+        "cefrLevel": "B1",
+        "inContext": "In this sentence, 'incontournable' describes the place (Mont-Royal) as essential or unmissable for visitors to Montreal. It is used in its masculine singular form to agree with 'lieu', which is masculine singular.",
+        "examples": [
+          "La Tour Eiffel est un monument incontournable à Paris.",
+          "Ce restaurant est incontournable pour les amateurs de cuisine italienne."
+        ],
+        "conjugation": null,
+        "sentenceContext": null,
+        "richEntry": {
+          "id": "fr_incontournable",
+          "pos": "adjective",
+          "note": "Use to describe something that cannot be ignored or is essential in a context.",
+          "noun": null,
+          "verb": null,
+          "word": "incontournable",
+          "level": "B1",
+          "adverb": null,
+          "example": {
+            "en": "It's an essential film of the year.",
+            "fr": "C'est un film incontournable de l'année."
+          },
+          "register": null,
+          "adjective": {
+            "forms": {
+              "fp": "incontournables",
+              "fs": "incontournable",
+              "mp": "incontournables",
+              "ms": "incontournable"
+            },
+            "placement": "either",
+            "comparison": ""
+          },
+          "expression": null,
+          "meaning_en": "unavoidable, essential",
+          "canada_note": "",
+          "preposition": null,
+          "collocations": []
+        },
+        "enrichedAt": -238246,
+        "lookedUpAt": -240512,
+        "savedAt": -240215
+      },
+      {
+        "lemma": "coucher",
+        "surface": "coucher",
+        "pos": "noun · masc.",
+        "translation": "sunset",
+        "cefrLevel": "A2",
+        "inContext": "In this sentence, 'coucher' is used in the phrase 'coucher du soleil', which means 'sunset'. It is a masculine noun that refers specifically to the time of day when the sun sets, and it is often used in the context of describing beautiful landscapes or moments in nature.",
+        "examples": [
+          "Nous avons admiré le coucher de soleil sur la plage.",
+          "Le coucher du soleil était spectaculaire ce soir."
+        ],
+        "conjugation": null,
+        "sentenceContext": null,
+        "richEntry": {
+          "id": "fr_coucher",
+          "pos": "noun",
+          "note": "Used to refer to the act of going to bed or the time one goes to bed.",
+          "noun": {
+            "gender": "m",
+            "plural": "",
+            "gender_hint": "ends in -er"
+          },
+          "verb": null,
+          "word": "coucher",
+          "level": "A1",
+          "adverb": null,
+          "example": {
+            "en": "It's time for bed.",
+            "fr": "Il est l'heure du coucher."
+          },
+          "register": null,
+          "adjective": null,
+          "expression": null,
+          "meaning_en": "bedtime",
+          "canada_note": "",
+          "preposition": null,
+          "collocations": []
+        },
+        "enrichedAt": -234106,
+        "lookedUpAt": -236590,
+        "savedAt": -236207
+      },
+      {
+        "lemma": "rester",
+        "surface": "rester",
+        "pos": "verb · intrans.",
+        "translation": "to stay",
+        "cefrLevel": "A2",
+        "inContext": "The verb 'rester' is used here in its infinitive form, indicating the action of staying or remaining in a place. It is an intransitive verb, meaning it does not take a direct object.",
+        "examples": [
+          "Je vais rester ici toute la journée.",
+          "Nous voulons rester à la maison ce soir."
+        ],
+        "conjugation": null,
+        "sentenceContext": null,
+        "richEntry": null,
+        "enrichedAt": null,
+        "lookedUpAt": -134718,
+        "savedAt": null
+      }
+    ],
+    "reading_sessions": [
+      {
+        "id": "reading_sessions#1",
+        "documentId": "documents#1",
+        "documentTitleSnapshot": "Un marché de quartier en automne",
+        "startedAt": -303213,
+        "endedAt": -288251,
+        "durationSeconds": 30
+      },
+      {
+        "id": "reading_sessions#2",
+        "documentId": "documents#3",
+        "documentTitleSnapshot": "Prendre le métro en hiver",
+        "startedAt": -270627,
+        "endedAt": null,
+        "durationSeconds": 0
+      },
+      {
+        "id": "reading_sessions#3",
+        "documentId": "documents#2",
+        "documentTitleSnapshot": "Un week-end sur le Mont-Royal",
+        "startedAt": -242251,
+        "endedAt": null,
+        "durationSeconds": 0
+      }
+    ],
+    "user_vocabulary_aliases": [
+      {
+        "surface": "étals",
+        "lemma": "étal",
+        "createdAt": -314041
+      },
+      {
+        "surface": "citrouilles",
+        "lemma": "citrouille",
+        "createdAt": -309977
+      },
+      {
+        "surface": "courges",
+        "lemma": "courge",
+        "createdAt": -305005
+      },
+      {
+        "surface": "goûté",
+        "lemma": "goûter",
+        "createdAt": -301001
+      },
+      {
+        "surface": "ateliers",
+        "lemma": "atelier",
+        "createdAt": -297064
+      },
+      {
+        "surface": "déplacer",
+        "lemma": "déplacer",
+        "createdAt": -283458
+      },
+      {
+        "surface": "rame",
+        "lemma": "rame",
+        "createdAt": -278757
+      },
+      {
+        "surface": "épais",
+        "lemma": "épais",
+        "createdAt": -274755
+      },
+      {
+        "surface": "enceintes",
+        "lemma": "enceinte",
+        "createdAt": -270875
+      },
+      {
+        "surface": "horizons",
+        "lemma": "horizon",
+        "createdAt": -266872
+      },
+      {
+        "surface": "détendre",
+        "lemma": "détendre",
+        "createdAt": -252539
+      },
+      {
+        "surface": "raquette",
+        "lemma": "raquette",
+        "createdAt": -248495
+      },
+      {
+        "surface": "promenade",
+        "lemma": "promenade",
+        "createdAt": -244547
+      },
+      {
+        "surface": "incontournable",
+        "lemma": "incontournable",
+        "createdAt": -240481
+      },
+      {
+        "surface": "coucher",
+        "lemma": "coucher",
+        "createdAt": -236562
+      },
+      {
+        "surface": "rester",
+        "lemma": "rester",
+        "createdAt": -134686
+      }
+    ],
+    "vocabulary_gaps": [
+      {
+        "id": "vocabulary_gaps#1",
+        "lemma": "déplacer",
+        "gapType": "recognition",
+        "source": "lookup",
+        "status": "active",
+        "box": 1,
+        "dueAt": -283530,
+        "lastReviewedAt": null,
+        "createdAt": -283530
+      },
+      {
+        "id": "vocabulary_gaps#2",
+        "lemma": "rame",
+        "gapType": "recognition",
+        "source": "lookup",
+        "status": "active",
+        "box": 1,
+        "dueAt": -278824,
+        "lastReviewedAt": null,
+        "createdAt": -278824
+      },
+      {
+        "id": "vocabulary_gaps#3",
+        "lemma": "épais",
+        "gapType": "recognition",
+        "source": "lookup",
+        "status": "active",
+        "box": 1,
+        "dueAt": -274828,
+        "lastReviewedAt": null,
+        "createdAt": -274828
+      },
+      {
+        "id": "vocabulary_gaps#4",
+        "lemma": "enceinte",
+        "gapType": "recognition",
+        "source": "lookup",
+        "status": "active",
+        "box": 1,
+        "dueAt": -270940,
+        "lastReviewedAt": null,
+        "createdAt": -270940
+      },
+      {
+        "id": "vocabulary_gaps#5",
+        "lemma": "horizon",
+        "gapType": "recognition",
+        "source": "lookup",
+        "status": "active",
+        "box": 1,
+        "dueAt": -266943,
+        "lastReviewedAt": null,
+        "createdAt": -266943
+      },
+      {
+        "id": "vocabulary_gaps#6",
+        "lemma": "détendre",
+        "gapType": "recognition",
+        "source": "lookup",
+        "status": "active",
+        "box": 1,
+        "dueAt": -252607,
+        "lastReviewedAt": null,
+        "createdAt": -252607
+      },
+      {
+        "id": "vocabulary_gaps#7",
+        "lemma": "raquette",
+        "gapType": "recognition",
+        "source": "lookup",
+        "status": "active",
+        "box": 1,
+        "dueAt": -248559,
+        "lastReviewedAt": null,
+        "createdAt": -248559
+      },
+      {
+        "id": "vocabulary_gaps#8",
+        "lemma": "promenade",
+        "gapType": "recognition",
+        "source": "lookup",
+        "status": "active",
+        "box": 1,
+        "dueAt": -244612,
+        "lastReviewedAt": null,
+        "createdAt": -244612
+      },
+      {
+        "id": "vocabulary_gaps#9",
+        "lemma": "incontournable",
+        "gapType": "recognition",
+        "source": "lookup",
+        "status": "active",
+        "box": 1,
+        "dueAt": -240549,
+        "lastReviewedAt": null,
+        "createdAt": -240549
+      },
+      {
+        "id": "vocabulary_gaps#10",
+        "lemma": "coucher",
+        "gapType": "recognition",
+        "source": "lookup",
+        "status": "active",
+        "box": 1,
+        "dueAt": -236632,
+        "lastReviewedAt": null,
+        "createdAt": -236632
+      },
+      {
+        "id": "vocabulary_gaps#11",
+        "lemma": "rester",
+        "gapType": "production",
+        "source": "feedback",
+        "status": "active",
+        "box": 1,
+        "dueAt": -134595,
+        "lastReviewedAt": null,
+        "createdAt": -134595
+      },
+      {
+        "id": "vocabulary_gaps#12",
+        "lemma": "étal",
+        "gapType": "recognition",
+        "source": "lookup",
+        "status": "active",
+        "box": 2,
+        "dueAt": 172769171,
+        "lastReviewedAt": -30829,
+        "createdAt": -314111
+      },
+      {
+        "id": "vocabulary_gaps#13",
+        "lemma": "citrouille",
+        "gapType": "recognition",
+        "source": "lookup",
+        "status": "active",
+        "box": 2,
+        "dueAt": 172775395,
+        "lastReviewedAt": -24605,
+        "createdAt": -310042
+      },
+      {
+        "id": "vocabulary_gaps#14",
+        "lemma": "courge",
+        "gapType": "recognition",
+        "source": "lookup",
+        "status": "active",
+        "box": 1,
+        "dueAt": 86381053,
+        "lastReviewedAt": -18947,
+        "createdAt": -305070
+      },
+      {
+        "id": "vocabulary_gaps#15",
+        "lemma": "goûter",
+        "gapType": "recognition",
+        "source": "lookup",
+        "status": "active",
+        "box": 2,
+        "dueAt": 172787241,
+        "lastReviewedAt": -12759,
+        "createdAt": -301068
+      },
+      {
+        "id": "vocabulary_gaps#16",
+        "lemma": "atelier",
+        "gapType": "recognition",
+        "source": "lookup",
+        "status": "active",
+        "box": 2,
+        "dueAt": 172789957,
+        "lastReviewedAt": -10043,
+        "createdAt": -297133
+      }
+    ],
+    "vocabulary_occurrences": [
+      {
+        "id": "vocabulary_occurrences#1",
+        "lemma": "étal",
+        "sourceType": "reading",
+        "documentId": "documents#1",
+        "tcfQuestionId": null,
+        "surface": "étals",
+        "sentenceContext": "Le marché Jean-Talon est l'un des plus grands marchés de Montréal. En automne, il est particulièrement animé. Les étals sont remplis de pommes, de citrouilles, et de courges. Les couleurs sont magnifiques : rouge, orange, et jaune. Les gens viennent en famille pour acheter des produits frais et locaux.",
+        "createdAt": -314009
+      },
+      {
+        "id": "vocabulary_occurrences#2",
+        "lemma": "citrouille",
+        "sourceType": "reading",
+        "documentId": "documents#1",
+        "tcfQuestionId": null,
+        "surface": "citrouilles",
+        "sentenceContext": "Le marché Jean-Talon est l'un des plus grands marchés de Montréal. En automne, il est particulièrement animé. Les étals sont remplis de pommes, de citrouilles, et de courges. Les couleurs sont magnifiques : rouge, orange, et jaune. Les gens viennent en famille pour acheter des produits frais et locaux.",
+        "createdAt": -309947
+      },
+      {
+        "id": "vocabulary_occurrences#3",
+        "lemma": "courge",
+        "sourceType": "reading",
+        "documentId": "documents#1",
+        "tcfQuestionId": null,
+        "surface": "courges",
+        "sentenceContext": "Le marché Jean-Talon est l'un des plus grands marchés de Montréal. En automne, il est particulièrement animé. Les étals sont remplis de pommes, de citrouilles, et de courges. Les couleurs sont magnifiques : rouge, orange, et jaune. Les gens viennent en famille pour acheter des produits frais et locaux.",
+        "createdAt": -304975
+      },
+      {
+        "id": "vocabulary_occurrences#4",
+        "lemma": "goûter",
+        "sourceType": "reading",
+        "documentId": "documents#1",
+        "tcfQuestionId": null,
+        "surface": "goûté",
+        "sentenceContext": "Le week-end dernier, j'ai visité ce marché avec mon amie Sophie. Nous avons goûté des tartes aux pommes et des cidres locaux. Les vendeurs sont très sympathiques et aiment parler de leurs produits. Nous avons aussi acheté quelques fleurs pour décorer nos maisons.",
+        "createdAt": -300973
+      },
+      {
+        "id": "vocabulary_occurrences#5",
+        "lemma": "atelier",
+        "sourceType": "reading",
+        "documentId": "documents#1",
+        "tcfQuestionId": null,
+        "surface": "ateliers",
+        "sentenceContext": "En automne, le marché offre aussi des activités spéciales. Par exemple, il y a des ateliers de cuisine pour apprendre à préparer des recettes avec des produits de saison. Il y a aussi des spectacles de musique pour divertir les visiteurs. C'est un endroit idéal pour passer un bon moment en famille.",
+        "createdAt": -297025
+      },
+      {
+        "id": "vocabulary_occurrences#6",
+        "lemma": "épais",
+        "sourceType": "reading",
+        "documentId": "documents#3",
+        "tcfQuestionId": null,
+        "surface": "épais",
+        "sentenceContext": "Hier, j'ai pris le métro pour aller au travail. J'ai dû attendre un peu parce qu'il y avait beaucoup de monde à la station Berri-UQAM. Mais, une fois dans la rame, c'était confortable. Les Montréalais portent souvent des manteaux épais et des bottes pour se protéger du froid.",
+        "createdAt": -274725
+      },
+      {
+        "id": "vocabulary_occurrences#7",
+        "lemma": "horizon",
+        "sourceType": "reading",
+        "documentId": "documents#3",
+        "tcfQuestionId": null,
+        "surface": "horizons",
+        "sentenceContext": "Prendre le métro en hiver est une expérience unique. Quand on sort de la station, on découvre parfois la ville toute blanche sous la neige. C'est aussi une bonne façon de rencontrer des gens de tous les horizons.",
+        "createdAt": -266843
+      },
+      {
+        "id": "vocabulary_occurrences#8",
+        "lemma": "promenade",
+        "sourceType": "reading",
+        "documentId": "documents#2",
+        "tcfQuestionId": null,
+        "surface": "promenade",
+        "sentenceContext": "Samedi dernier, j'ai passé la journée sur le Mont-Royal avec ma famille. Nous avons fait une longue promenade pour admirer la vue sur la ville. Ensuite, nous avons pris un chocolat chaud dans un café près du lac aux Castors.",
+        "createdAt": -244515
+      },
+      {
+        "id": "vocabulary_occurrences#9",
+        "lemma": "incontournable",
+        "sourceType": "reading",
+        "documentId": "documents#2",
+        "tcfQuestionId": null,
+        "surface": "incontournable",
+        "sentenceContext": "Le Mont-Royal est aussi un endroit parfait pour faire de la photographie. Les paysages sont magnifiques, surtout au coucher du soleil. C'est un lieu incontournable pour tous ceux qui visitent Montréal.",
+        "createdAt": -240453
+      },
+      {
+        "id": "vocabulary_occurrences#10",
+        "lemma": "déplacer",
+        "sourceType": "reading",
+        "documentId": "documents#3",
+        "tcfQuestionId": null,
+        "surface": "déplacer",
+        "sentenceContext": "À Montréal, l'hiver est très froid. Les températures peuvent descendre jusqu'à -20 degrés. Pour se déplacer en ville, beaucoup de gens utilisent le métro. C'est rapide, pratique, et on reste au chaud.",
+        "createdAt": -283429
+      },
+      {
+        "id": "vocabulary_occurrences#11",
+        "lemma": "rame",
+        "sourceType": "reading",
+        "documentId": "documents#3",
+        "tcfQuestionId": null,
+        "surface": "rame",
+        "sentenceContext": "Hier, j'ai pris le métro pour aller au travail. J'ai dû attendre un peu parce qu'il y avait beaucoup de monde à la station Berri-UQAM. Mais, une fois dans la rame, c'était confortable. Les Montréalais portent souvent des manteaux épais et des bottes pour se protéger du froid.",
+        "createdAt": -278727
+      },
+      {
+        "id": "vocabulary_occurrences#12",
+        "lemma": "enceinte",
+        "sourceType": "reading",
+        "documentId": "documents#3",
+        "tcfQuestionId": null,
+        "surface": "enceintes",
+        "sentenceContext": "Dans le métro, il y a beaucoup de monde le matin et le soir. Parfois, il est difficile de trouver une place assise. Mais les gens sont généralement polis. Ils laissent sortir les passagers avant d'entrer et ils laissent leur place aux personnes âgées ou aux femmes enceintes.",
+        "createdAt": -270845
+      },
+      {
+        "id": "vocabulary_occurrences#13",
+        "lemma": "détendre",
+        "sourceType": "reading",
+        "documentId": "documents#2",
+        "tcfQuestionId": null,
+        "surface": "détendre",
+        "sentenceContext": "Le Mont-Royal est un parc très populaire à Montréal. En été comme en hiver, c'est un endroit où les gens aiment se détendre et faire du sport. En hiver, le parc est couvert de neige et on peut y faire du ski de fond ou de la raquette.",
+        "createdAt": -252509
+      },
+      {
+        "id": "vocabulary_occurrences#14",
+        "lemma": "raquette",
+        "sourceType": "reading",
+        "documentId": "documents#2",
+        "tcfQuestionId": null,
+        "surface": "raquette",
+        "sentenceContext": "Le Mont-Royal est un parc très populaire à Montréal. En été comme en hiver, c'est un endroit où les gens aiment se détendre et faire du sport. En hiver, le parc est couvert de neige et on peut y faire du ski de fond ou de la raquette.",
+        "createdAt": -248463
+      },
+      {
+        "id": "vocabulary_occurrences#15",
+        "lemma": "coucher",
+        "sourceType": "reading",
+        "documentId": "documents#2",
+        "tcfQuestionId": null,
+        "surface": "coucher",
+        "sentenceContext": "Le Mont-Royal est aussi un endroit parfait pour faire de la photographie. Les paysages sont magnifiques, surtout au coucher du soleil. C'est un lieu incontournable pour tous ceux qui visitent Montréal.",
+        "createdAt": -236533
+      }
+    ],
+    "writing_tasks": [
+      {
+        "id": "writing_tasks#1",
+        "documentId": "documents#1",
+        "promptEn": "Imagine that you are writing a letter to a friend who is considering visiting Montreal in the autumn. Describe your experience at the Jean-Talon market as vividly as possible to persuade them to visit. Use the vocabulary words provided. Remember to include your impressions of the colors, the atmosphere, and the people you met. Use the present and passé composé tenses to talk about your visit and the ongoing aspects of the market.",
+        "targetWords": [
+          "marché",
+          "automne",
+          "pommes",
+          "fleurs",
+          "sympathiques"
+        ],
+        "targetGrammar": [
+          "conjugation_present",
+          "conjugation_passe_compose",
+          "adjective_agreement"
+        ],
+        "targetLemmas": null,
+        "difficulty": "B1",
+        "minWordCount": 120,
+        "maxWordCount": 180,
+        "createdAt": -222094
+      },
+      {
+        "id": "writing_tasks#2",
+        "documentId": "documents#3",
+        "promptEn": "Imagine you are a Montrealer who commutes daily using the metro during the winter. Write a diary entry describing a memorable experience you had on the metro recently. Focus on details about the weather, the crowd, and any interesting interactions or observations you made. Use the words 'températures', 'attendre', 'confortable', 'Montréalais', and 'manteaux'. Ensure to use past tenses accurately and pay attention to adjective agreement.",
+        "targetWords": [
+          "températures",
+          "attendre",
+          "confortable",
+          "Montréalais",
+          "manteaux"
+        ],
+        "targetGrammar": [
+          "pc_vs_imparfait",
+          "adjective_agreement",
+          "past_participle_agreement"
+        ],
+        "targetLemmas": null,
+        "difficulty": "B1",
+        "minWordCount": 150,
+        "maxWordCount": 200,
+        "createdAt": -172887
+      }
+    ],
+    "submissions": [
+      {
+        "id": "submissions#1",
+        "taskId": "writing_tasks#1",
+        "contentFr": "Chère Léa,\n\nTu dois visiter Montréal en automne ! Samedi dernier, j'ai allé au marché Jean-Talon avec ma mère. Le marché est très intéressante, avec des pommes, des citrouilles et beaucoup de fleurs. Les couleurs sont magnifiques : rouge, orange et jaune.\n\nIl y avait beaucoup des gens parce que il faisait très beau. Nous avons acheté des pommes rouge et une grande citrouille pour faire une soupe. Les vendeurs sont très sympathiques et ils nous ont donné des conseils pour cuisiner.\n\nJe pense que c'est important d'acheter des produits locaux pour aider les agriculteurs. Je veux retourner à le marché la semaine prochain. Viens avec moi !\n\nBises,\nCamille",
+        "wordCount": 110,
+        "submittedAt": -201698,
+        "feedbackJson": {
+          "errors": [
+            {
+              "span": {
+                "end": 54,
+                "start": 48
+              },
+              "rule_id": "auxiliary_choice",
+              "category": "Grammar",
+              "original": "j'ai allé",
+              "correction": "je suis allé",
+              "fr_examples": [
+                "Je suis allé au marché hier.",
+                "Elle est allée à la plage ce matin."
+              ],
+              "micro_drill": "Conjugate 'aller' in passé composé with 'être' for different subjects.",
+              "subcategory": "auxiliary_choice",
+              "explanation_en": "In the passé composé, the verb 'aller' requires the auxiliary verb 'être' instead of 'avoir'.",
+              "trigger_context": "Samedi dernier, j'ai allé au marché Jean-Talon"
+            },
+            {
+              "span": {
+                "end": 86,
+                "start": 73
+              },
+              "rule_id": "adjective_agreement",
+              "category": "GenderAgreement",
+              "original": "est très intéressante",
+              "correction": "est très intéressant",
+              "fr_examples": [
+                "Le livre est intéressant.",
+                "Le film est intéressant."
+              ],
+              "micro_drill": "Practice adjective agreement with masculine nouns.",
+              "subcategory": "adjective_agreement",
+              "explanation_en": "The adjective 'intéressant' should agree in gender with the masculine noun 'marché'.",
+              "trigger_context": "Le marché est très intéressante"
+            },
+            {
+              "span": {
+                "end": 183,
+                "start": 179
+              },
+              "rule_id": "negation_de_rule",
+              "category": "Articles",
+              "original": "des ",
+              "correction": "de ",
+              "fr_examples": [
+                "Il y a beaucoup de monde ici.",
+                "J'ai acheté beaucoup de fruits."
+              ],
+              "micro_drill": "Use 'beaucoup de' with different nouns.",
+              "subcategory": "negation_de_rule",
+              "explanation_en": "After expressions of quantity like 'beaucoup', 'de' is used instead of 'des'.",
+              "trigger_context": "Il y avait beaucoup des gens"
+            },
+            {
+              "span": {
+                "end": 187,
+                "start": 185
+              },
+              "rule_id": "awkward_structure",
+              "category": "Syntax",
+              "original": "il",
+              "correction": "qu'il",
+              "fr_examples": [
+                "Je pense qu'il est là.",
+                "Parce qu'il pleut, je reste à la maison."
+              ],
+              "micro_drill": "Practice sentences with 'qu'il' to ensure correct contraction.",
+              "subcategory": "awkward_structure",
+              "explanation_en": "In French, 'que' and 'il' must be contracted to 'qu'il' to avoid vowel conflict.",
+              "trigger_context": "parce que il faisait très beau"
+            },
+            {
+              "span": {
+                "end": 229,
+                "start": 218
+              },
+              "rule_id": "adjective_agreement",
+              "category": "GenderAgreement",
+              "original": "des pommes rouge",
+              "correction": "des pommes rouges",
+              "fr_examples": [
+                "Des pommes rouges sont sur la table.",
+                "Les fleurs rouges sont belles."
+              ],
+              "micro_drill": "Practice plural adjective agreement with different nouns.",
+              "subcategory": "adjective_agreement",
+              "explanation_en": "The adjective 'rouge' should agree in number with the plural noun 'pommes'.",
+              "trigger_context": "Nous avons acheté des pommes rouge"
+            },
+            {
+              "span": {
+                "end": 292,
+                "start": 282
+              },
+              "rule_id": "adjective_agreement",
+              "category": "GenderAgreement",
+              "original": "la semaine prochain",
+              "correction": "la semaine prochaine",
+              "fr_examples": [
+                "La semaine prochaine, je pars en vacances.",
+                "Nous verrons cela la semaine prochaine."
+              ],
+              "micro_drill": "Practice feminine adjective agreement with different nouns.",
+              "subcategory": "adjective_agreement",
+              "explanation_en": "The adjective 'prochain' should agree in gender with the feminine noun 'semaine'.",
+              "trigger_context": "Je veux retourner à le marché la semaine prochain"
+            }
+          ],
+          "praise": [
+            "Your use of descriptive language to convey the vibrant colors of the market is very effective.",
+            "The way you describe the friendly vendors adds a personal touch to your narrative.",
+            "You have successfully used the passé composé to describe past events, which is great for B1 level."
+          ],
+          "summary_en": "The writing effectively uses descriptive language and passé composé, but contains some errors in agreement and auxiliary choice.",
+          "improvements": [
+            {
+              "span": {
+                "end": 5,
+                "start": 0
+              },
+              "original": "Chère",
+              "suggestion": "Chère amie",
+              "explanation_en": "Adding 'amie' can make the greeting more personal and warm."
+            },
+            {
+              "span": {
+                "end": 11,
+                "start": 8
+              },
+              "original": "Léa",
+              "suggestion": "Léa,",
+              "explanation_en": "Adding a comma after the name can improve the flow of the sentence."
+            },
+            {
+              "span": {
+                "end": 299,
+                "start": 295
+              },
+              "original": "Viens",
+              "suggestion": "Viens donc",
+              "explanation_en": "Adding 'donc' can make the invitation sound more inviting and persuasive."
+            }
+          ],
+          "overall_level_estimate": "B1"
+        },
+        "estimatedLevel": "B1",
+        "praise": [
+          "Your use of descriptive language to convey the vibrant colors of the market is very effective.",
+          "The way you describe the friendly vendors adds a personal touch to your narrative.",
+          "You have successfully used the passé composé to describe past events, which is great for B1 level."
+        ],
+        "summaryEn": "The writing effectively uses descriptive language and passé composé, but contains some errors in agreement and auxiliary choice.",
+        "feedbackStatus": "ready"
+      },
+      {
+        "id": "submissions#2",
+        "taskId": "writing_tasks#2",
+        "contentFr": "Mardi 14 janvier\n\nCe matin, les températures étaient très basses : moins vingt degrés ! À Paris, ma ville d'origine, il ne fait jamais aussi froid que à Montréal. J'ai couru jusqu'à la station parce que je voulais de reste au chaud le plus vite possible.\n\nSur le quai, il y avait beaucoup de monde. Je suis pris le métro de 8 h, mais j'ai dû attendre dix minutes. Dans la rame, je n'ai pas trouvé une place assise. Les gens était très pressés et personne ne parlait. Tous les Montréalais portaient des gros manteaux et des bottes pleines de neige.\n\nJe dois rester debout pendant trente minutes, mais c'était quand même confortable parce qu'il faisait chaud. Une vieille dame m'a souri et nous avons parlé de la météo. J'ai beaucoup apprendre sur la ville en regardant les gens. Ce soir, je suis fatiguée, mais contente.",
+        "wordCount": 146,
+        "submittedAt": -143125,
+        "feedbackJson": {
+          "errors": [
+            {
+              "span": {
+                "end": 82,
+                "start": 81
+              },
+              "rule_id": "liaison_elision",
+              "category": "Orthography",
+              "original": "à",
+              "correction": "qu'à",
+              "fr_examples": [
+                "Il est plus grand qu'à Paris.",
+                "C'est mieux qu'à la maison."
+              ],
+              "micro_drill": "Combine 'que' and 'à' to form 'qu'à' in sentences.",
+              "subcategory": "liaison_elision",
+              "explanation_en": "In French, when 'que' is followed by 'à', they are combined into 'qu'à' to maintain the flow of the sentence.",
+              "trigger_context": "aussi froid que à Montréal"
+            },
+            {
+              "span": {
+                "end": 128,
+                "start": 122
+              },
+              "rule_id": "wrong_word",
+              "category": "Vocabulary",
+              "original": "de reste",
+              "correction": "rester",
+              "fr_examples": [
+                "Je veux rester ici.",
+                "Elle préfère rester à la maison."
+              ],
+              "micro_drill": "Practice using 'rester' without prepositions in sentences.",
+              "subcategory": "wrong_word",
+              "explanation_en": "The verb 'rester' does not require a preposition like 'de' when used in this context.",
+              "trigger_context": "je voulais de reste au chaud"
+            },
+            {
+              "span": {
+                "end": 183,
+                "start": 179
+              },
+              "rule_id": "pc_vs_imparfait",
+              "category": "Grammar",
+              "original": "pris",
+              "correction": "pris le métro",
+              "fr_examples": [
+                "J'ai pris le train ce matin.",
+                "Elle a pris son sac."
+              ],
+              "micro_drill": "Conjugate 'prendre' in passé composé with 'avoir'.",
+              "subcategory": "pc_vs_imparfait",
+              "explanation_en": "The passé composé requires the auxiliary verb 'avoir' for 'prendre', not 'être'.",
+              "trigger_context": "Je suis pris le métro de 8 h"
+            },
+            {
+              "span": {
+                "end": 227,
+                "start": 222
+              },
+              "rule_id": "adjective_agreement",
+              "category": "GenderAgreement",
+              "original": "était",
+              "correction": "étaient",
+              "fr_examples": [
+                "Les enfants étaient contents.",
+                "Les fleurs étaient belles."
+              ],
+              "micro_drill": "Conjugate 'être' in the imperfect tense for plural subjects.",
+              "subcategory": "adjective_agreement",
+              "explanation_en": "The verb 'être' must agree in number with its subject 'les gens', which is plural.",
+              "trigger_context": "Les gens était très pressés"
+            },
+            {
+              "span": {
+                "end": 278,
+                "start": 274
+              },
+              "rule_id": "negation_de_rule",
+              "category": "Articles",
+              "original": "des",
+              "correction": "de",
+              "fr_examples": [
+                "Je n'ai pas de livres.",
+                "Il n'y a pas de problème."
+              ],
+              "micro_drill": "Practice changing 'des' to 'de' in negative sentences.",
+              "subcategory": "negation_de_rule",
+              "explanation_en": "In French, after a negative expression, 'des' changes to 'de'.",
+              "trigger_context": "portaient des gros manteaux"
+            },
+            {
+              "span": {
+                "end": 383,
+                "start": 374
+              },
+              "rule_id": "past_participle_agreement",
+              "category": "Grammar",
+              "original": "apprendre",
+              "correction": "appris",
+              "fr_examples": [
+                "J'ai appris la nouvelle.",
+                "Elle a appris à conduire."
+              ],
+              "micro_drill": "Conjugate 'apprendre' in passé composé.",
+              "subcategory": "past_participle_agreement",
+              "explanation_en": "In the passé composé, the past participle 'apprendre' should be 'appris'.",
+              "trigger_context": "J'ai beaucoup apprendre"
+            }
+          ],
+          "praise": [
+            "Your use of descriptive language to convey the cold temperatures and crowded metro is vivid and engaging.",
+            "The narrative flow of your diary entry is smooth and keeps the reader interested.",
+            "You effectively used past tenses to describe your experiences, which is a key skill at the B1 level."
+          ],
+          "summary_en": "The diary entry effectively uses descriptive language and past tenses, though it contains some errors in verb conjugation and agreement.",
+          "improvements": [
+            {
+              "span": {
+                "end": 15,
+                "start": 0
+              },
+              "original": "Mardi 14 janvier",
+              "suggestion": "Mardi 14 janvier,",
+              "explanation_en": "Adding a comma after the date can improve the flow of the sentence."
+            },
+            {
+              "span": {
+                "end": 80,
+                "start": 66
+              },
+              "original": "aussi froid que à",
+              "suggestion": "aussi froid qu'à",
+              "explanation_en": "Using 'qu'à' instead of 'que à' is more fluid and correct in French."
+            },
+            {
+              "span": {
+                "end": 235,
+                "start": 228
+              },
+              "original": "pressés et",
+              "suggestion": "pressés, et",
+              "explanation_en": "A comma before 'et' can help clarify the sentence structure."
+            }
+          ],
+          "overall_level_estimate": "B1"
+        },
+        "estimatedLevel": "B1",
+        "praise": [
+          "Your use of descriptive language to convey the cold temperatures and crowded metro is vivid and engaging.",
+          "The narrative flow of your diary entry is smooth and keeps the reader interested.",
+          "You effectively used past tenses to describe your experiences, which is a key skill at the B1 level."
+        ],
+        "summaryEn": "The diary entry effectively uses descriptive language and past tenses, though it contains some errors in verb conjugation and agreement.",
+        "feedbackStatus": "ready"
+      }
+    ],
+    "errors": [
+      {
+        "id": "errors#1",
+        "submissionId": "submissions#1",
+        "spanStart": 66,
+        "spanEnd": 75,
+        "original": "j'ai allé",
+        "correction": "je suis allé",
+        "category": "Grammar",
+        "subcategory": "auxiliary_choice",
+        "triggerContext": "Samedi dernier, j'ai allé au marché Jean-Talon",
+        "explanationEn": "In the passé composé, the verb 'aller' requires the auxiliary verb 'être' instead of 'avoir'.",
+        "frExamples": [
+          "Je suis allé au marché hier.",
+          "Elle est allée à la plage ce matin."
+        ],
+        "ruleId": "auxiliary_choice",
+        "microDrill": "Conjugate 'aller' in passé composé with 'être' for different subjects.",
+        "createdAt": -193183
+      },
+      {
+        "id": "errors#2",
+        "submissionId": "submissions#1",
+        "spanStart": 121,
+        "spanEnd": 142,
+        "original": "est très intéressante",
+        "correction": "est très intéressant",
+        "category": "GenderAgreement",
+        "subcategory": "adjective_agreement",
+        "triggerContext": "Le marché est très intéressante",
+        "explanationEn": "The adjective 'intéressant' should agree in gender with the masculine noun 'marché'.",
+        "frExamples": [
+          "Le livre est intéressant.",
+          "Le film est intéressant."
+        ],
+        "ruleId": "adjective_agreement",
+        "microDrill": "Practice adjective agreement with masculine nouns.",
+        "createdAt": -193183
+      },
+      {
+        "id": "errors#3",
+        "submissionId": "submissions#1",
+        "spanStart": 179,
+        "spanEnd": 183,
+        "original": "des ",
+        "correction": "de ",
+        "category": "Articles",
+        "subcategory": "negation_de_rule",
+        "triggerContext": "Il y avait beaucoup des gens",
+        "explanationEn": "After expressions of quantity like 'beaucoup', 'de' is used instead of 'des'.",
+        "frExamples": [
+          "Il y a beaucoup de monde ici.",
+          "J'ai acheté beaucoup de fruits."
+        ],
+        "ruleId": "negation_de_rule",
+        "microDrill": "Use 'beaucoup de' with different nouns.",
+        "createdAt": -193183
+      },
+      {
+        "id": "errors#4",
+        "submissionId": "submissions#1",
+        "spanStart": 185,
+        "spanEnd": 187,
+        "original": "il",
+        "correction": "qu'il",
+        "category": "Syntax",
+        "subcategory": "awkward_structure",
+        "triggerContext": "parce que il faisait très beau",
+        "explanationEn": "In French, 'que' and 'il' must be contracted to 'qu'il' to avoid vowel conflict.",
+        "frExamples": [
+          "Je pense qu'il est là.",
+          "Parce qu'il pleut, je reste à la maison."
+        ],
+        "ruleId": "awkward_structure",
+        "microDrill": "Practice sentences with 'qu'il' to ensure correct contraction.",
+        "createdAt": -193183
+      },
+      {
+        "id": "errors#5",
+        "submissionId": "submissions#1",
+        "spanStart": 336,
+        "spanEnd": 352,
+        "original": "des pommes rouge",
+        "correction": "des pommes rouges",
+        "category": "GenderAgreement",
+        "subcategory": "adjective_agreement",
+        "triggerContext": "Nous avons acheté des pommes rouge",
+        "explanationEn": "The adjective 'rouge' should agree in number with the plural noun 'pommes'.",
+        "frExamples": [
+          "Des pommes rouges sont sur la table.",
+          "Les fleurs rouges sont belles."
+        ],
+        "ruleId": "adjective_agreement",
+        "microDrill": "Practice plural adjective agreement with different nouns.",
+        "createdAt": -193183
+      },
+      {
+        "id": "errors#6",
+        "submissionId": "submissions#1",
+        "spanStart": 605,
+        "spanEnd": 624,
+        "original": "la semaine prochain",
+        "correction": "la semaine prochaine",
+        "category": "GenderAgreement",
+        "subcategory": "adjective_agreement",
+        "triggerContext": "Je veux retourner à le marché la semaine prochain",
+        "explanationEn": "The adjective 'prochain' should agree in gender with the feminine noun 'semaine'.",
+        "frExamples": [
+          "La semaine prochaine, je pars en vacances.",
+          "Nous verrons cela la semaine prochaine."
+        ],
+        "ruleId": "adjective_agreement",
+        "microDrill": "Practice feminine adjective agreement with different nouns.",
+        "createdAt": -193183
+      },
+      {
+        "id": "errors#7",
+        "submissionId": "submissions#2",
+        "spanStart": 81,
+        "spanEnd": 82,
+        "original": "à",
+        "correction": "qu'à",
+        "category": "Orthography",
+        "subcategory": "liaison_elision",
+        "triggerContext": "aussi froid que à Montréal",
+        "explanationEn": "In French, when 'que' is followed by 'à', they are combined into 'qu'à' to maintain the flow of the sentence.",
+        "frExamples": [
+          "Il est plus grand qu'à Paris.",
+          "C'est mieux qu'à la maison."
+        ],
+        "ruleId": "liaison_elision",
+        "microDrill": "Combine 'que' and 'à' to form 'qu'à' in sentences.",
+        "createdAt": -136197
+      },
+      {
+        "id": "errors#8",
+        "submissionId": "submissions#2",
+        "spanStart": 214,
+        "spanEnd": 222,
+        "original": "de reste",
+        "correction": "rester",
+        "category": "Vocabulary",
+        "subcategory": "wrong_word",
+        "triggerContext": "je voulais de reste au chaud",
+        "explanationEn": "The verb 'rester' does not require a preposition like 'de' when used in this context.",
+        "frExamples": [
+          "Je veux rester ici.",
+          "Elle préfère rester à la maison."
+        ],
+        "ruleId": "wrong_word",
+        "microDrill": "Practice using 'rester' without prepositions in sentences.",
+        "createdAt": -136197
+      },
+      {
+        "id": "errors#9",
+        "submissionId": "submissions#2",
+        "spanStart": 307,
+        "spanEnd": 311,
+        "original": "pris",
+        "correction": "pris le métro",
+        "category": "Grammar",
+        "subcategory": "pc_vs_imparfait",
+        "triggerContext": "Je suis pris le métro de 8 h",
+        "explanationEn": "The passé composé requires the auxiliary verb 'avoir' for 'prendre', not 'être'.",
+        "frExamples": [
+          "J'ai pris le train ce matin.",
+          "Elle a pris son sac."
+        ],
+        "ruleId": "pc_vs_imparfait",
+        "microDrill": "Conjugate 'prendre' in passé composé with 'avoir'.",
+        "createdAt": -136197
+      },
+      {
+        "id": "errors#10",
+        "submissionId": "submissions#2",
+        "spanStart": 222,
+        "spanEnd": 227,
+        "original": "était",
+        "correction": "étaient",
+        "category": "GenderAgreement",
+        "subcategory": "adjective_agreement",
+        "triggerContext": "Les gens était très pressés",
+        "explanationEn": "The verb 'être' must agree in number with its subject 'les gens', which is plural.",
+        "frExamples": [
+          "Les enfants étaient contents.",
+          "Les fleurs étaient belles."
+        ],
+        "ruleId": "adjective_agreement",
+        "microDrill": "Conjugate 'être' in the imperfect tense for plural subjects.",
+        "createdAt": -136197
+      },
+      {
+        "id": "errors#11",
+        "submissionId": "submissions#2",
+        "spanStart": 274,
+        "spanEnd": 278,
+        "original": "des",
+        "correction": "de",
+        "category": "Articles",
+        "subcategory": "negation_de_rule",
+        "triggerContext": "portaient des gros manteaux",
+        "explanationEn": "In French, after a negative expression, 'des' changes to 'de'.",
+        "frExamples": [
+          "Je n'ai pas de livres.",
+          "Il n'y a pas de problème."
+        ],
+        "ruleId": "negation_de_rule",
+        "microDrill": "Practice changing 'des' to 'de' in negative sentences.",
+        "createdAt": -136197
+      },
+      {
+        "id": "errors#12",
+        "submissionId": "submissions#2",
+        "spanStart": 732,
+        "spanEnd": 741,
+        "original": "apprendre",
+        "correction": "appris",
+        "category": "Grammar",
+        "subcategory": "past_participle_agreement",
+        "triggerContext": "J'ai beaucoup apprendre",
+        "explanationEn": "In the passé composé, the past participle 'apprendre' should be 'appris'.",
+        "frExamples": [
+          "J'ai appris la nouvelle.",
+          "Elle a appris à conduire."
+        ],
+        "ruleId": "past_participle_agreement",
+        "microDrill": "Conjugate 'apprendre' in passé composé.",
+        "createdAt": -136197
+      }
+    ],
+    "conjugation_attempts": [
+      {
+        "id": "conjugation_attempts#1",
+        "runItemId": null,
+        "verb": "prendre",
+        "tense": "passé composé",
+        "person": 2,
+        "userInput": "a pris",
+        "expected": "a pris",
+        "correct": true,
+        "requestKey": "6e851575-deac-4aab-ac84-de7212978c61",
+        "requestHash": "7da63bc8936b54c2c47b9d00f979e3806e3cb850601e2062bee3bb88c59a767e",
+        "answeredAt": -107821
+      },
+      {
+        "id": "conjugation_attempts#2",
+        "runItemId": null,
+        "verb": "devoir",
+        "tense": "passé composé",
+        "person": 2,
+        "userInput": "a du",
+        "expected": "a dû",
+        "correct": true,
+        "requestKey": "d4ea95f4-fad9-480d-a31c-65cc8efed6a0",
+        "requestHash": "2b3d6ae99a362cd72c1cb784278facf3591af739f368d81e747ff90091da46b0",
+        "answeredAt": -99691
+      },
+      {
+        "id": "conjugation_attempts#3",
+        "runItemId": null,
+        "verb": "être",
+        "tense": "passé composé",
+        "person": 2,
+        "userInput": "est été",
+        "expected": "a été",
+        "correct": false,
+        "requestKey": "36447455-5452-4ee9-b0d8-999550b687b0",
+        "requestHash": "413edd7789fa1cf114d23deb840d07c4e90751559fd5f64d4cdbcedc24b8a791",
+        "answeredAt": -91841
+      },
+      {
+        "id": "conjugation_attempts#4",
+        "runItemId": null,
+        "verb": "être",
+        "tense": "futur simple",
+        "person": 4,
+        "userInput": "serez",
+        "expected": "serez",
+        "correct": true,
+        "requestKey": "873df776-6c51-48a5-ac53-b4d8d876133b",
+        "requestHash": "8fa653f27b37d0d5e45bdabcc0fcc1228b4366eaee0b1990c82627d67435cc6a",
+        "answeredAt": -80494
+      },
+      {
+        "id": "conjugation_attempts#5",
+        "runItemId": null,
+        "verb": "vouloir",
+        "tense": "subjonctif présent",
+        "person": 0,
+        "userInput": "veule",
+        "expected": "veuille",
+        "correct": false,
+        "requestKey": "07c83c67-a59c-4714-a2e6-bb638b7bcaa6",
+        "requestHash": "2686333a7e11134d5fd3efec8dbdda12a79a2bcc4642215d6eb3907658b8f971",
+        "answeredAt": -73031
+      },
+      {
+        "id": "conjugation_attempts#6",
+        "runItemId": null,
+        "verb": "voir",
+        "tense": "futur simple",
+        "person": 5,
+        "userInput": "verront",
+        "expected": "verront",
+        "correct": true,
+        "requestKey": "24fc06e2-7c1d-4194-a324-c6214f771c3f",
+        "requestHash": "c09f0e94be6fa62a5e355be4cc5545631c12eddf6888b877d3f32f63ca5e8130",
+        "answeredAt": -66242
+      },
+      {
+        "id": "conjugation_attempts#7",
+        "runItemId": null,
+        "verb": "parler",
+        "tense": "futur simple",
+        "person": 2,
+        "userInput": "parlera",
+        "expected": "parlera",
+        "correct": true,
+        "requestKey": "c45ea24e-75ec-47e4-9547-d935b7ab546d",
+        "requestHash": "6914cc56fbbb91cd2edf759d3398d2ec410185f8322afa6a187ab0fa4f4408ee",
+        "answeredAt": -60500
+      },
+      {
+        "id": "conjugation_attempts#8",
+        "runItemId": null,
+        "verb": "vouloir",
+        "tense": "présent",
+        "person": 0,
+        "userInput": "voulez",
+        "expected": "veux",
+        "correct": false,
+        "requestKey": "5ab72ccd-6dff-4d7a-b227-e1f88ab86003",
+        "requestHash": "8948b4ea9dda322a39d9d458b125f27ca3eeccce71e09deb90906fedb3024bea",
+        "answeredAt": -54505
+      },
+      {
+        "id": "conjugation_attempts#9",
+        "runItemId": null,
+        "verb": "devoir",
+        "tense": "futur simple",
+        "person": 2,
+        "userInput": "devra",
+        "expected": "devra",
+        "correct": true,
+        "requestKey": "7b3247ea-1417-4ff1-86ef-b7c17681aa58",
+        "requestHash": "046573712e180165cff7418e05a4f4e0fae51be0a8e70a06060c903f67c110e1",
+        "answeredAt": -48781
+      },
+      {
+        "id": "conjugation_attempts#10",
+        "runItemId": null,
+        "verb": "finir",
+        "tense": "présent",
+        "person": 2,
+        "userInput": "finit",
+        "expected": "finit",
+        "correct": true,
+        "requestKey": "d4f92f8a-13f0-4c00-9364-da55cdca5b03",
+        "requestHash": "79653c0631a8d8fe77404372b1539694b0ca77aa8ff0d030ed235ab0e0c3407e",
+        "answeredAt": -43026
+      }
+    ],
+    "micro_drills": [
+      {
+        "id": "micro_drills#1",
+        "runItemId": null,
+        "errorId": "errors#9",
+        "promptText": "Conjugate 'prendre' in passé composé with 'avoir'.",
+        "responseFr": "Hier, j'ai pris le métro pour aller au travail. Nous avons pris un café avant de partir.",
+        "feedbackJson": {
+          "ok": true,
+          "comments": [
+            "Great job using 'pris' correctly in both sentences!",
+            "You've correctly conjugated 'prendre' in the passé composé with 'avoir'."
+          ],
+          "better_examples": [
+            "Hier, j'ai pris le métro pour aller au travail.",
+            "Nous avons pris un café avant de partir."
+          ]
+        },
+        "feedbackStatus": "ready",
+        "feedbackAttempts": 1,
+        "feedbackLeaseUntil": null,
+        "requestKey": "muzwzedt-v2syntu2aaq-hg2fhop1trr",
+        "requestHash": "a2ee6a3659a567cf06a56d5d103804f88a576a52871cbf31ac8d479bfa06abf6",
+        "createdAt": -121007
+      }
+    ],
+    "vocabulary_review_attempts": [
+      {
+        "id": "vocabulary_review_attempts#1",
+        "runItemId": null,
+        "gapId": "vocabulary_gaps#12",
+        "answer": "stalls",
+        "correct": true,
+        "gradingMethod": "objective",
+        "boxBefore": 1,
+        "boxAfter": 2,
+        "statusAfter": "active",
+        "requestKey": "muzx1bx4-r29ty1zofqr-nqgeghk859s",
+        "requestHash": "2d9061e61c4a352cbfc6fbba5693ac6e6ce8f85693884eec4ab0663f18d8a7b2",
+        "policyVersion": 1,
+        "answeredAt": -30895
+      },
+      {
+        "id": "vocabulary_review_attempts#2",
+        "runItemId": null,
+        "gapId": "vocabulary_gaps#13",
+        "answer": "pumpkins",
+        "correct": true,
+        "gradingMethod": "objective",
+        "boxBefore": 1,
+        "boxAfter": 2,
+        "statusAfter": "active",
+        "requestKey": "muzx1gpt-iwj2q6hhcok-iywnc9dtjhq",
+        "requestHash": "0f189c6e7f9413336dc9d90e136ce12e683102def503193c0cc40e0e80809ead",
+        "policyVersion": 1,
+        "answeredAt": -24673
+      },
+      {
+        "id": "vocabulary_review_attempts#3",
+        "runItemId": null,
+        "gapId": "vocabulary_gaps#14",
+        "answer": "pumpkins",
+        "correct": false,
+        "gradingMethod": "objective",
+        "boxBefore": 1,
+        "boxAfter": 1,
+        "statusAfter": "active",
+        "requestKey": "muzx1l38-649lmoxiclv-q0307we345r",
+        "requestHash": "991ac5f3d7152a9676b626dc4605fe1ba6708703737a2eec03ca65385e3a800f",
+        "policyVersion": 1,
+        "answeredAt": -19012
+      },
+      {
+        "id": "vocabulary_review_attempts#4",
+        "runItemId": null,
+        "gapId": "vocabulary_gaps#15",
+        "answer": "tasted",
+        "correct": true,
+        "gradingMethod": "objective",
+        "boxBefore": 1,
+        "boxAfter": 2,
+        "statusAfter": "active",
+        "requestKey": "muzx1pv7-9b1wj3036ms-ft9b1ro21v8",
+        "requestHash": "5a25a1b9a55e6112a2a8199083b988ef4ea4e963aa291565474952300facb28d",
+        "policyVersion": 1,
+        "answeredAt": -12824
+      },
+      {
+        "id": "vocabulary_review_attempts#5",
+        "runItemId": null,
+        "gapId": "vocabulary_gaps#16",
+        "answer": "workshops",
+        "correct": true,
+        "gradingMethod": "objective",
+        "boxBefore": 1,
+        "boxAfter": 2,
+        "statusAfter": "active",
+        "requestKey": "muzx1rya-2ceke4re8ll-vytiatkfbh",
+        "requestHash": "4c9b3e58a2499d25c493a14ded9de0fe3ee10b522044eaa8586d0b64ece38f66",
+        "policyVersion": 1,
+        "answeredAt": -10114
+      }
+    ]
+  }
 }
