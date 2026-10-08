@@ -7,7 +7,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { admin, anonymous, emailOTP } from "better-auth/plugins";
 import { adminAc, userAc } from "better-auth/plugins/admin/access";
-import { deleteUserData, purgeOwnedData } from "@/lib/account/delete";
+import { USER_HAS_INVITE_CODES_MESSAGE, deleteUserData, ownsInviteCodes, purgeOwnedData } from "@/lib/account/delete";
 import { GUEST_DAILY_CAP, GUEST_SIGNINS_PER_IP_PER_HOUR, INVITE_COOKIE } from "@/lib/access/limits";
 import { db } from "@/lib/db";
 import { accounts, rateLimits, sessions, users, verifications } from "@/lib/db/schema";
@@ -117,7 +117,11 @@ export const auth = betterAuth({
       delete: {
         // Owned rows use RESTRICT foreign keys; clear them before Better Auth deletes the user
         // (the anonymous plugin after a guest converts, the admin plugin's removeUser).
+        // invite_codes.created_by blocks the delete, so refuse before purging anything.
         before: async (user) => {
+          if (await ownsInviteCodes(user.id)) {
+            throw new APIError("CONFLICT", { code: "USER_HAS_INVITE_CODES", message: USER_HAS_INVITE_CODES_MESSAGE });
+          }
           await purgeOwnedData(user.id);
         },
       },
