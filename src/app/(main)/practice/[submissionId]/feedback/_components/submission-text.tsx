@@ -3,6 +3,7 @@
 import type { ErrorRecord } from "@/lib/db/schema";
 import type { ErrorCategory } from "@/lib/taxonomy";
 import { CATEGORY_STYLES, superscript } from "@/lib/category-styles";
+import { locateErrorSpan } from "@/lib/feedback/error-span";
 
 type Props = {
   contentFr: string;
@@ -14,17 +15,26 @@ type Segment =
   | { type: "error"; text: string; originalIndex: number; category: ErrorCategory };
 
 export function SubmissionText({ contentFr, errors }: Props) {
-  // Pair each error with its original DB-order index so superscripts match the right panel
-  const indexed = errors.map((err, i) => ({ err, originalIndex: i }));
+  // Pair each error with its original DB-order index so superscripts match the right panel.
+  // Re-locate every span: stored offsets can point at unrelated text (older rows).
+  const located = errors.flatMap((err, originalIndex) => {
+    const span = locateErrorSpan(
+      contentFr,
+      err.original,
+      err.spanStart,
+      err.spanEnd,
+      err.triggerContext,
+    );
+    return span ? [{ err, originalIndex, span }] : [];
+  });
   // Sort by span start to walk the text in order
-  const sorted = [...indexed].sort((a, b) => a.err.spanStart - b.err.spanStart);
+  const sorted = [...located].sort((a, b) => a.span.start - b.span.start);
 
   const segments: Segment[] = [];
   let pos = 0;
 
-  for (const { err, originalIndex } of sorted) {
-    const start = Math.max(0, err.spanStart);
-    const end = Math.min(contentFr.length, err.spanEnd);
+  for (const { err, originalIndex, span } of sorted) {
+    const { start, end } = span;
 
     if (start >= end || start < pos) continue; // degenerate or overlapping span
 

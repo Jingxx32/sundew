@@ -28,6 +28,7 @@ import { upsertGap, gradeGap } from "@/lib/vocabulary/gaps";
 import { getProductionGapLemmas } from "@/lib/actions/vocab-gaps";
 import { requireUser } from "@/lib/auth/session";
 import { requireFeature } from "@/lib/access/guard";
+import { locateErrorSpan } from "@/lib/feedback/error-span";
 
 const ARCHIVE_PLACEHOLDER_TITLE = "(Targeted practice from your error archive)";
 const ARCHIVE_PLACEHOLDER_TYPE = "personal";
@@ -196,31 +197,23 @@ export async function writeFromTcfPassage(questionId: string): Promise<string> {
 }
 
 /**
- * LLM character offsets are notoriously unreliable. If the reported span doesn't
- * match `original`, recover it by unique-substring search; otherwise keep the
- * clamped span. Prevents mis-highlighted or silently dropped error cards.
+ * Re-anchor the LLM's span on `original` (see `locateErrorSpan`). When it can't
+ * be found at all, keep the clamped offsets so the error card is not dropped.
  */
 function repairSpan(
   content: string,
   original: string,
   start: number,
   end: number,
+  context?: string | null,
 ): { start: number; end: number } {
+  const located = locateErrorSpan(content, original, start, end, context);
+  if (located) return located;
+  console.warn(
+    `[feedback] could not locate span for "${original}" — keeping clamped offsets`,
+  );
   const clampedStart = Math.max(0, Math.min(content.length, start));
   const clampedEnd = Math.max(clampedStart, Math.min(content.length, end));
-  if (content.slice(clampedStart, clampedEnd) === original) {
-    return { start: clampedStart, end: clampedEnd };
-  }
-  if (original.length > 0) {
-    const idx = content.indexOf(original);
-    // Only trust the search when the substring occurs exactly once in the text.
-    if (idx !== -1 && content.indexOf(original, idx + 1) === -1) {
-      return { start: idx, end: idx + original.length };
-    }
-    console.warn(
-      `[feedback] could not locate span for "${original}" — keeping clamped offsets`,
-    );
-  }
   return { start: clampedStart, end: clampedEnd };
 }
 
@@ -245,7 +238,13 @@ async function persistFeedback(
   if (feedback.errors.length > 0) {
     await db.insert(errors).values(
       feedback.errors.map((err) => {
-        const span = repairSpan(content, err.original, err.span.start, err.span.end);
+        const span = repairSpan(
+          content,
+          err.original,
+          err.span.start,
+          err.span.end,
+          err.trigger_context,
+        );
         return {
           id: randomUUID(),
           userId,
