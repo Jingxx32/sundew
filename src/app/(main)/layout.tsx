@@ -1,6 +1,7 @@
 import { AccountSession } from "@/components/account-session";
 import { ImpersonationBanner } from "@/components/impersonation-banner";
 import { Sidebar } from "@/components/sidebar";
+import { formatGuestExpiry } from "@/lib/access/limits";
 import { requirePageUser } from "@/lib/auth/session";
 
 export default async function MainLayout({
@@ -9,6 +10,10 @@ export default async function MainLayout({
   children: React.ReactNode;
 }) {
   const user = await requirePageUser();
+  const account =
+    user.access === "guest" && user.guestExpiresAt
+      ? { primary: "Guest", secondary: `Expires ${formatGuestExpiry(user.guestExpiresAt)}` }
+      : { primary: user.email, secondary: user.access === "admin" ? "Administrator" : "Member" };
 
   return (
     <AccountSession userId={user.id}>
@@ -19,7 +24,7 @@ export default async function MainLayout({
         >
           Skip to content
         </a>
-        <Sidebar email={user.email} role={user.role} />
+        <Sidebar account={account} />
         <main id="main-content" className="min-w-0 flex-1 pb-20 md:pb-0">
           {user.impersonatedBy && <ImpersonationBanner email={user.email} />}
           {children}

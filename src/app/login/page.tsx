@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { SundewLogo } from "@/components/sundew-logo";
+import { GuestStartButton } from "@/components/guest-start-button";
 import { SignOutButton } from "@/components/sign-out-button";
 import { Button } from "@/components/ui/button";
 import { safeCallbackPath } from "@/lib/auth/callback-path";
 import { otpEmailConfigured } from "@/lib/auth/email";
+import { guestAccessEnabled } from "@/lib/auth/guest";
 import { getCurrentUser } from "@/lib/auth/session";
 import { signupEnabled } from "@/lib/auth/signup";
 import { LoginForm } from "./_components/login-form";
@@ -44,6 +46,14 @@ export default async function LoginPage({
             signupOpen={signupEnabled()}
             initialError={error ?? null}
           />
+        )}
+        {!user && guestAccessEnabled() && (
+          <div className="mt-6 border-t border-border pt-6">
+            <p className="mb-3 text-sm text-muted-foreground">
+              Just looking around? Open a demo account with sample data — no sign-up, deleted after 7 days.
+            </p>
+            <GuestStartButton variant="outline" className="w-full" />
+          </div>
         )}
       </section>
       <Link href="/demo" className="mt-6 text-center text-sm text-muted-foreground hover:text-accent">

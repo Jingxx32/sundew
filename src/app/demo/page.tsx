@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowDown, ArrowRight, BookOpenText, Clock3, LockKeyhole, Mic2 } from "lucide-react";
 
+import { GuestStartButton } from "@/components/guest-start-button";
 import { SundewLogo } from "@/components/sundew-logo";
 import { Button } from "@/components/ui/button";
+import { guestAccessEnabled } from "@/lib/auth/guest";
 
 import { DemoQuestion } from "./_components/demo-question";
 
@@ -63,6 +65,11 @@ export default function DemoPage() {
                   <ArrowDown className="h-4 w-4" aria-hidden="true" />
                 </a>
               </Button>
+              {guestAccessEnabled() && (
+                <GuestStartButton size="lg" variant="outline" className="h-12 px-6">
+                  Try the full app
+                </GuestStartButton>
+              )}
               <span className="inline-flex items-center gap-2 px-2 text-sm text-muted-foreground">
                 <Clock3 className="h-4 w-4" strokeWidth={1.8} aria-hidden="true" />
                 About 3 minutes

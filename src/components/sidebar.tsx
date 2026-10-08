@@ -82,7 +82,7 @@ function MobileNavigation({ pathname }: { pathname: string }) {
   );
 }
 
-export function Sidebar({ email, role }: { email: string; role: "admin" | "member" }) {
+export function Sidebar({ account }: { account: { primary: string; secondary: string } }) {
   const pathname = usePathname();
   return (
     <>
@@ -97,9 +97,9 @@ export function Sidebar({ email, role }: { email: string; role: "admin" | "membe
           href="/account"
           className="mt-auto rounded-lg border-t border-border/70 px-3 pt-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
         >
-          <p className="truncate text-xs font-medium" title={email}>{email}</p>
+          <p className="truncate text-xs font-medium" title={account.primary}>{account.primary}</p>
           <p className="mt-1 text-[11px] uppercase tracking-wider text-muted-foreground">
-            {role === "admin" ? "Administrator" : "Member"}
+            {account.secondary}
           </p>
         </Link>
       </aside>
