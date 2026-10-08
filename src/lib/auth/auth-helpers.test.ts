@@ -20,9 +20,23 @@ test("sign-up is closed in production unless explicitly opened", () => {
 
 test("sessions map to the app user; banned users have none", () => {
   const session = { user: { id: "u1", email: "a@example.com", name: "", role: "admin", banned: false }, session: { impersonatedBy: null } };
-  assert.deepEqual(toAuthenticatedUser(session), { id: "u1", email: "a@example.com", name: "", role: "admin", impersonatedBy: null });
+  assert.deepEqual(toAuthenticatedUser(session), {
+    id: "u1", email: "a@example.com", name: "", role: "admin",
+    access: "admin", guestExpiresAt: null, impersonatedBy: null,
+  });
   assert.equal(toAuthenticatedUser({ ...session, user: { ...session.user, role: "user" } })?.role, "member");
   assert.equal(toAuthenticatedUser({ ...session, user: { ...session.user, banned: true } }), null);
   assert.equal(toAuthenticatedUser(null), null);
   assert.equal(toAuthenticatedUser({ ...session, session: { impersonatedBy: "admin-1" } })?.impersonatedBy, "admin-1");
+});
+
+test("anonymous users are guests with an expiry", () => {
+  const guest = toAuthenticatedUser({
+    user: { id: "g1", email: "temp@anonymous.invalid", name: "Guest", role: "member", isAnonymous: true, createdAt: "2026-10-07T12:00:00Z" },
+    session: {},
+  });
+  assert.equal(guest?.access, "guest");
+  assert.equal(guest?.role, "member");
+  assert.equal(guest?.guestExpiresAt?.toISOString(), "2026-10-14T12:00:00.000Z");
+  assert.equal(toAuthenticatedUser({ user: { id: "m1", email: "m@example.com", name: "", role: "member" }, session: {} })?.access, "full");
 });
