@@ -5,7 +5,9 @@ import { usePathname } from "next/navigation";
 import { MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SundewLogo } from "@/components/sundew-logo";
+import type { Access } from "@/lib/access/features";
 import {
+  ADMIN_NAVIGATION,
   PRIMARY_NAVIGATION,
   SECONDARY_NAVIGATION,
   isNavigationItemActive,
@@ -38,8 +40,9 @@ function NavigationLink({ item, pathname }: { item: NavigationItem; pathname: st
   );
 }
 
-function MobileNavigation({ pathname }: { pathname: string }) {
-  const moreIsActive = SECONDARY_NAVIGATION.some((item) => isNavigationItemActive(item, pathname));
+function MobileNavigation({ pathname, access }: { pathname: string; access: Access }) {
+  const moreItems = [...SECONDARY_NAVIGATION, ...(access === "admin" ? ADMIN_NAVIGATION : [])];
+  const moreIsActive = moreItems.some((item) => isNavigationItemActive(item, pathname));
   return (
     <nav aria-label="Primary navigation" className="fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-surface/95 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur md:hidden">
       <div className="mx-auto grid max-w-md grid-cols-4">
@@ -63,7 +66,7 @@ function MobileNavigation({ pathname }: { pathname: string }) {
           <DialogContent className="bottom-[calc(4.5rem+env(safe-area-inset-bottom))] left-3 right-3 top-auto w-auto max-w-none translate-x-0 translate-y-0 p-4 sm:max-w-none">
             <DialogHeader><DialogTitle>More</DialogTitle></DialogHeader>
             <div className="grid grid-cols-2 gap-1.5">
-              {SECONDARY_NAVIGATION.map((item) => {
+              {moreItems.map((item) => {
                 const Icon = item.icon;
                 const active = isNavigationItemActive(item, pathname);
                 return (
@@ -82,7 +85,7 @@ function MobileNavigation({ pathname }: { pathname: string }) {
   );
 }
 
-export function Sidebar({ account }: { account: { primary: string; secondary: string } }) {
+export function Sidebar({ account, access }: { account: { primary: string; secondary: string }; access: Access }) {
   const pathname = usePathname();
   return (
     <>
@@ -92,6 +95,7 @@ export function Sidebar({ account }: { account: { primary: string; secondary: st
           {PRIMARY_NAVIGATION.map((item) => <NavigationLink key={item.href} item={item} pathname={pathname} />)}
           <p className="mb-1 mt-6 px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Workspace</p>
           {SECONDARY_NAVIGATION.map((item) => <NavigationLink key={item.href} item={item} pathname={pathname} />)}
+          {access === "admin" && ADMIN_NAVIGATION.map((item) => <NavigationLink key={item.href} item={item} pathname={pathname} />)}
         </nav>
         <Link
           href="/account"
@@ -103,7 +107,7 @@ export function Sidebar({ account }: { account: { primary: string; secondary: st
           </p>
         </Link>
       </aside>
-      <MobileNavigation pathname={pathname} />
+      <MobileNavigation pathname={pathname} access={access} />
     </>
   );
 }

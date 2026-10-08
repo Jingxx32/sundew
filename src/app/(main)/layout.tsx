@@ -24,7 +24,7 @@ export default async function MainLayout({
         >
           Skip to content
         </a>
-        <Sidebar account={account} />
+        <Sidebar account={account} access={user.access} />
         <main id="main-content" className="min-w-0 flex-1 pb-20 md:pb-0">
           {user.impersonatedBy && <ImpersonationBanner email={user.email} />}
           {children}

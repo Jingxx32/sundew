@@ -6,6 +6,7 @@ import {
   Layers3,
   RotateCcw,
   Settings,
+  Ticket,
   UserRound,
   type LucideIcon,
 } from "lucide-react";
@@ -37,6 +38,10 @@ export const SECONDARY_NAVIGATION: NavigationItem[] = [
   { href: "/progress", label: "Progress", icon: BarChart3, matches: within("/progress") },
   { href: "/settings", label: "Settings", icon: Settings, matches: within("/settings") },
   { href: "/account", label: "Account", icon: UserRound, matches: within("/account") },
+];
+
+export const ADMIN_NAVIGATION: NavigationItem[] = [
+  { href: "/admin/invites", label: "Invites", icon: Ticket, matches: within("/admin") },
 ];
 
 export const ALL_NAVIGATION = [...PRIMARY_NAVIGATION, ...SECONDARY_NAVIGATION];
