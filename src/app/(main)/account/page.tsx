@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { UserRound } from "lucide-react";
+import { InviteCodeForm } from "@/components/invite-code-form";
 import { SignOutButton } from "@/components/sign-out-button";
 import { formatGuestExpiry } from "@/lib/access/limits";
 import { auth } from "@/lib/auth/auth";
@@ -23,6 +24,12 @@ export default async function AccountPage() {
                 This demo account and its sample data are deleted on {formatGuestExpiry(user.guestExpiresAt!)}.
               </p>
             </div>
+          </div>
+          <div className="border-t border-border pt-5">
+            <p className="mb-3 text-sm text-muted-foreground">
+              Got an invite? Create a full account — it starts fresh; the demo data stays behind.
+            </p>
+            <InviteCodeForm next="/login?callbackURL=%2Ftoday" />
           </div>
           <SignOutButton label="End demo" />
         </section>
