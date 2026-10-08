@@ -5,7 +5,7 @@ import { and, desc, eq, gt, isNull, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { speakingAssessments, speakingAssets, speakingFollowUps, speakingOperations, speakingPrompts, speakingSessions, speakingSimulations, speakingTurns } from "@/lib/db/schema";
-import { requireUser } from "@/lib/auth/session";
+import { requireFeature } from "@/lib/access/guard";
 import { DRILLS, SCENARIO, type DrillId } from "@/lib/speaking/scenario";
 import { reserveOperation, settleOperation, simulationEnabled } from "@/lib/speaking/operations";
 import { getOpenAI, MODELS } from "@/lib/ai/client";
@@ -15,7 +15,7 @@ import { deleteRecording } from "@/lib/storage/speaking-recordings";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function startSimulation(requestKey: string) {
-  const user = await requireUser();
+  const user = await requireFeature("speaking");
   if (!simulationEnabled()) throw new Error("Speaking simulation is currently unavailable");
   if (!UUID.test(requestKey)) throw new Error("Invalid request key");
   const sessionId = await db.transaction(async (tx) => {
@@ -44,7 +44,7 @@ export async function startSimulation(requestKey: string) {
 }
 
 export async function getSimulation(sessionId: string) {
-  const user = await requireUser();
+  const user = await requireFeature("speaking");
   if (!UUID.test(sessionId)) return null;
   const [row] = await db.select({ session: speakingSessions, simulation: speakingSimulations })
     .from(speakingSimulations).innerJoin(speakingSessions, eq(speakingSessions.id, speakingSimulations.sessionId))
@@ -74,7 +74,7 @@ export async function getSimulation(sessionId: string) {
 }
 
 export async function listSimulations() {
-  const user = await requireUser();
+  const user = await requireFeature("speaking");
   if (!simulationEnabled()) {
     const [available] = await db.execute(sql`select to_regclass('public.speaking_simulations') as relation`);
     if (!available?.relation) return [];
@@ -86,7 +86,7 @@ export async function listSimulations() {
 }
 
 export async function beginSimulation(sessionId: string, revision: number) {
-  const user = await requireUser();
+  const user = await requireFeature("speaking");
   if (!UUID.test(sessionId) || !Number.isSafeInteger(revision)) throw new Error("Invalid session");
   const now = new Date();
   const [updated] = await db.update(speakingSimulations).set({
@@ -99,7 +99,7 @@ export async function beginSimulation(sessionId: string, revision: number) {
 }
 
 export async function flagSimulationTranscription(sessionId: string, turnId: string) {
-  const user = await requireUser();
+  const user = await requireFeature("speaking");
   if (!UUID.test(sessionId) || !UUID.test(turnId)) throw new Error("Invalid turn");
   await db.transaction(async (tx) => {
     const [simulation] = await tx.select().from(speakingSimulations).where(and(
@@ -122,7 +122,7 @@ export async function flagSimulationTranscription(sessionId: string, turnId: str
 }
 
 export async function finishSimulation(sessionId: string, reason: "user_finished" | "time_expired" = "user_finished") {
-  const user = await requireUser();
+  const user = await requireFeature("speaking");
   if (!UUID.test(sessionId)) throw new Error("Invalid session");
   await db.transaction(async (tx) => {
     const [state] = await tx.select().from(speakingSimulations).where(and(
@@ -145,7 +145,7 @@ export async function finishSimulation(sessionId: string, reason: "user_finished
 }
 
 export async function generateSimulationFeedback(sessionId: string) {
-  const user = await requireUser();
+  const user = await requireFeature("speaking");
   if (!UUID.test(sessionId)) throw new Error("Invalid session");
   const [simulation] = await db.select().from(speakingSimulations).where(and(
     eq(speakingSimulations.sessionId, sessionId), eq(speakingSimulations.userId, user.id),
@@ -224,7 +224,7 @@ export async function generateSimulationFeedback(sessionId: string) {
 }
 
 export async function startFollowUp(assessmentId: string, issueId: string) {
-  const user = await requireUser();
+  const user = await requireFeature("speaking");
   if (!UUID.test(assessmentId)) throw new Error("Invalid assessment");
   const [assessment] = await db.select().from(speakingAssessments).where(and(
     eq(speakingAssessments.id, assessmentId), eq(speakingAssessments.userId, user.id), eq(speakingAssessments.status, "ready"),
@@ -253,7 +253,7 @@ export async function startFollowUp(assessmentId: string, issueId: string) {
 }
 
 export async function deleteSimulation(sessionId: string) {
-  const user = await requireUser();
+  const user = await requireFeature("speaking");
   if (!UUID.test(sessionId)) throw new Error("Invalid session");
   const [owned] = await db.select({ sessionId: speakingSimulations.sessionId }).from(speakingSimulations).where(and(
     eq(speakingSimulations.sessionId, sessionId), eq(speakingSimulations.userId, user.id),

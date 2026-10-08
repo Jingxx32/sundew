@@ -5,8 +5,11 @@ import { listSimulations } from "@/lib/actions/speaking-simulation";
 import { simulationEnabled } from "@/lib/speaking/operations";
 import { SCENARIO } from "@/lib/speaking/scenario";
 import { StartPractice } from "../_components/start-practice";
+import { pageGate } from "@/lib/access/page-gate";
 
 export default async function TaskTwoPage() {
+  const locked = await pageGate("speaking");
+  if (locked) return locked;
   const history = await listSimulations();
   const enabled = simulationEnabled();
   return <main className="mx-auto max-w-3xl px-5 py-10 sm:px-8">

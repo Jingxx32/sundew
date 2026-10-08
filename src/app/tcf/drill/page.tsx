@@ -9,12 +9,15 @@ import {
 import { DrillRunner } from "../_components/drill-runner";
 import { LevelBadge } from "../_components/level-badge";
 import { LEVEL_LABELS, LEVEL_ORDER } from "@/lib/tcf/display";
+import { pageGate } from "@/lib/access/page-gate";
 
 export default async function TcfDrillPage({
   searchParams,
 }: {
   searchParams: Promise<{ skill?: string; level?: string; q?: string; round?: string }>;
 }) {
+  const locked = await pageGate("tcf");
+  if (locked) return locked;
   const { skill: skillParam, level: levelParam, q, round: roundParam } = await searchParams;
   let skill = (skillParam === "reading" ? "reading" : "listening") as "listening" | "reading";
   let level = (LEVEL_ORDER.includes(levelParam as TcfLevel) ? levelParam : "A2") as TcfLevel;

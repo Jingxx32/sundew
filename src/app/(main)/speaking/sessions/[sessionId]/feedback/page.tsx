@@ -4,8 +4,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getSimulation } from "@/lib/actions/speaking-simulation";
 import { FeedbackWorkbench } from "../../../_components/feedback-workbench";
+import { pageGate } from "@/lib/access/page-gate";
 
 export default async function FeedbackPage({ params }: { params: Promise<{ sessionId: string }> }) {
+  const locked = await pageGate("speaking");
+  if (locked) return locked;
   const { sessionId } = await params;
   const state = await getSimulation(sessionId);
   if (!state) notFound();

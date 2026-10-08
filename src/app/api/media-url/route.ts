@@ -3,6 +3,7 @@ import { and, eq, or } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { quizPassages, quizSets, tcfQuestions } from "@/lib/db/schema";
 import { requireUser } from "@/lib/auth/session";
+import { canUse } from "@/lib/access/features";
 import { getPrivateMediaUrl } from "@/lib/storage/r2";
 
 export const runtime = "nodejs";
@@ -25,12 +26,19 @@ export async function GET(request: NextRequest) {
   }
   // Shared exam assets are available to approved learners; personal Quiz audio
   // must belong to the caller. Never sign an arbitrary private bucket object.
+  const canTcf = canUse(user.access, "tcf") === true;
+  const canQuiz = canUse(user.access, "quiz") === true;
+  if (!canTcf && !canQuiz) return NextResponse.json({ error: "Invite only." }, { status: 403 });
   const [shared, owned] = await Promise.all([
-    db.select({ id: tcfQuestions.id }).from(tcfQuestions)
-      .where(or(eq(tcfQuestions.audioPath, path), eq(tcfQuestions.imagePath, path))).limit(1),
-    db.select({ id: quizSets.id }).from(quizSets)
-      .innerJoin(quizPassages, eq(quizPassages.setId, quizSets.id))
-      .where(and(eq(quizSets.userId, user.id), eq(quizPassages.audioUrl, path))).limit(1),
+    canTcf
+      ? db.select({ id: tcfQuestions.id }).from(tcfQuestions)
+          .where(or(eq(tcfQuestions.audioPath, path), eq(tcfQuestions.imagePath, path))).limit(1)
+      : Promise.resolve([]),
+    canQuiz
+      ? db.select({ id: quizSets.id }).from(quizSets)
+          .innerJoin(quizPassages, eq(quizPassages.setId, quizSets.id))
+          .where(and(eq(quizSets.userId, user.id), eq(quizPassages.audioUrl, path))).limit(1)
+      : Promise.resolve([]),
   ]);
   if (!shared.length && !owned.length) {
     return NextResponse.json({ error: "Media is unavailable." }, { status: 404 });

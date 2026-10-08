@@ -2,7 +2,8 @@ import { createHash } from "node:crypto";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { speakingAssessments, speakingAssets, speakingFollowUps } from "@/lib/db/schema";
-import { AuthenticationError, requireUser } from "@/lib/auth/session";
+import { AuthenticationError, authErrorStatus } from "@/lib/auth/session";
+import { requireFeature } from "@/lib/access/guard";
 import { MAX_TURN_BYTES, wavDurationSeconds } from "@/lib/speaking/audio";
 import { reserveOperation, settleOperation } from "@/lib/speaking/operations";
 import { DRILLS, type DrillId } from "@/lib/speaking/scenario";
@@ -15,9 +16,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ fol
   const origin = request.headers.get("origin");
   if (origin && origin !== new URL(request.url).origin) return Response.json({ error: "Invalid origin" }, { status: 403 });
   let user;
-  try { user = await requireUser(); }
+  try { user = await requireFeature("speaking"); }
   catch (error) {
-    if (error instanceof AuthenticationError) return Response.json({ error: "Unauthorized" }, { status: error.code === "FORBIDDEN" ? 403 : 401 });
+    if (error instanceof AuthenticationError) return Response.json({ error: "Unauthorized" }, { status: authErrorStatus(error.code) });
     throw error;
   }
   const { followUpId } = await params;

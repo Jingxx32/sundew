@@ -12,6 +12,7 @@ import {
   type VocabGapStatus,
 } from "@/lib/db/schema";
 import { requireUser } from "@/lib/auth/session";
+import { requireFeature } from "@/lib/access/guard";
 
 /** Manual gap marking from a TCF question. Creates the entry (cache-first lookup),
  *  the occurrence, and the gap row. */
@@ -21,7 +22,7 @@ export async function markTcfVocabGap(input: {
   tcfQuestionId: string;
   gapType: VocabGapType;
 }): Promise<void> {
-  const user = await requireUser();
+  const user = await requireFeature("tcf");
   const { lemma } = await resolveLookup(input.surface, input.sentenceContext, {
     type: "tcf",
     tcfQuestionId: input.tcfQuestionId,

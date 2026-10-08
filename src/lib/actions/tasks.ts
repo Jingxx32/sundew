@@ -27,6 +27,7 @@ import { ensureEntryForWord, norm } from "@/lib/vocabulary/helpers";
 import { upsertGap, gradeGap } from "@/lib/vocabulary/gaps";
 import { getProductionGapLemmas } from "@/lib/actions/vocab-gaps";
 import { requireUser } from "@/lib/auth/session";
+import { requireFeature } from "@/lib/access/guard";
 
 const ARCHIVE_PLACEHOLDER_TITLE = "(Targeted practice from your error archive)";
 const ARCHIVE_PLACEHOLDER_TYPE = "personal";
@@ -152,7 +153,7 @@ export async function quickWrite(): Promise<void> {
  * Returns the task id; the (client) caller navigates to the task stage.
  */
 export async function writeFromTcfPassage(questionId: string): Promise<string> {
-  const user = await requireUser();
+  const user = await requireFeature("tcf");
   const row = await db
     .select({
       passage: tcfQuestions.passage,

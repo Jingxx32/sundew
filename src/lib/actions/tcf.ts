@@ -24,6 +24,8 @@ import {
   type TcfQuestionLearningSummary,
 } from "@/lib/tcf/learning";
 import { requireUser } from "@/lib/auth/session";
+import { requireFeature } from "@/lib/access/guard";
+import { canUse } from "@/lib/access/features";
 import { gradeExamAnswers } from "@/lib/tcf/exam-grading";
 import { assertSyncAccount } from "@/lib/tcf/sync-identity";
 
@@ -40,7 +42,7 @@ export interface TcfSetWithCounts {
 }
 
 export async function listTcfSets(skill: "listening" | "reading" = "listening"): Promise<TcfSetWithCounts[]> {
-  await requireUser();
+  await requireFeature("tcf");
   const sets = await db
     .select()
     .from(tcfSets)
@@ -85,7 +87,7 @@ export interface TcfLevelSummary {
 
 /** Aggregate across all sets for the overview cards */
 export async function getTcfLevelSummaries(skill: "listening" | "reading" = "listening"): Promise<TcfLevelSummary[]> {
-  await requireUser();
+  await requireFeature("tcf");
   const sets = await db.select({ id: tcfSets.id }).from(tcfSets).where(eq(tcfSets.skill, skill));
   if (sets.length === 0) return [];
 
@@ -138,7 +140,7 @@ export interface TcfProgressOverview {
 export async function getTcfProgressOverview(
   skill: "listening" | "reading" = "listening",
 ): Promise<TcfProgressOverview> {
-  const user = await requireUser();
+  const user = await requireFeature("tcf");
   const LEVELS: TcfLevel[] = ["A1", "A2", "B1", "B2", "C1", "C2"];
   const empty = (): TcfProgressOverview => ({
     byLevel: LEVELS.map((level) => ({ level, total: 0, answered: 0, accuracy: null, needsReview: 0 })),
@@ -271,7 +273,7 @@ export async function getTcfSetQuestions(
   skill: "listening" | "reading",
   testNumber: number,
 ): Promise<TcfQuestionForDrill[]> {
-  await requireUser();
+  await requireFeature("tcf");
   const rows = await db
     .select({
       id: tcfQuestions.id,
@@ -311,7 +313,7 @@ export async function getTcfSetQuestions(
 export async function getTcfQuestionById(
   id: string,
 ): Promise<{ skill: "listening" | "reading"; level: TcfLevel } | null> {
-  await requireUser();
+  await requireFeature("tcf");
   try {
     const row = (
       await db
@@ -347,7 +349,7 @@ export async function recordTcfExamAttempt(input: {
   /** The account the browser queued this answer under; a mismatch is rejected. */
   expectedUserId?: string;
 }): Promise<void> {
-  const user = await requireUser();
+  const user = await requireFeature("tcf");
   assertSyncAccount(user.id, input.expectedUserId);
   if (!input.setId || !Array.isArray(input.answers) || input.answers.length > 100) throw new Error("Invalid exam answers");
   if (input.requestKey && !/^[a-zA-Z0-9-]{8,100}$/.test(input.requestKey)) throw new Error("Invalid request key");
@@ -415,7 +417,7 @@ export async function recordTcfQuestionAttempt(input: {
   /** The account the browser queued this answer under; a mismatch is rejected. */
   expectedUserId?: string;
 }): Promise<void> {
-  const user = await requireUser();
+  const user = await requireFeature("tcf");
   assertSyncAccount(user.id, input.expectedUserId);
   if (input.requestKey && !/^[a-zA-Z0-9-]{8,100}$/.test(input.requestKey)) throw new Error("Invalid request key");
   if (!Number.isInteger(input.chosen)) throw new Error("Réponse invalide.");
@@ -464,7 +466,7 @@ function assertUuid(id: string, label: string): void {
 /** Removes exactly one historical answer. Learning summaries are always
  * derived from the remaining rows, so there is no cache to repair. */
 export async function deleteTcfQuestionAttempt(attemptId: string): Promise<void> {
-  const user = await requireUser();
+  const user = await requireFeature("tcf");
   assertUuid(attemptId, "Identifiant de tentative");
   await db.transaction(async tx => {
     if (reviewDataEnabled()) await lockReviewOwner(tx,user.id);
@@ -478,7 +480,7 @@ export async function deleteTcfQuestionAttempt(attemptId: string): Promise<void>
 /** Deliberately separate from deleting one row: callers must ask the learner
  * for a second explicit confirmation before invoking it. */
 export async function resetTcfQuestionLearningHistory(questionId: string): Promise<void> {
-  const user = await requireUser();
+  const user = await requireFeature("tcf");
   assertUuid(questionId, "Identifiant de question");
   await db.transaction(async tx => {
     if (reviewDataEnabled()) await lockReviewOwner(tx,user.id);
@@ -503,7 +505,7 @@ export async function getTcfQuestionLearning(
   skill: "listening" | "reading",
   level: TcfLevel,
 ): Promise<TcfQuestionLearning[]> {
-  const user = await requireUser();
+  const user = await requireFeature("tcf");
   const questions = await db
     .select({ id: tcfQuestions.id })
     .from(tcfQuestions)
@@ -544,7 +546,7 @@ export async function getTcfQuestionLearning(
 }
 
 export async function getTcfQuestionHistory(questionId: string): Promise<TcfQuestionAttemptHistory[]> {
-  const user = await requireUser();
+  const user = await requireFeature("tcf");
   assertUuid(questionId, "Identifiant de question");
   const rows = await db
     .select({
@@ -579,7 +581,7 @@ export async function getTcfScheduledDrillQuestions(
   level: TcfLevel,
   kind: TcfDrillSessionKind,
 ): Promise<{ questions: TcfQuestionForDrill[]; learning: TcfQuestionLearning[] }> {
-  const user = await requireUser();
+  const user = await requireFeature("tcf");
   const [questions, learning, gapQuestionRows] = await Promise.all([
     getTcfDrillQuestions(skill, level),
     getTcfQuestionLearning(skill, level),
@@ -638,7 +640,9 @@ export async function getTcfReviewCount(
   skill: "listening" | "reading",
   level?: TcfLevel,
 ): Promise<number> {
-  await requireUser();
+  const user = await requireUser();
+  // Review (open to guests) shows this count; guests have no TCF history.
+  if (canUse(user.access, "tcf") !== true) return 0;
   if (level) {
     const now = new Date();
     return (await getTcfQuestionLearning(skill, level)).filter((summary) => isTcfReviewDue(summary, now)).length;
@@ -653,7 +657,7 @@ export async function getTcfReviewQueue(filters: {
   level?: TcfLevel;
   tag?: string;
 } = {}): Promise<Array<TcfQuestionForDrill & { skill: "listening" | "reading"; learning: TcfQuestionLearning }>> {
-  await requireUser();
+  await requireFeature("tcf");
   const skills: Array<"listening" | "reading"> = filters.skill ? [filters.skill] : ["listening", "reading"];
   const levels: TcfLevel[] = filters.level ? [filters.level] : ["A1", "A2", "B1", "B2", "C1", "C2"];
   const groups = await Promise.all(skills.flatMap((skill) => levels.map(async (level) => {
@@ -670,7 +674,7 @@ export async function getTcfDoneQuestionIds(
   skill: "listening" | "reading",
   level: TcfLevel,
 ): Promise<string[]> {
-  const user = await requireUser();
+  const user = await requireFeature("tcf");
   const rows = await db
     .selectDistinct({ questionId: tcfQuestionAttempts.questionId })
     .from(tcfQuestionAttempts)
@@ -688,6 +692,7 @@ export async function getTcfDoneQuestionIds(
 
 export async function listRecentTcfAttempts(limit = 10): Promise<TcfAttempt[]> {
   const user = await requireUser();
+  if (canUse(user.access, "tcf") !== true) return [];
   return db
     .select()
     .from(tcfAttempts)
@@ -700,7 +705,7 @@ export async function getTcfDrillQuestions(
   skill: "listening" | "reading",
   level: TcfLevel,
 ): Promise<TcfQuestionForDrill[]> {
-  await requireUser();
+  await requireFeature("tcf");
   const rows = await db
     .select({
       id: tcfQuestions.id,

@@ -1,7 +1,8 @@
 import { and, eq, gt, isNull } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { speakingAssets } from "@/lib/db/schema";
-import { AuthenticationError, requireUser } from "@/lib/auth/session";
+import { AuthenticationError, authErrorStatus } from "@/lib/auth/session";
+import { requireFeature } from "@/lib/access/guard";
 import { getRecording } from "@/lib/storage/speaking-recordings";
 
 export const runtime = "nodejs";
@@ -9,9 +10,9 @@ export const dynamic = "force-dynamic";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ assetId: string }> }) {
   let user;
-  try { user = await requireUser(); }
+  try { user = await requireFeature("speaking"); }
   catch (error) {
-    if (error instanceof AuthenticationError) return new Response(null, { status: error.code === "FORBIDDEN" ? 403 : 401 });
+    if (error instanceof AuthenticationError) return new Response(null, { status: authErrorStatus(error.code) });
     throw error;
   }
   const { assetId } = await params;

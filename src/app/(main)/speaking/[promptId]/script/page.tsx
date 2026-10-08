@@ -4,12 +4,15 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getPromptWithScript } from "@/lib/actions/speaking";
 import { ScriptWorkbench } from "../../_components/script-workbench";
+import { pageGate } from "@/lib/access/page-gate";
 
 export default async function ScriptPracticePage({
   params,
 }: {
   params: Promise<{ promptId: string }>;
 }) {
+  const locked = await pageGate("speaking");
+  if (locked) return locked;
   const { promptId } = await params;
   const { prompt, script } = await getPromptWithScript(promptId);
 

@@ -19,6 +19,7 @@ import {
   writingTasks,
 } from "@/lib/db/schema";
 import { requireUser } from "@/lib/auth/session";
+import { canUse } from "@/lib/access/features";
 import { CEFR_LEVELS, type CefrLevel } from "@/lib/cefr";
 import { ERROR_TAXONOMY, type ErrorCategory } from "@/lib/taxonomy";
 import { getCefrLevel, getStudyGoal, type StudyGoal } from "./settings";
@@ -58,7 +59,7 @@ export type TodayPlan = {
   goal: StudyGoal & { daysLeft: number | null; examState: "future" | "today" | "past" | null };
   activity: TodayActivity;
   alternatives: TodayActivity[];
-  skills: Array<{ key: "listening" | "speaking" | "reading" | "writing"; title: string; href: string; detail: string }>;
+  skills: Array<{ key: "listening" | "speaking" | "reading" | "writing"; title: string; href: string; detail: string; locked: boolean }>;
   focusAreas: TodayFocusArea[];
   week: { from: Date; tcfAnswers: number; writingSubmissions: number; conjugationAnswers: number };
 };
@@ -178,8 +179,10 @@ export async function getTodayPlan(): Promise<TodayPlan> {
   const recommendedKey = recommendActivity({ learningMode: goal.learningMode, dueVocabulary, repeatedConjugationIssue, wroteToday: writingDone, suggestedTcfSkill: suggestedSkill });
   const savedFocus = parseFocus(focusSetting?.value);
   const activeKey = savedFocus?.dateKey === dateKey ? savedFocus.key : recommendedKey;
-  const activity = activities.find((candidate) => candidate.key === activeKey) ?? activities.find((candidate) => candidate.key === recommendedKey)!;
-  const alternatives = activities.filter((candidate) => candidate.key !== activity.key && (!candidate.done || candidate.key === "writing"));
+  // Guests cannot open TCF drills; never recommend one.
+  const available = canUse(user.access, "tcf") === true ? activities : activities.filter((candidate) => !candidate.key.startsWith("tcf-"));
+  const activity = available.find((candidate) => candidate.key === activeKey) ?? available.find((candidate) => candidate.key === recommendedKey) ?? available[0];
+  const alternatives = available.filter((candidate) => candidate.key !== activity.key && (!candidate.done || candidate.key === "writing"));
 
   const daysLeft = goal.examDate ? calendarDayDifference(dateKey, goal.examDate) : null;
   const examState = daysLeft === null ? null : daysLeft < 0 ? "past" : daysLeft === 0 ? "today" : "future";
@@ -196,10 +199,10 @@ export async function getTodayPlan(): Promise<TodayPlan> {
     activity,
     alternatives,
     skills: [
-      { key: "listening", title: "Listening", href: "/tcf?skill=listening", detail: recentForSkill(lastListening, "TCF listening practice") },
-      { key: "speaking", title: "Speaking", href: "/speaking", detail: recentForSkill(speakingRows.map((row) => row.startedAt), "Script and pronunciation") },
-      { key: "reading", title: "Reading", href: "/training#reading", detail: recentForSkill(lastReading, "Library or TCF reading") },
-      { key: "writing", title: "Writing", href: "/practice", detail: recentForSkill(lastWriting, "Short writing with feedback") },
+      { key: "listening", title: "Listening", href: "/tcf?skill=listening", detail: recentForSkill(lastListening, "TCF listening practice"), locked: canUse(user.access, "tcf") !== true },
+      { key: "speaking", title: "Speaking", href: "/speaking", detail: recentForSkill(speakingRows.map((row) => row.startedAt), "Script and pronunciation"), locked: canUse(user.access, "speaking") !== true },
+      { key: "reading", title: "Reading", href: "/training#reading", detail: recentForSkill(lastReading, "Library or TCF reading"), locked: false },
+      { key: "writing", title: "Writing", href: "/practice", detail: recentForSkill(lastWriting, "Short writing with feedback"), locked: false },
     ],
     focusAreas,
     week: { from: weekStart, tcfAnswers: tcfRows.filter((row) => row.answeredAt >= weekStart).length, writingSubmissions: submissionRows.length, conjugationAnswers: conjugationRows.length },
