@@ -5,8 +5,16 @@ let client: OpenAI | undefined;
 /**
  * Create the SDK only when an AI action actually runs. Importing this module
  * during `next build` must not require a production-only API key.
+ *
+ * Inside the Next.js server (NEXT_RUNTIME is set) every call first checks that
+ * the requester is not a guest. Scripts run outside Next and skip the check —
+ * they cannot load the server-only session module.
  */
-export function getOpenAI(): OpenAI {
+export async function getOpenAI(): Promise<OpenAI> {
+  if (process.env.NEXT_RUNTIME) {
+    const { assertAiAllowed } = await import("@/lib/access/ai-guard");
+    await assertAiAllowed();
+  }
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     throw new Error("OPENAI_API_KEY is not configured.");

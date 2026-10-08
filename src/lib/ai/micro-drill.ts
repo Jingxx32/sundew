@@ -15,7 +15,7 @@ export async function evaluateMicroDrill(
   correction: string,
   responseFr: string,
 ): Promise<MicroDrillFeedback> {
-  const completion = await getOpenAI().chat.completions.parse({
+  const completion = await (await getOpenAI()).chat.completions.parse({
     model: MODELS.feedback,
     messages: [
       {

@@ -12,7 +12,7 @@ export async function parseQuizFromText(
   rawText: string,
   section: "reading",
 ): Promise<ParsedQuiz> {
-  const completion = await getOpenAI().chat.completions.parse({
+  const completion = await (await getOpenAI()).chat.completions.parse({
     model: MODELS.task,
     messages: [
       {

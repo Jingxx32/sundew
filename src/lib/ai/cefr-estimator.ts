@@ -13,7 +13,7 @@ const CefrSchema = z.object({
 export async function estimateCefrLevel(text: string): Promise<string> {
   const excerpt = text.slice(0, 800);
 
-  const completion = await getOpenAI().chat.completions.parse({
+  const completion = await (await getOpenAI()).chat.completions.parse({
     model: MODELS.lookup,
     messages: [
       {

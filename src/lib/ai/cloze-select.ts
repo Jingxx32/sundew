@@ -43,7 +43,7 @@ export async function selectBlanks(
 
   const numbered = words.map((w, i) => `${i}:${w.word}`).join(" ");
 
-  const completion = await getOpenAI().chat.completions.parse({
+  const completion = await (await getOpenAI()).chat.completions.parse({
     model: MODELS.task,
     messages: [
       {

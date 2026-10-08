@@ -195,7 +195,7 @@ export async function generateSimulationFeedback(sessionId: string) {
   const startedAt = Date.now();
   try {
     const transcript = usableTurns.map((turn) => `${turn.role} [${turn.id}]: ${turn.text.slice(0, 1000)}`).join("\n").slice(0, 12_000);
-    const response = await getOpenAI().chat.completions.create({
+    const response = await (await getOpenAI()).chat.completions.create({
       model: MODELS.feedback,
       response_format: { type: "json_object" },
       max_completion_tokens: 1500,

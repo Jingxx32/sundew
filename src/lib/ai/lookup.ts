@@ -21,7 +21,7 @@ export async function lookupWord(
   word: string,
   sentenceContext: string,
 ): Promise<LookupResult> {
-  const completion = await getOpenAI().chat.completions.parse({
+  const completion = await (await getOpenAI()).chat.completions.parse({
     model: MODELS.lookup,
     messages: [
       {

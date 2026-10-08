@@ -69,7 +69,7 @@ export async function processSimulationTurn(userId: string, sessionId: string, r
     }).returning({ id: speakingTurns.id });
     await db.update(speakingAssets).set({ turnId: userTurn.id }).where(eq(speakingAssets.id, assetId));
 
-    const response = await getOpenAI().chat.completions.create({
+    const response = await (await getOpenAI()).chat.completions.create({
       model: MODELS.speaking,
       max_completion_tokens: 300,
       messages: [
@@ -82,7 +82,7 @@ export async function processSimulationTurn(userId: string, sessionId: string, r
     if (!reply) throw new Error("Partner response unavailable");
     const [partnerTurn] = await db.insert(speakingTurns).values({ userId, sessionId, orderIndex: orderIndex + 1,
       role: "examiner", text: reply }).returning({ id: speakingTurns.id });
-    const speech = await getOpenAI().audio.speech.create({ model: "tts-1", voice: "alloy", input: reply,
+    const speech = await (await getOpenAI()).audio.speech.create({ model: "tts-1", voice: "alloy", input: reply,
       response_format: "mp3" }, { timeout: 20_000, maxRetries: 0 });
     const audio = Buffer.from(await speech.arrayBuffer());
     const partnerAssetId = crypto.randomUUID();
