@@ -305,13 +305,18 @@ codes again; codes are low-value and revocable.
    - on `ok`, sets cookie `sundew_invite` = normalized code (HttpOnly,
      `SameSite=Lax`, `Secure` in production, path `/`, max-age 600 s).
 2. The page switches to **"Create your account"** with Google and email OTP.
+   The Google callback does not carry this cookie to the create hook (verified
+   2026-10-08), so a `hooks.before` middleware on `/sign-in/social` copies the
+   code into Better Auth's signed OAuth state (`addOAuthServerContext`); the
+   hooks below read `getOAuthState().serverContext.inviteCode` first and fall
+   back to the cookie (email OTP).
 3. `user.create.before`, non-anonymous user:
    - reject when `AUTH_SIGNUP_ENABLED === "false"`;
-   - read `sundew_invite` from `context`; reject when absent;
+   - read the invite code (OAuth state, else the `sundew_invite` cookie); reject when absent;
    - reserve one use atomically:
      `UPDATE invite_codes SET used_count = used_count + 1 WHERE code = $1 AND revoked_at IS NULL AND (expires_at IS NULL OR expires_at > now()) AND used_count < max_uses RETURNING id`;
      no row → reject.
-4. `user.create.after`: read `sundew_invite` again, select the invite id by code,
+4. `user.create.after`: read the invite code again (same order), select the invite id by code,
    insert `invite_redemptions`, expire the cookie.
 5. Signing in to an existing account creates no user and needs no code.
 6. The providers' `disableSignUp` options are removed; the hook is the single

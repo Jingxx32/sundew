@@ -1410,6 +1410,31 @@ Replace `sendVerificationOTP`:
       },
 ```
 
+**Task 1 finding (2026-10-08):** the invite cookie is **not** visible in `user.create.before` on the Google callback (`/callback/:id` logged `null`), but it is on `/sign-in/email-otp`. So the code travels through Better Auth's signed OAuth state, the same mechanism the anonymous plugin uses: a `hooks.before` middleware on `/sign-in/social` (same-origin, cookie present) calls `addOAuthServerContext({ inviteCode })`, and the create hooks read `(await getOAuthState())?.serverContext?.inviteCode` first, falling back to the cookie (email OTP). Verified in the spike: the callback hook received `{"inviteCode":"TEST-1234"}` and the rejection redirected to `/login?…&error=INVITE_REQUIRED` (the APIError `code` passes through unchanged).
+
+Extend the `better-auth/api` import with `addOAuthServerContext, createAuthMiddleware, getOAuthState`, then add below `export const auth` … `rateLimit` (top-level option `hooks`):
+
+```ts
+  // Google's callback does not carry our cookies; carry the invite code in the signed OAuth state instead.
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+      if (ctx.path !== "/sign-in/social") return;
+      const inviteCode = ctx.getCookie(INVITE_COOKIE);
+      if (inviteCode) await addOAuthServerContext({ inviteCode });
+    }),
+  },
+```
+
+Add a helper above `export const auth`:
+
+```ts
+/** The invite code for this sign-up: OAuth state on a provider callback, the cookie otherwise (email OTP). */
+async function inviteCodeFor(context: { getCookie: (key: string) => string | null } | null): Promise<string | null> {
+  const fromState = (await getOAuthState().catch(() => null))?.serverContext?.inviteCode;
+  return typeof fromState === "string" ? fromState : (context?.getCookie(INVITE_COOKIE) ?? null);
+}
+```
+
 Replace the `create` hooks:
 
 ```ts
@@ -1423,7 +1448,7 @@ Replace the `create` hooks:
           if (!signupOpen) {
             throw new APIError("FORBIDDEN", { code: "SIGNUP_CLOSED", message: "Sign-up is currently closed. Existing accounts can sign in." });
           }
-          const code = context?.getCookie(INVITE_COOKIE) ?? null;
+          const code = await inviteCodeFor(context);
           if (!code) {
             throw new APIError("FORBIDDEN", { code: "INVITE_REQUIRED", message: "An invite code is required to create an account." });
           }
@@ -1434,7 +1459,7 @@ Replace the `create` hooks:
         },
         after: async (user, context) => {
           if (user.isAnonymous === true) return;
-          const code = context?.getCookie(INVITE_COOKIE);
+          const code = await inviteCodeFor(context);
           if (!code) return;
           await recordRedemption(code, user.id);
           // Best effort: the cookie also expires on its own after 10 minutes.
@@ -1745,7 +1770,7 @@ git commit -m "feat(admin): create, list and revoke invite codes"
 - Modify: `src/app/login/page.tsx`, `src/app/login/_components/login-form.tsx`, `src/app/(main)/account/page.tsx`
 
 **Interfaces:**
-- Consumes: `checkInviteCode`, `clearInviteCode` (Task 6); `INVITE_COOKIE` (Task 3); the Google `error=` value recorded in Task 1, Step 5.
+- Consumes: `checkInviteCode`, `clearInviteCode` (Task 6); `INVITE_COOKIE` (Task 3). Google rejections arrive as `/login?error=<APIError code>` (Task 1).
 - Produces: `<InviteCodeForm next?: string />`, which renders a `form#invite` so `/account#invite` links resolve.
 
 - [ ] **Step 1: `src/components/invite-code-form.tsx`**
@@ -1829,13 +1854,12 @@ Render:
 
 - [ ] **Step 3: LoginForm** — `src/app/login/_components/login-form.tsx`
 
-Add to `MESSAGES` (replace `GOOGLE_ERROR_VALUE` with the exact value recorded in Task 1, Step 5):
+Add to `MESSAGES` (Task 1 confirmed Google redirects with the APIError code itself, e.g. `error=INVITE_REQUIRED`, so these keys cover both the OTP errors and the `initialError` query value):
 
 ```ts
   INVITE_REQUIRED: "An invite code is required to create an account.",
   INVITE_INVALID: "This invite code is no longer valid.",
   SIGNUP_CLOSED: "Sign-up is currently closed. Existing accounts can sign in.",
-  GOOGLE_ERROR_VALUE: "An invite code is required to create an account.",
 ```
 
 Remove the now-unused `signup_disabled` entry. Add the prop `mode: "sign-in" | "create"`. In `"create"` mode, render below the buttons:
