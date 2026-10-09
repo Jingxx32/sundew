@@ -15,7 +15,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getTodayPlan, selectTodayActivity, startTodayActivity } from "@/lib/actions/today";
+import { requirePageUser } from "@/lib/auth/session";
 import type { TodayActivity } from "@/lib/actions/today";
+import { GuestStartHere } from "./_components/guest-start-here";
 
 const SKILL_ICONS = { listening: Headphones, speaking: Mic, reading: BookOpenText, writing: PenLine } as const;
 
@@ -31,7 +33,7 @@ function ActivityAction({ activity }: { activity: TodayActivity }) {
 }
 
 export default async function TodayPage() {
-  const plan = await getTodayPlan();
+  const [plan, user] = await Promise.all([getTodayPlan(), requirePageUser()]);
   const formattedDate = new Intl.DateTimeFormat("en-CA", { timeZone: plan.timeZone, weekday: "long", month: "long", day: "numeric" }).format(new Date());
   const weekFrom = new Intl.DateTimeFormat("en-CA", { timeZone: plan.timeZone, month: "short", day: "numeric" }).format(plan.week.from);
   const goalCopy = plan.goal.learningMode === "tcf"
@@ -50,6 +52,8 @@ export default async function TodayPage() {
           <Link href="/settings" className="rounded-lg px-2 py-1.5 text-sm font-medium text-accent hover:bg-accent-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40">Edit goal</Link>
         </div>
       </header>
+
+      {user.access === "guest" && <GuestStartHere />}
 
       <section aria-labelledby="today-focus" className="relative overflow-hidden rounded-2xl bg-surface-blue px-6 py-6 sm:px-8 sm:py-8">
         <div className="sundew-organic-shape pointer-events-none absolute -right-20 -top-32 h-72 w-72 bg-accent-soft-strong/65" aria-hidden="true" />

@@ -1,5 +1,6 @@
 import { AccessProvider } from "@/components/access-context";
 import { AccountSession } from "@/components/account-session";
+import { GuestBar } from "@/components/guest-bar";
 import { ImpersonationBanner } from "@/components/impersonation-banner";
 import { Sidebar } from "@/components/sidebar";
 import { formatGuestExpiry } from "@/lib/access/limits";
@@ -29,6 +30,7 @@ export default async function MainLayout({
           <Sidebar account={account} access={user.access} />
           <main id="main-content" className="min-w-0 flex-1 pb-20 md:pb-0">
             {user.impersonatedBy && <ImpersonationBanner email={user.email} />}
+            {user.access === "guest" && user.guestExpiresAt && <GuestBar expiresAt={user.guestExpiresAt} />}
             {children}
           </main>
         </div>
