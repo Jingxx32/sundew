@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { ERROR_TAXONOMY } from "@/lib/taxonomy";
-import { FEATURE_CARDS, featureTag } from "./content";
+import { FEATURE_CARDS, featureTag, landingCta } from "./content";
 
 test("cards a guest can open say so, unless guest access is off", () => {
   assert.equal(featureTag({ inGuestTour: true }, true), "In the guest tour");
@@ -21,4 +21,11 @@ test("the writing card's taxonomy numbers come from the taxonomy itself", () => 
   const writing = FEATURE_CARDS.find((card) => card.key === "writing");
   assert.ok(writing?.body.includes(`${categories.length}-category`));
   assert.ok(writing?.body.includes(`${types} error types`));
+});
+
+test("the landing CTA continues a guest's demo, else starts one or falls back to sign-in", () => {
+  assert.equal(landingCta("guest", true), "continue");
+  assert.equal(landingCta("guest", false), "continue");
+  assert.equal(landingCta("visitor", true), "guest-start");
+  assert.equal(landingCta("visitor", false), "sign-in");
 });

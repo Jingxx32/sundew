@@ -27,3 +27,9 @@ test("guests expire seven days after creation", () => {
   assert.equal(expires.toISOString(), "2026-10-14T12:00:00.000Z");
   assert.equal(formatGuestExpiry(expires), "Oct 14");
 });
+
+test("every feature explains why it is members-only", () => {
+  for (const [key, feature] of Object.entries(FEATURES)) {
+    assert.match(feature.memberReason, /^\S.*\.$/, key);
+  }
+});

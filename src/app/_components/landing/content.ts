@@ -60,4 +60,13 @@ export const STACK = [
   "OpenAI", "Azure Speech", "Cloudflare R2", "Vercel",
 ] as const;
 
-export const SOURCE_URL = "https://github.com/Jingxx32/sundew";
+export { SOURCE_URL } from "@/lib/site";
+
+/** Who is looking at the landing page: a signed-out visitor or a signed-in guest. */
+export type LandingViewer = "visitor" | "guest";
+
+/** Main call to action: guests continue their demo; visitors start one, or sign in when guests are off. */
+export function landingCta(viewer: LandingViewer, guestEnabled: boolean): "continue" | "guest-start" | "sign-in" {
+  if (viewer === "guest") return "continue";
+  return guestEnabled ? "guest-start" : "sign-in";
+}
