@@ -109,11 +109,15 @@ export default async function TcfReviewPage({
                       {item.skill === "listening" ? "Écoute" : "Lecture"} · Test {item.testNumber} · n°{item.orderIndex}
                     </span>
                     <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                      {reason && (
-                        <span className={cn("rounded-full px-1.5 font-semibold", reason === "wrong" ? "bg-danger-soft text-danger" : "bg-warning-soft text-warning")}>
-                          {reason === "wrong" ? "Ratée" : "Incertaine"}
-                        </span>
-                      )}
+                      {/* No wrong or uncertain answer means the schedule brought it back for a check. */}
+                      <span
+                        className={cn(
+                          "rounded-full px-1.5 font-semibold",
+                          reason === "wrong" ? "bg-danger-soft text-danger" : reason === "uncertain" ? "bg-warning-soft text-warning" : "bg-surface-muted text-muted-foreground",
+                        )}
+                      >
+                        {reason === "wrong" ? "Ratée" : reason === "uncertain" ? "Incertaine" : "Rappel"}
+                      </span>
                       {item.learning.lastAnsweredAt && <span>{dateFormat.format(item.learning.lastAnsweredAt)}</span>}
                     </span>
                   </span>
