@@ -16,7 +16,7 @@ export function LandingHero() {
           <span className="text-focus-star" aria-hidden="true">✱</span>
           TCF Canada · no sign-up needed
         </p>
-        <h1 className="mt-6 font-display text-[44px] font-extrabold leading-[0.98] tracking-[-0.025em] sm:text-[56px] lg:text-[60px]">
+        <h1 className="mt-6 font-display text-[44px] font-extrabold leading-[0.98] tracking-[-0.025em] sm:text-[56px] lg:text-[52px] xl:text-[60px]">
           Practise the exam.
           <br />
           <span className="text-primary">Fix the weakness</span>
