@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, BookOpen } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen } from "lucide-react";
 import { getWritingTaskWithDocument, listRecentSubmissions } from "@/lib/actions/tasks";
 import { requirePageUser } from "@/lib/auth/session";
 import { TaskCard } from "./_components/task-card";
@@ -16,7 +16,7 @@ export default async function PracticePage({
 
   if (!taskId) {
     const user = await requirePageUser();
-    const samples = user.access === "guest" ? await listRecentSubmissions() : [];
+    if (user.access === "guest") return <GuestPractice samples={await listRecentSubmissions()} />;
     return (
       <div className="max-w-2xl mx-auto px-10 py-24 text-center space-y-6">
         <div className="flex justify-center mb-2">
@@ -26,20 +26,6 @@ export default async function PracticePage({
         <div className="flex justify-center">
           <QuickWriteButton />
         </div>
-        {samples.length > 0 && (
-          <div className="mx-auto max-w-sm space-y-2 text-left">
-            <div className="text-[11px] font-medium uppercase tracking-wider text-accent">Sample feedback</div>
-            <ul className="space-y-1">
-              {samples.map((s) => (
-                <li key={s.id}>
-                  <Link href={`/practice/${s.id}/feedback`} className="block truncate text-sm text-muted-foreground transition-colors hover:text-foreground">
-                    {s.promptEn}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
         <p className="text-muted-foreground text-sm leading-relaxed max-w-sm mx-auto">
           Prefer writing about something you read? Open a document in the{" "}
           <Link href="/library" className="text-accent hover:underline">
@@ -80,6 +66,47 @@ export default async function PracticePage({
           maxWordCount={task.maxWordCount}
         />
       </div>
+    </div>
+  );
+}
+
+/** Guests can't write new answers, so the sample feedback leads and writing is explained, not offered. */
+function GuestPractice({ samples }: { samples: Array<{ id: string; promptEn: string; submittedAt: Date }> }) {
+  const date = new Intl.DateTimeFormat("en-CA", { month: "short", day: "numeric" });
+  return (
+    <div className="mx-auto max-w-2xl px-5 py-10 sm:px-8">
+      <h1 className="mb-1 text-[38px] font-bold tracking-[-0.025em]">Practice</h1>
+      <p className="text-sm text-muted-foreground">Write in French and get feedback that classifies every error.</p>
+
+      <section aria-labelledby="sample-feedback" className="mt-8">
+        <h2 id="sample-feedback" className="text-xs font-semibold uppercase tracking-[0.14em] text-accent">Sample feedback</h2>
+        <ul className="mt-3 space-y-3">
+          {samples.map((sample) => (
+            <li key={sample.id}>
+              <Link
+                href={`/practice/${sample.id}/feedback`}
+                className="group block rounded-xl border border-border/80 bg-surface p-4 transition-colors hover:border-accent/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+              >
+                <span className="line-clamp-2 text-sm font-medium group-hover:text-accent">{sample.promptEn}</span>
+                <span className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+                  {date.format(sample.submittedAt)}
+                  <span className="inline-flex items-center gap-1 font-semibold text-accent">
+                    View feedback
+                    <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                  </span>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section aria-labelledby="write-your-own" className="mt-10 border-t border-border pt-6">
+        <h2 id="write-your-own" className="text-sm font-semibold">Write your own</h2>
+        <div className="mt-3">
+          <QuickWriteButton />
+        </div>
+      </section>
     </div>
   );
 }
