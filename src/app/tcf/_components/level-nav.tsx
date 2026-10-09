@@ -26,9 +26,13 @@ export function LevelNav({ questions, currentIndex, onSelect, statusByQuestion, 
     (count, question) => count + (statusByQuestion[question.id] === "needs_review" ? 1 : 0),
     0,
   );
-  const groups = groupQuestionsByTest(questions);
   const current = questions[currentIndex];
   const showStrip = questions.length <= STRIP_MAX;
+  // A 10/20 round is numbered in running order so the nav matches "Question x de N";
+  // "Toutes" stays a map by test, where test and question numbers are the useful index.
+  const groups = showStrip
+    ? [{ label: "Session", entries: questions.map((question, index) => ({ question, index })) }]
+    : groupQuestionsByTest(questions).map((group) => ({ label: `Test ${group.testNumber}`, entries: group.entries }));
 
   function select(index: number) {
     onSelect(index);
@@ -45,7 +49,7 @@ export function LevelNav({ questions, currentIndex, onSelect, statusByQuestion, 
       <div className="md:hidden">
         <div className="flex items-baseline justify-between gap-2">
           <span className="font-mono text-xs text-muted-foreground">
-            {current ? `Test ${current.testNumber} · Q${current.orderIndex}` : "Navigation"}
+            {current ? `Test ${current.testNumber} · n°${current.orderIndex}` : "Navigation"}
           </span>
           <button
             type="button"
@@ -97,9 +101,9 @@ export function LevelNav({ questions, currentIndex, onSelect, statusByQuestion, 
 
         <div className="space-y-3">
           {groups.map((group) => (
-            <div key={group.testNumber} className="space-y-1.5">
+            <div key={group.label} className="space-y-1.5">
               <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                Test {group.testNumber}
+                {group.label}
               </p>
               <div className="flex flex-wrap gap-1">
                 {group.entries.map(({ question, index }) => {
@@ -110,14 +114,14 @@ export function LevelNav({ questions, currentIndex, onSelect, statusByQuestion, 
                       key={question.id}
                       type="button"
                       onClick={() => select(index)}
-                      title={`Test ${group.testNumber} · question ${question.orderIndex} · ${STATUS_LABELS[status]}`}
-                      aria-label={`Test ${group.testNumber}, question ${question.orderIndex}, ${STATUS_LABELS[status]}`}
+                      title={`Test ${question.testNumber} · n°${question.orderIndex} · ${STATUS_LABELS[status]}`}
+                      aria-label={`Test ${question.testNumber}, question ${question.orderIndex}, ${STATUS_LABELS[status]}`}
                       className={cn(
                         "relative h-7 w-7 rounded font-mono text-xs font-medium transition-colors touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50",
                         isCurrent ? "bg-accent text-accent-foreground" : STATUS_STYLE[status],
                       )}
                     >
-                      {question.orderIndex}
+                      {showStrip ? index + 1 : question.orderIndex}
                       {completedIds.has(question.id) && !isCurrent && (
                         <span className="absolute top-0.5 right-0.5 h-1.5 w-1.5 rounded-full bg-current" />
                       )}

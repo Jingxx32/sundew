@@ -14,11 +14,11 @@ import { pageGate } from "@/lib/access/page-gate";
 export default async function TcfDrillPage({
   searchParams,
 }: {
-  searchParams: Promise<{ skill?: string; level?: string; q?: string; round?: string }>;
+  searchParams: Promise<{ skill?: string; level?: string; q?: string; round?: string; run?: string }>;
 }) {
   const locked = await pageGate("tcf");
   if (locked) return locked;
-  const { skill: skillParam, level: levelParam, q, round: roundParam } = await searchParams;
+  const { skill: skillParam, level: levelParam, q, round: roundParam, run } = await searchParams;
   let skill = (skillParam === "reading" ? "reading" : "listening") as "listening" | "reading";
   let level = (LEVEL_ORDER.includes(levelParam as TcfLevel) ? levelParam : "A2") as TcfLevel;
 
@@ -89,8 +89,8 @@ export default async function TcfDrillPage({
       ) : (
         <DrillRunner
           // DrillRunner snapshots its question list on mount, so changing the
-          // session (level or round) has to remount it rather than re-render.
-          key={`${skill}:${level}:${round}`}
+          // session (level, round, or "Encore 10 questions" via `run`) has to remount it.
+          key={`${skill}:${level}:${round}:${run ?? ""}`}
           questions={questions}
           learning={session.learning}
           skill={skill}

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Eye, Loader2, PenLine } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Eye, Loader2, PenLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAccountId } from "@/components/account-session";
 import { cn } from "@/lib/utils";
@@ -17,6 +17,7 @@ import { OptionList } from "./option-list";
 import { MarkGapFloater } from "./mark-gap-floater";
 import type { AudioPlayerHandle } from "./audio-player";
 import { useQuestionKeyboardNav } from "@/hooks/use-question-keyboard-nav";
+import { nextStep } from "@/lib/tcf/drill-nav";
 import { submitDrillAttempt } from "@/lib/tcf/pending-sync";
 import { writeFromTcfPassage } from "@/lib/actions/tasks";
 import type { TcfDrillSessionKind, TcfQuestionForDrill, TcfQuestionLearning, TcfLevel } from "@/lib/actions/tcf";
@@ -104,8 +105,10 @@ interface DrillRunnerProps {
   level: TcfLevel;
   kind: TcfDrillSessionKind;
   initialIndex?: number;
-  /** The review centre keeps its history panel visible after a response. */
-  showSummaryOnComplete?: boolean;
+  /** "single" is the review centre's one-question view: no round navigation and no summary. */
+  layout?: "round" | "single";
+  /** Single layout: where "Question suivante" goes; null when the queue has nothing after this one. */
+  nextHref?: string | null;
   /** Off inside the review centre, which already owns `?q=` at the page level for its single-question view. */
   syncUrl?: boolean;
 }
@@ -117,9 +120,11 @@ export function DrillRunner({
   level,
   kind,
   initialIndex = 0,
-  showSummaryOnComplete = true,
+  layout = "round",
+  nextHref = null,
   syncUrl = true,
 }: DrillRunnerProps) {
+  const router = useRouter();
   const owner = useAccountId();
   // A round is a fixed set of questions, but answering one revalidates the TCF
   // paths, which re-runs the scheduler on the server: `getTcfScheduledDrillQuestions`
@@ -129,8 +134,10 @@ export function DrillRunner({
   // answer. Snapshot on mount instead; the page keys this component by
   // skill/level/round, so picking another session still gives a fresh list.
   const [questions] = useState(sessionInput);
-  const storageKey = `${owner}:tcf-drill:${skill}:${level}:${kind}:${questions.map((q) => q.id).join(",")}`;
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  // The summary is opened by the learner, never forced: answering the last question
+  // must still show that question's explanation.
+  const [showSummary, setShowSummary] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const [chosen, setChosen] = useState<number>();
   const [uncertain, setUncertain] = useState(false);
@@ -143,17 +150,6 @@ export function DrillRunner({
     Object.fromEntries(learning.map((item) => [item.questionId, item.consecutiveConfidentCorrect])),
   );
   const audioRef = useRef<AudioPlayerHandle>(null);
-
-  useEffect(() => {
-    const saved = window.localStorage.getItem(storageKey);
-    const index = saved ? Number.parseInt(saved, 10) : NaN;
-    if (!Number.isInteger(index) || index < 0 || index >= questions.length) return;
-    const frame = window.requestAnimationFrame(() => setCurrentIndex(index));
-    return () => window.cancelAnimationFrame(frame);
-  }, [questions.length, storageKey]);
-  useEffect(() => {
-    window.localStorage.setItem(storageKey, String(currentIndex));
-  }, [currentIndex, storageKey]);
 
   const q = questions.length > 0 ? questions[currentIndex] : undefined;
 
@@ -168,8 +164,8 @@ export function DrillRunner({
     url.searchParams.set("q", q.id);
     window.history.replaceState(null, "", url);
   }, [syncUrl, q]);
-  const allComplete = completedIds.size === questions.length;
   const answers = Object.values(results);
+  const single = layout === "single";
 
   function goTo(index: number) {
     if (index < 0 || index >= questions.length) return;
@@ -226,7 +222,16 @@ export function DrillRunner({
     );
   }
 
-  if (allComplete && showSummaryOnComplete) {
+  /** The end-of-question action starts at the top of the next question, not mid-page under the old explanation. */
+  function stepTo(index: number) {
+    goTo(index);
+    window.scrollTo({ top: 0 });
+  }
+  function startAnotherRound() {
+    router.push(`/tcf/drill?skill=${skill}&level=${level}&round=10&run=${Date.now()}`);
+  }
+
+  if (showSummary && !single) {
     const correct = answers.filter((answer) => answer.correct).length;
     const uncertainCorrect = answers.filter((answer) => answer.correct && answer.uncertain).length;
     const incorrect = answers.filter((answer) => !answer.correct).length;
@@ -241,14 +246,21 @@ export function DrillRunner({
         <p className="mt-2 text-sm text-danger">
           {needsReview} question{needsReview !== 1 ? "s" : ""} à revoir
         </p>
-        <div className="mt-7 flex justify-center gap-3">
-          <Link href={`/tcf/review?skill=${skill}&level=${level}`} className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground">
-            Revoir maintenant
-          </Link>
-          <Link href={`/tcf?skill=${skill}`} className="rounded-lg border border-border px-4 py-2 text-sm font-medium">
-            Retour au niveau
-          </Link>
+        <div className="mt-7 flex flex-wrap justify-center gap-3">
+          <Button onClick={startAnotherRound}>
+            Encore 10 questions
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Button>
+          <Button asChild variant="outline">
+            <Link href={`/tcf/review?skill=${skill}&level=${level}`}>Revoir maintenant</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href={`/tcf?skill=${skill}`}>Retour au niveau</Link>
+          </Button>
         </div>
+        <button type="button" onClick={() => setShowSummary(false)} className="mt-5 text-sm text-muted-foreground hover:text-accent">
+          Revenir aux questions
+        </button>
       </section>
     );
   }
@@ -259,22 +271,26 @@ export function DrillRunner({
 
   return (
     <div className="flex flex-col gap-4 min-h-0 md:flex-row md:gap-6">
-      <LevelNav
-        questions={questions}
-        currentIndex={currentIndex}
-        onSelect={goTo}
-        statusByQuestion={statusByQuestion}
-        completedIds={completedIds}
-      />
+      {!single && (
+        <LevelNav
+          questions={questions}
+          currentIndex={currentIndex}
+          onSelect={goTo}
+          statusByQuestion={statusByQuestion}
+          completedIds={completedIds}
+        />
+      )}
 
-      <div className="flex-1 min-w-0 pb-16 md:pb-0">
+      <div className={cn("flex-1 min-w-0", !single && "pb-16 md:pb-0")}>
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2 md:mb-4">
-          <div className="hidden flex-wrap items-center gap-2 md:flex">
-            <span className="text-lg font-semibold">
-              Question {currentIndex + 1} de {questions.length}
-            </span>
+          <div className={cn("flex-wrap items-center gap-2", single ? "flex" : "hidden md:flex")}>
+            {!single && (
+              <span className="text-lg font-semibold">
+                Question {currentIndex + 1} de {questions.length}
+              </span>
+            )}
             <span className="font-mono text-xs text-muted-foreground">
-              Test {q.testNumber} · {q.orderIndex}
+              Test {q.testNumber} · n°{q.orderIndex}
             </span>
             <LevelBadge level={q.level} />
           </div>
@@ -324,7 +340,7 @@ export function DrillRunner({
           )}
         </div>
 
-        <RoundNav
+        {!single && <RoundNav
           className="mt-4 hidden md:flex"
           onPrev={() => goTo(currentIndex - 1)}
           onNext={() => goTo(currentIndex + 1)}
@@ -332,7 +348,7 @@ export function DrillRunner({
           atEnd={currentIndex === questions.length - 1}
           done={completedIds.size}
           total={questions.length}
-        />
+        />}
 
         <p className="mt-2 hidden text-center font-mono text-[10px] text-muted-foreground md:block">
           A–D pour répondre · ← → pour naviguer{q.type !== "reading_mcq" ? " · Espace lecture · R recule" : ""}
@@ -355,7 +371,9 @@ export function DrillRunner({
           </div>
         )}
 
-        <RoundNav
+        {showAnswer && endOfQuestion()}
+
+        {!single && <RoundNav
           className="fixed inset-x-0 bottom-0 z-20 border-t border-border/60 bg-background/95 px-4 py-2.5 backdrop-blur md:hidden"
           onPrev={() => goTo(currentIndex - 1)}
           onNext={() => goTo(currentIndex + 1)}
@@ -363,8 +381,44 @@ export function DrillRunner({
           atEnd={currentIndex === questions.length - 1}
           done={completedIds.size}
           total={questions.length}
-        />
+        />}
       </div>
     </div>
   );
+
+  /** Below the explanation, where the learner finishes reading: the one obvious way on. */
+  function endOfQuestion() {
+    if (single) {
+      return (
+        <div className="mt-6 flex justify-end">
+          {nextHref ? (
+            <Button asChild>
+              <Link href={nextHref}>
+                Question suivante
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </Button>
+          ) : (
+            <p className="text-sm text-muted-foreground">Plus rien à revoir avec ces filtres.</p>
+          )}
+        </div>
+      );
+    }
+    const step = nextStep(questions.map((question) => question.id), completedIds, currentIndex);
+    return (
+      <div className="mt-6 flex justify-end">
+        {step.kind === "summary" ? (
+          <Button onClick={() => { setShowSummary(true); window.scrollTo({ top: 0 }); }}>
+            Voir le bilan
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Button>
+        ) : (
+          <Button onClick={() => stepTo(step.index)}>
+            {step.kind === "next" ? "Question suivante" : "Question non répondue"}
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Button>
+        )}
+      </div>
+    );
+  }
 }

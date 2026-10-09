@@ -668,6 +668,36 @@ export async function getTcfReviewQueue(filters: {
   return groups.flat().filter(({ question }) => !filters.tag || question.skillTags?.includes(filters.tag)).map(({ question, learning, skill }) => ({ ...question, learning, skill }));
 }
 
+/** One question in review-centre shape, even after answering it took it out of the queue —
+ *  so the learner keeps reading its explanation until they choose to move on. */
+export async function getTcfReviewItem(
+  questionId: string,
+): Promise<(TcfQuestionForDrill & { skill: "listening" | "reading"; learning: TcfQuestionLearning }) | null> {
+  await requireFeature("tcf");
+  const target = await getTcfQuestionById(questionId);
+  if (!target) return null;
+  const session = await getTcfScheduledDrillQuestions(target.skill, target.level, "all");
+  const question = session.questions.find((item) => item.id === questionId);
+  const learning = session.learning.find((item) => item.questionId === questionId);
+  return question && learning ? { ...question, learning, skill: target.skill } : null;
+}
+
+/** The skill and level of the learner's latest TCF answer, for the "Reprendre" entry on /tcf. */
+export async function getLastTcfPractice(): Promise<{ skill: "listening" | "reading"; level: TcfLevel } | null> {
+  const user = await requireFeature("tcf");
+  const row = (
+    await db
+      .select({ skill: tcfSets.skill, level: tcfQuestions.level })
+      .from(tcfQuestionAttempts)
+      .innerJoin(tcfQuestions, eq(tcfQuestionAttempts.questionId, tcfQuestions.id))
+      .innerJoin(tcfSets, eq(tcfQuestions.setId, tcfSets.id))
+      .where(eq(tcfQuestionAttempts.userId, user.id))
+      .orderBy(desc(tcfQuestionAttempts.answeredAt))
+      .limit(1)
+  )[0];
+  return row ? { skill: row.skill, level: row.level as TcfLevel } : null;
+}
+
 /** Question ids of a drill group with at least one recorded attempt — the
  *  DB-derived "done" marks that replaced the old localStorage set. */
 export async function getTcfDoneQuestionIds(

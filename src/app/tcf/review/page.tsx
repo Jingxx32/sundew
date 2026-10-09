@@ -1,10 +1,13 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { DrillRunner } from "../_components/drill-runner";
 import { ReviewHistory } from "../_components/review-history";
 import { LevelBadge } from "../_components/level-badge";
 import { LEVEL_ORDER } from "@/lib/tcf/display";
-import { getTcfQuestionHistory, getTcfReviewQueue, type TcfLevel } from "@/lib/actions/tcf";
+import { getTcfQuestionHistory, getTcfReviewItem, getTcfReviewQueue, type TcfLevel } from "@/lib/actions/tcf";
+import { reviewReason } from "@/lib/tcf/learning";
+import { cn } from "@/lib/utils";
 import { pageGate } from "@/lib/access/page-gate";
 
 export default async function TcfReviewPage({
@@ -18,7 +21,6 @@ export default async function TcfReviewPage({
   const skill = params.skill === "listening" || params.skill === "reading" ? params.skill : undefined;
   const level = LEVEL_ORDER.includes(params.level as TcfLevel) ? (params.level as TcfLevel) : undefined;
   const queue = await getTcfReviewQueue({ skill, level, tag: params.tag });
-  const selected = queue.find((item) => item.id === params.q) ?? queue[0];
   const tags = [...new Set(queue.flatMap((item) => item.skillTags ?? []))].sort();
 
   const base = new URLSearchParams();
@@ -26,6 +28,13 @@ export default async function TcfReviewPage({
   if (level) base.set("level", level);
   if (params.tag) base.set("tag", params.tag);
   const withQuestion = (id: string) => `/tcf/review?${new URLSearchParams({ ...Object.fromEntries(base), q: id }).toString()}`;
+  // Always name the question in the URL: answering can take it out of the queue on the
+  // refresh that follows, and it must stay on screen until the learner moves on.
+  if (!params.q && queue[0]) redirect(withQuestion(queue[0].id));
+  const selected = queue.find((item) => item.id === params.q) ?? (params.q ? await getTcfReviewItem(params.q) : null) ?? queue[0];
+  const position = selected ? queue.findIndex((item) => item.id === selected.id) : -1;
+  const next = position >= 0 ? queue[position + 1] : queue.find((item) => item.id !== selected?.id);
+  const dateFormat = new Intl.DateTimeFormat("fr-CA", { month: "short", day: "numeric" });
 
   const history = selected ? await getTcfQuestionHistory(selected.id) : [];
 
@@ -84,23 +93,33 @@ export default async function TcfReviewPage({
         <div className="mt-8 grid gap-6 lg:grid-cols-[220px_1fr]">
           <aside className="space-y-2">
             <p className="font-mono text-xs text-muted-foreground">{queue.length} à revoir</p>
-            {queue.map((item) => (
-              <Link
-                key={item.id}
-                href={withQuestion(item.id)}
-                className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 ${
-                  item.id === selected.id ? "border-accent bg-accent-soft text-accent" : "border-border hover:bg-surface-muted"
-                }`}
-              >
-                <LevelBadge level={item.level} className="shrink-0" />
-                <span className="min-w-0">
-                  <span className="block truncate">{item.skill === "listening" ? "Écoute" : "Lecture"}</span>
-                  <span className="block truncate text-[11px] text-muted-foreground">
-                    {item.skillTags?.join(" · ") || "Non classée"}
+            {queue.map((item) => {
+              const reason = reviewReason(item.learning);
+              return (
+                <Link
+                  key={item.id}
+                  href={withQuestion(item.id)}
+                  className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 ${
+                    item.id === selected.id ? "border-accent bg-accent-soft text-accent" : "border-border hover:bg-surface-muted"
+                  }`}
+                >
+                  <LevelBadge level={item.level} className="shrink-0" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate">
+                      {item.skill === "listening" ? "Écoute" : "Lecture"} · Test {item.testNumber} · n°{item.orderIndex}
+                    </span>
+                    <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                      {reason && (
+                        <span className={cn("rounded-full px-1.5 font-semibold", reason === "wrong" ? "bg-danger-soft text-danger" : "bg-warning-soft text-warning")}>
+                          {reason === "wrong" ? "Ratée" : "Incertaine"}
+                        </span>
+                      )}
+                      {item.learning.lastAnsweredAt && <span>{dateFormat.format(item.learning.lastAnsweredAt)}</span>}
+                    </span>
                   </span>
-                </span>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </aside>
           <div>
             <DrillRunner
@@ -110,7 +129,8 @@ export default async function TcfReviewPage({
               skill={selected.skill}
               level={selected.level}
               kind="review"
-              showSummaryOnComplete={false}
+              layout="single"
+              nextHref={next ? withQuestion(next.id) : null}
               syncUrl={false}
             />
             <ReviewHistory questionId={selected.id} initialHistory={history} />
