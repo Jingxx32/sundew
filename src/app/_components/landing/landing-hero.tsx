@@ -2,13 +2,13 @@ import { ArrowDown } from "lucide-react";
 import { SundewLogo } from "@/components/sundew-logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ROUTE_STEPS } from "./content";
+import { ROUTE_STEPS, type LandingViewer } from "./content";
 import { GuestCta } from "./guest-cta";
 
 // Desktop: steps float around the symbol. Mobile: they stack beneath it.
 const STEP_POSITIONS = ["lg:left-0 lg:top-10", "lg:right-0 lg:top-[170px]", "lg:bottom-8 lg:left-8"];
 
-export function LandingHero() {
+export function LandingHero({ viewer }: { viewer: LandingViewer }) {
   return (
     <section className="relative mx-auto grid max-w-6xl items-center gap-14 px-5 pb-20 pt-8 sm:px-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-6 lg:pb-28 lg:pt-14">
       <div>
@@ -27,7 +27,7 @@ export function LandingHero() {
           Sundew turns each TCF answer into a specific learning signal, then uses it to choose what you practise next.
         </p>
         <div className="mt-8 flex flex-wrap items-start gap-3">
-          <GuestCta />
+          <GuestCta viewer={viewer} />
           <Button asChild size="lg" variant="outline" className="h-[52px] px-7">
             <a href="#try-demo">
               Try one question

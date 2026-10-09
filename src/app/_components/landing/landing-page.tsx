@@ -6,14 +6,15 @@ import { GlowTheme } from "@/components/theme/glow-theme";
 import { Button } from "@/components/ui/button";
 import { guestAccessEnabled } from "@/lib/auth/guest";
 import { DemoQuestion } from "../demo-question";
-import { SOURCE_URL, STACK } from "./content";
+import { SOURCE_URL, STACK, landingCta, type LandingViewer } from "./content";
 import { GuestCta } from "./guest-cta";
 import { LandingHero } from "./landing-hero";
 import { WhatsInside } from "./whats-inside";
 
 const stackList = new Intl.ListFormat("en", { type: "conjunction" }).format(STACK);
 
-export function LandingPage() {
+export function LandingPage({ viewer }: { viewer: LandingViewer }) {
+  const showSignIn = landingCta(viewer, guestAccessEnabled()) !== "sign-in";
   return (
     <GlowTheme>
       <GlowBackdrop placement="hero" />
@@ -23,14 +24,23 @@ export function LandingPage() {
         </Link>
         <nav aria-label="Landing" className="flex items-center gap-5 text-sm text-muted-foreground">
           <a href="#try-demo" className="hidden hover:text-foreground sm:inline">How it works</a>
-          <Button asChild variant="outline">
-            <Link href="/login">Sign in</Link>
-          </Button>
+          {viewer === "guest" ? (
+            <>
+              <Link href="/login" className="hover:text-foreground">Sign in</Link>
+              <Button asChild>
+                <Link href="/today">Continue the demo</Link>
+              </Button>
+            </>
+          ) : (
+            <Button asChild variant="outline">
+              <Link href="/login">Sign in</Link>
+            </Button>
+          )}
         </nav>
       </header>
 
       <main className="relative">
-        <LandingHero />
+        <LandingHero viewer={viewer} />
 
         <section id="try-demo" className="scroll-mt-6 border-y border-border bg-surface-muted/60">
           <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
@@ -58,8 +68,8 @@ export function LandingPage() {
               Ready to see the whole app?
             </h2>
             <div className="relative mt-8 flex flex-wrap items-start justify-center gap-3">
-              <GuestCta />
-              {guestAccessEnabled() && (
+              <GuestCta viewer={viewer} />
+              {showSignIn && (
                 <Button asChild size="lg" variant="outline" className="h-[52px] px-7">
                   <Link href="/login">Sign in</Link>
                 </Button>

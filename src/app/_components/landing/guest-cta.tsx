@@ -2,15 +2,17 @@ import Link from "next/link";
 import { GuestStartButton } from "@/components/guest-start-button";
 import { Button, type ButtonProps } from "@/components/ui/button";
 import { guestAccessEnabled } from "@/lib/auth/guest";
+import { landingCta, type LandingViewer } from "./content";
 
 const SIZE = "h-[52px] px-7";
 
-/** The recruiter path: a 7-day guest account, or sign-in when guests are off. */
-export function GuestCta({ variant = "default" }: { variant?: ButtonProps["variant"] }) {
-  if (!guestAccessEnabled()) {
+/** The recruiter path: a 7-day guest account, sign-in when guests are off, or back into an existing demo. */
+export function GuestCta({ variant = "default", viewer }: { variant?: ButtonProps["variant"]; viewer: LandingViewer }) {
+  const cta = landingCta(viewer, guestAccessEnabled());
+  if (cta !== "guest-start") {
     return (
       <Button asChild size="lg" variant={variant} className={SIZE}>
-        <Link href="/login">Sign in</Link>
+        {cta === "continue" ? <Link href="/today">Continue the demo</Link> : <Link href="/login">Sign in</Link>}
       </Button>
     );
   }

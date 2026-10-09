@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import type { Access } from "@/lib/access/features";
 import { getCurrentUser } from "@/lib/auth/session";
 import { LandingPage } from "./_components/landing/landing-page";
 
@@ -10,12 +11,13 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  let signedIn = false;
+  let access: Access | null = null;
   try {
-    signedIn = Boolean(await getCurrentUser());
+    access = (await getCurrentUser())?.access ?? null;
   } catch {
     // The landing page must not depend on the database being up.
   }
-  if (signedIn) redirect("/today");
-  return <LandingPage />;
+  // Guests (recruiters) keep the landing page: it holds the sample question and the way back.
+  if (access && access !== "guest") redirect("/today");
+  return <LandingPage viewer={access === "guest" ? "guest" : "visitor"} />;
 }
