@@ -15,6 +15,10 @@ const nextConfig: NextConfig = {
   // HMR fail while the page itself loads. DHCP may hand out a different address
   // — update this when it does. Dev-only: `next build` ignores it.
   allowedDevOrigins: ["192.168.2.66"],
+  // The public demo became the landing page at / (2026-10).
+  async redirects() {
+    return [{ source: "/demo", destination: "/", permanent: true }];
+  },
 };
 
 export default nextConfig;

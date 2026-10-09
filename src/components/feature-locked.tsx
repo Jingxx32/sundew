@@ -25,7 +25,7 @@ export function FeatureLocked({ feature }: { feature: FeatureKey }) {
         <h1 className="mt-2 text-[28px] font-bold tracking-[-0.035em]">{FEATURES[feature].label}</h1>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">{DESCRIPTIONS[feature]}</p>
         {feature === "tcf" && (
-          <Link href="/demo#try-demo" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:underline">
+          <Link href="/#try-demo" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:underline">
             Try an original sample question
             <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
           </Link>

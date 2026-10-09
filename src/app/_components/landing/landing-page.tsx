@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowDown, ArrowRight, BookOpenText, Clock3, LockKeyhole, Mic2 } from "lucide-react";
 
@@ -7,13 +6,7 @@ import { SundewLogo } from "@/components/sundew-logo";
 import { Button } from "@/components/ui/button";
 import { guestAccessEnabled } from "@/lib/auth/guest";
 
-import { DemoQuestion } from "./_components/demo-question";
-
-export const metadata: Metadata = {
-  title: "TCF Canada practice demo — Sundew",
-  description:
-    "Try one original TCF-style question and see how Sundew turns the result into a focused follow-up drill.",
-};
+import { DemoQuestion } from "../demo-question";
 
 const ROUTE_STEPS = [
   { number: "01", label: "Attempt", detail: "One original TCF-style question" },
@@ -21,12 +14,12 @@ const ROUTE_STEPS = [
   { number: "03", label: "Retrain", detail: "A drill built from the same signal" },
 ] as const;
 
-export default function DemoPage() {
+export function LandingPage() {
   return (
     <main className="min-h-screen overflow-hidden bg-background">
       <header className="border-b border-border/80 bg-background/95">
         <div className="mx-auto flex h-[72px] max-w-6xl items-center justify-between px-5 sm:px-8">
-          <Link href="/demo" aria-label="Sundew demo home" className="rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+          <Link href="/" aria-label="Sundew home" className="rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
             <SundewLogo className="text-[21px] sm:text-[23px]" priority />
           </Link>
           <div className="flex items-center gap-3">

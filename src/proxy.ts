@@ -1,14 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
-
-// /assets holds brand images only. public/media (private exam audio) stays behind the gate.
-// /api/cron is guarded by CRON_SECRET in the route itself.
-const PUBLIC_PREFIXES = ["/api/auth", "/api/cron", "/assets", "/demo", "/login"];
-
-function isPublicPath(pathname: string): boolean {
-  return PUBLIC_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
-}
+import { isPublicPath } from "@/lib/auth/public-paths";
 
 function isPageRequest(request: NextRequest): boolean {
   return request.method === "GET" && !request.nextUrl.pathname.startsWith("/api/");
