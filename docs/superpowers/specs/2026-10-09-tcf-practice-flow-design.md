@@ -32,8 +32,8 @@
 | 3 | Rounds of up to 20 questions (10, 20, à revoir): the side nav lists the round in order, labelled 1…N (status colours unchanged). "Toutes" (200+) keeps the by-test map, where test/number labels are the useful index. "Test X · n°Y" stays next to the question header in both. |
 | 4 | The summary's primary action is **Encore 10 questions** (same skill and level, fresh round); "Revoir maintenant" and "Retour au niveau" become secondary. |
 | 5 | `/tcf` shows **Reprendre : {skill} {level} →** from the user's latest TCF answer (server query, any mode, any skill), linking to a fresh round at that level. The localStorage position restore is removed. |
-| 6 | Review centre: after an answer, **Question suivante →** links to the next queue item; at the end, "Plus rien à revoir avec ces filtres." |
-| 7 | List items show `Test {n} · n°{k}`, a reason badge — **Ratée** (latest answer wrong) or **Incertaine** (latest answer uncertain) — and the last-answer date. |
+| 6 | Review centre: after an answer, **Question suivante →** links to the next queue item; at the end, "Plus rien à revoir avec ces filtres." The URL always names the question (`/tcf/review` redirects to `?q=` the first item), and a `q` that left the queue after being answered is loaded directly (`getTcfReviewItem`), because recording an attempt revalidates the page and would otherwise swap the question out from under its explanation. |
+| 7 | List items show `Test {n} · n°{k}`, a reason badge — **Ratée** (latest answer wrong), **Incertaine** (latest answer uncertain) or **Rappel** (scheduled re-check of a confident answer) — and the last-answer date. |
 | 8 | `DrillRunner` gains a `single` layout for the review centre: no side nav, no "Question x de y", no Previous/Next. |
 | 9 | The review card copy names the skill: "Questions ratées ou incertaines · {Compréhension orale / écrite}". |
 | 10 | "À revoir" always means **due now** (`isTcfReviewDue`): `getTcfProgressOverview` counts due questions per level, so level counts sum to the review card. |
