@@ -30,7 +30,7 @@ export default async function LoginPage({
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-5 py-12">
       <Link href="/demo" className="mb-10 w-fit">
-        <SundewLogo priority />
+        <SundewLogo className="text-[30px]" priority />
       </Link>
       <section className="rounded-2xl bg-surface p-6 shadow-card sm:p-8">
         <h1 className="text-[28px] font-bold tracking-[-0.035em]">

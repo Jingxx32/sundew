@@ -27,7 +27,7 @@ export default function DemoPage() {
       <header className="border-b border-border/80 bg-background/95">
         <div className="mx-auto flex h-[72px] max-w-6xl items-center justify-between px-5 sm:px-8">
           <Link href="/demo" aria-label="Sundew demo home" className="rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
-            <SundewLogo className="w-[138px] sm:w-[150px]" priority />
+            <SundewLogo className="text-[21px] sm:text-[23px]" priority />
           </Link>
           <div className="flex items-center gap-3">
             <span className="hidden rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-muted-foreground sm:inline-flex">
