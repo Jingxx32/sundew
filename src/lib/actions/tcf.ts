@@ -191,6 +191,7 @@ export async function getTcfProgressOverview(
     else attemptsByQuestion.set(attempt.questionId, [attempt]);
   }
 
+  const now = new Date();
   const levelStats = new Map<TcfLevel, { total: number; answered: number; correct: number; needsReview: number }>(
     LEVELS.map((level) => [level, { total: 0, answered: 0, correct: 0, needsReview: 0 }]),
   );
@@ -210,7 +211,8 @@ export async function getTcfProgressOverview(
     level.answered += 1;
     set.answered += 1;
     if (summary.latestCorrect) level.correct += 1;
-    if (summary.needsReview) level.needsReview += 1;
+    // "À revoir" means due now everywhere, so level counts add up to the review card.
+    if (isTcfReviewDue(summary, now)) level.needsReview += 1;
   }
 
   // Ordered ascending, so the last row for a test number is its latest run.

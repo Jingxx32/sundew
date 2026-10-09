@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Headphones, BookOpenText, Mic, RotateCcw } from "lucide-react";
+import { ArrowRight, Headphones, BookOpenText, Mic, RotateCcw } from "lucide-react";
 import {
+  getLastTcfPractice,
   getTcfLevelSummaries,
   getTcfProgressOverview,
   getTcfReviewCount,
@@ -28,11 +29,12 @@ export default async function TcfPage({
   const meta = SKILLS[skill];
   const Icon = meta.icon;
 
-  const [summaries, sets, reviewCount, progress] = await Promise.all([
+  const [summaries, sets, reviewCount, progress, last] = await Promise.all([
     getTcfLevelSummaries(skill),
     listTcfSets(skill),
     getTcfReviewCount(skill),
     getTcfProgressOverview(skill),
+    getLastTcfPractice(),
   ]);
   const progressByLevel = new Map(progress.byLevel.map((entry) => [entry.level, entry]));
 
@@ -43,6 +45,18 @@ export default async function TcfPage({
         <h1 className="text-[38px] font-bold tracking-[-0.025em]">TCF Canada</h1>
       </div>
       <p className="text-sm text-muted-foreground mb-6">{meta.title} — par niveau CECR</p>
+
+      {last && (
+        <Link
+          href={`/tcf/drill?skill=${last.skill}&level=${last.level}`}
+          className="mb-3 flex items-center justify-between gap-4 rounded-xl bg-primary px-5 py-4 text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+        >
+          <span className="text-sm font-semibold">
+            Reprendre : {SKILLS[last.skill].title} {last.level}
+          </span>
+          <ArrowRight className="h-4 w-4" aria-hidden="true" />
+        </Link>
+      )}
 
       <Link href="/speaking/task-2" className="mb-6 flex items-center gap-3 rounded-xl border border-border bg-surface px-5 py-4 text-sm font-medium text-accent hover:border-accent/40">
         <Mic className="h-4 w-4" aria-hidden="true" /> Expression orale · Tâche 2 practice
@@ -58,7 +72,7 @@ export default async function TcfPage({
           </span>
           <div>
             <p className="text-sm font-medium text-foreground">Centre de révision</p>
-            <p className="text-xs text-muted-foreground">Questions marquées incertaines ou ratées, toutes compétences</p>
+            <p className="text-xs text-muted-foreground">Questions ratées ou incertaines · {meta.title}</p>
           </div>
         </div>
         <span
