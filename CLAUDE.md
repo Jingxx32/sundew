@@ -194,7 +194,8 @@ Do not add categories without considering AI labelling accuracy and dashboard co
 
 ### UI conventions
 
-- **Fonts**: `font-sans` (Inter) for UI, `font-serif` (Source Serif 4) for reading content. Apply `font-serif` to document text and display headings.
+- **Fonts**: Geist (`font-sans`) for UI; Plus Jakarta Sans 800 (`font-display`) for page titles — every `h1` gets it from a base rule, and `h2`s ≥ 24px add `font-display` — with tracking `-0.025em`. Smaller headings stay Geist. Reading content uses Source Serif 4 via `.reading-prose`.
+- **Shapes**: actions are pills (`Button` and single-line fields read `--radius-button` / `--radius-field`); content stays rectangular (cards, answer options, tabs). Multi-line fields use `rounded-xl`, never the pill radius.
 - **Design tokens**: All colours are CSS custom properties defined in `globals.css` and exposed via Tailwind's `@theme inline`. Use semantic tokens (`text-muted-foreground`, `bg-surface`, `border-border`, `text-accent`) — never raw colour values.
 - **Component style**: UI primitives live in `src/components/ui/` and are built with `cva` + `cn`. Follow the existing `Button` / `Chip` / `Card` pattern when adding new primitives.
 - **Page-level components**: Co-locate sub-components under `_components/` inside the route folder (e.g. `app/library/_components/`).
