@@ -15,6 +15,7 @@ import type { AudioPlayerHandle } from "./audio-player";
 import { useQuestionKeyboardNav } from "@/hooks/use-question-keyboard-nav";
 import { LEVEL_ORDER, TYPE_LABELS, levelBadgeStyle } from "@/lib/tcf/display";
 import { submitExamAttempt } from "@/lib/tcf/pending-sync";
+import { decodeExamProgress, encodeExamProgress, type ExamAnswers } from "@/lib/tcf/exam-progress";
 import type { TcfQuestionForDrill, TcfLevel, TcfExamAnswer } from "@/lib/actions/tcf";
 import type { TcfPerLevel } from "@/lib/db/schema";
 
@@ -82,10 +83,49 @@ export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: E
   const owner = useAccountId();
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   // answers[i] = chosen option index for questions[i]
-  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [answers, setAnswers] = useState<ExamAnswers>({});
   const [finished, setFinished] = useState(false);
   const [confirmFinish, setConfirmFinish] = useState(false);
+  const [restoredCount, setRestoredCount] = useState<number | null>(null);
   const audioRef = useRef<AudioPlayerHandle>(null);
+
+  // Answers survive a reload or leaving mid-exam: saved per test as they are given,
+  // restored on return, cleared on finish. Browser storage can be unavailable — then
+  // the exam simply runs without it.
+  const progressKey = `${owner}:tcf-exam:${skill}:${testNumber}`;
+  const questionIds = useMemo(() => questions.map((question) => question.id), [questions]);
+  useEffect(() => {
+    let raw: string | null = null;
+    try {
+      raw = window.localStorage.getItem(progressKey);
+    } catch {}
+    const restored = decodeExamProgress(raw, questionIds);
+    const count = restored ? Object.keys(restored).length : 0;
+    if (!restored || count === 0) return;
+    const frame = window.requestAnimationFrame(() => {
+      setAnswers(restored);
+      setRestoredCount(count);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [progressKey, questionIds]);
+  useEffect(() => {
+    if (finished || Object.keys(answers).length === 0) return;
+    try {
+      window.localStorage.setItem(progressKey, encodeExamProgress(questionIds, answers));
+    } catch {}
+  }, [answers, finished, progressKey, questionIds]);
+
+  function clearProgress() {
+    try {
+      window.localStorage.removeItem(progressKey);
+    } catch {}
+  }
+  function restart() {
+    clearProgress();
+    setAnswers({});
+    setRestoredCount(null);
+    setCurrentIndex(0);
+  }
 
   const byLevel = useMemo(() => {
     const groups: Partial<Record<TcfLevel, number[]>> = {};
@@ -133,6 +173,8 @@ export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: E
     setFinished(true);
     setConfirmFinish(false);
     setCurrentIndex(0);
+    setRestoredCount(null);
+    clearProgress();
 
     // Persist the run — total + per-level + per-question — so this signal
     // flows into Progress and the error loop (fire-and-forget).
@@ -167,6 +209,17 @@ export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: E
   return (
     <div>
       {score && <ScoreHeader testNumber={testNumber} score={score} />}
+      {restoredCount !== null && !finished && (
+        <p role="status" className="mb-4 flex flex-wrap items-center gap-x-2 rounded-lg bg-accent-soft px-4 py-2 text-sm text-accent">
+          <span>
+            Examen repris · {restoredCount} réponse{restoredCount > 1 ? "s" : ""} restaurée{restoredCount > 1 ? "s" : ""}
+          </span>
+          <span aria-hidden="true">·</span>
+          <button type="button" onClick={restart} className="font-semibold underline-offset-2 hover:underline">
+            Recommencer
+          </button>
+        </p>
+      )}
 
       <div className="flex flex-col gap-6 min-h-0 md:flex-row">
         {/* Left nav — status map */}
