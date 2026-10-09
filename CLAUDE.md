@@ -218,10 +218,8 @@ Postgres in Canada Central.
   connection string must keep `sslmode=require`.
 - `BETTER_AUTH_URL` and the Google OAuth redirect URI
   (`<origin>/api/auth/callback/google`) must match the production domain.
-- Transition (from 2026-10): the old Azure App Service (`sundew-french`) and its workflow
-  `.github/workflows/main_sundew-french.yml` stay for about a week after cutover as a
-  rollback path. When they are removed, also drop `output: "standalone"` from
-  `next.config.ts` (only that workflow needs it) and the `AZUREAPPSERVICE_*` repo secrets.
+- The old Azure App Service (`sundew-french`) and its deploy workflow were retired on
+  2026-10-09. Azure now hosts only the Postgres database (`lumiere-platform-db`).
 
 ## Environment variables
 

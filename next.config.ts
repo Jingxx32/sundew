@@ -1,9 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Azure's free App Service tier cannot build Next.js within its CPU quota, so CI
-  // ships a self-contained server instead (see .github/workflows/main_sundew-french.yml).
-  output: "standalone",
   // pdf-parse (pdfjs-dist) resolves its worker file at runtime — bundling breaks it;
   // @napi-rs/canvas is its native DOMMatrix polyfill (see src/lib/pdf/extract.ts)
   serverExternalPackages: ["pdf-parse", "@napi-rs/canvas"],
