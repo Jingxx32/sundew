@@ -11,12 +11,11 @@ Developer-ready exports traced directly from the user-supplied final Sundew Visu
 
 ## Usage
 
-- `sundew-logo-primary-light`: primary stacked logo on light surfaces
-- `sundew-logo-horizontal`: navigation/header lockup derived from the same master
-- `sundew-symbol-*`: symbol-only use; primary, monochrome, reversed
-- `sundew-logo-horizontal-monochrome`: one-color production
-- `sundew-logo-horizontal-reversed`: dark/blue backgrounds
-- `sundew-app-icon-light`: primary app icon
-- `sundew-app-icon-bold`: high-impact/dark-context app icon
+- `sundew-symbol-3d-512.png`: soft-3D symbol, trimmed for the web (`SundewLogo`: login, sidebar, demo header)
+- `sundew-app-icon-bold-512.png`: favicon and Apple touch icon (`src/app/layout.tsx`)
 
-SVG is the source format. PNG exports are provided at common implementation sizes. Preserve proportions, do not recolor individual elements, and keep clear space around the mark of at least the organic star's width.
+The wordmark is live text set in Nunito 800 (`src/components/sundew-logo.tsx`), not an asset: the traced wordmark had rough edges.
+
+Only the files the app references are kept. The other exports (horizontal and stacked lockups, flat symbol, monochrome, reversed, light app icon, other PNG sizes) and the source identity board were removed in 2026-10 and remain in git history.
+
+Preserve proportions, do not recolor individual elements, and keep clear space around the mark of at least the organic star's width.
