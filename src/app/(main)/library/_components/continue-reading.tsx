@@ -26,7 +26,7 @@ export function ContinueReadingCard({ document }: { document: Document }) {
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 items-start">
         <div className="min-w-0">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="font-display text-2xl font-semibold tracking-[-0.025em] text-foreground">
             {document.title}
           </h2>
           {document.source && (

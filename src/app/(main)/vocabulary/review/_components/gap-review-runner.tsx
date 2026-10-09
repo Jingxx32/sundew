@@ -324,7 +324,7 @@ function ProductionCard({
           value={inputValue}
           onChange={(e) => onChange(e.target.value)}
           placeholder="Écrivez le mot en français…"
-          className="w-full rounded-lg border border-border bg-surface px-3.5 py-2.5 text-center text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+          className="w-full rounded-[var(--radius-field)] border border-border bg-surface px-3.5 py-2.5 text-center text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
         />
       ) : (
         <p

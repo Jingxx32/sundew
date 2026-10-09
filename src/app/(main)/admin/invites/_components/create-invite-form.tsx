@@ -42,7 +42,7 @@ export function CreateInviteForm() {
           <select
             value={expiry}
             onChange={(e) => setExpiry(e.target.value as typeof expiry)}
-            className="flex h-10 w-full rounded-lg border border-border bg-surface px-3 text-[15px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
+            className="flex h-10 w-full rounded-[var(--radius-field)] border border-border bg-surface px-3 text-[15px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
           >
             <option value="none">Never</option>
             <option value="7d">In 7 days</option>

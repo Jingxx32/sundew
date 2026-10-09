@@ -26,7 +26,7 @@ export function SpeakingProfileEditor({ initialValue }: Props) {
         onChange={(e) => setValue(e.target.value)}
         rows={8}
         placeholder="Votre métier, votre ville, votre famille, pourquoi le Canada, vos loisirs… (français ou chinois)"
-        className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm leading-relaxed placeholder:text-subtle-foreground focus:outline-none focus:ring-2 focus:ring-accent/40 resize-y"
+        className="w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm leading-relaxed placeholder:text-subtle-foreground focus:outline-none focus:ring-2 focus:ring-accent/40 resize-y"
       />
       <div className="flex items-center gap-3">
         <Button

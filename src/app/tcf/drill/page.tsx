@@ -60,7 +60,7 @@ export default async function TcfDrillPage({
           >
             <ChevronLeft className="h-5 w-5" aria-hidden="true" />
           </Link>
-          <h1 className="text-xl font-semibold tracking-tight md:text-3xl">{title}</h1>
+          <h1 className="text-xl font-semibold tracking-[-0.025em] md:text-3xl">{title}</h1>
           <LevelBadge level={level} className="px-2 py-0.5 text-sm" />
         </div>
         <p className="mt-1 hidden text-sm text-muted-foreground md:block">

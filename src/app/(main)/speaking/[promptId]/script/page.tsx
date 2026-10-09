@@ -28,7 +28,7 @@ export default async function ScriptPracticePage({
       <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
         Tâche {prompt.task}
       </p>
-      <h1 className="text-2xl font-semibold tracking-tight mb-2">{prompt.prompt}</h1>
+      <h1 className="text-2xl font-semibold tracking-[-0.025em] mb-2">{prompt.prompt}</h1>
       {prompt.context && <p className="text-sm text-muted-foreground mb-6">{prompt.context}</p>}
       <ScriptWorkbench prompt={prompt} initialScript={script} />
     </div>

@@ -295,7 +295,7 @@ export function ImportQuizDialog() {
                     <select
                       id="section"
                       name="section"
-                      className="flex h-9 w-full rounded-lg border border-border bg-surface px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
+                      className="flex h-9 w-full rounded-[var(--radius-field)] border border-border bg-surface px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
                       defaultValue="reading"
                     >
                       <option value="reading">Reading</option>

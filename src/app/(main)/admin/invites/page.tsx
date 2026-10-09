@@ -13,7 +13,7 @@ export default async function InvitesPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-10 py-10">
-      <h1 className="mb-1 text-[38px] font-bold tracking-[-0.035em]">Invites</h1>
+      <h1 className="mb-1 text-[38px] font-bold tracking-[-0.025em]">Invites</h1>
       <p className="mb-10 text-sm text-muted-foreground">Codes that let someone create a full account.</p>
       <section className="rounded-2xl bg-surface p-6 shadow-card">
         <h2 className="mb-4 text-sm font-medium">New code</h2>

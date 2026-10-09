@@ -18,7 +18,7 @@ export default async function SpeakingPage() {
         <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-accent">
           TCF Canada
         </p>
-        <h1 className="text-[38px] font-bold tracking-[-0.035em]">Expression orale</h1>
+        <h1 className="text-[38px] font-bold tracking-[-0.025em]">Expression orale</h1>
         <p className="mt-2 text-[15px] leading-6 text-muted-foreground">
           Rehearse the exam interaction, then slow down and refine the parts that need work.
         </p>
@@ -45,7 +45,7 @@ export default async function SpeakingPage() {
                 </span>
               </div>
 
-              <h2 className="mt-7 max-w-md text-2xl font-bold tracking-[-0.025em]">
+              <h2 className="mt-7 max-w-md font-display text-2xl font-bold tracking-[-0.025em]">
                 Tâche 2 · Obtain information through conversation
               </h2>
               <p className="mt-3 max-w-xl text-[15px] leading-6 text-muted-foreground">

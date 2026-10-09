@@ -13,7 +13,7 @@ export default async function AccountPage() {
   if (user.access === "guest") {
     return (
       <div className="mx-auto max-w-2xl px-10 py-10">
-        <h1 className="mb-1 text-[38px] font-bold tracking-[-0.035em]">Account</h1>
+        <h1 className="mb-1 text-[38px] font-bold tracking-[-0.025em]">Account</h1>
         <p className="mb-10 text-sm text-muted-foreground">You&apos;re exploring Sundew with a demo account.</p>
         <section className="space-y-5 rounded-2xl bg-surface p-6 shadow-card">
           <div className="flex items-start gap-3">
@@ -41,7 +41,7 @@ export default async function AccountPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-10 py-10">
-      <h1 className="mb-1 text-[38px] font-bold tracking-[-0.035em]">Account</h1>
+      <h1 className="mb-1 text-[38px] font-bold tracking-[-0.025em]">Account</h1>
       <p className="mb-10 text-sm text-muted-foreground">Your sign-in and the learning history that belongs to it.</p>
       <section className="space-y-5 rounded-2xl bg-surface p-6 shadow-card">
         <div className="flex items-start gap-3">

@@ -44,7 +44,7 @@ export default async function TodayPage() {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">{formattedDate}</p>
-            <h1 className="text-[38px] font-bold tracking-[-0.035em]">Today</h1>
+            <h1 className="text-[38px] font-bold tracking-[-0.025em]">Today</h1>
             <p className="mt-1 text-sm text-muted-foreground">{goalCopy} · practice level {plan.cefr}</p>
           </div>
           <Link href="/settings" className="rounded-lg px-2 py-1.5 text-sm font-medium text-accent hover:bg-accent-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40">Edit goal</Link>

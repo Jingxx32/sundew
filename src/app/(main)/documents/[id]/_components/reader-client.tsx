@@ -129,7 +129,7 @@ export function ReaderShell({ doc, paragraphs, initialSavedWords }: Props) {
 
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-3">
           <div className="min-w-0 flex-1">
-            <h1 className="text-[30px] font-bold tracking-[-0.03em] break-words">
+            <h1 className="text-[30px] font-bold tracking-[-0.025em] break-words">
               {doc.title}
             </h1>
             {doc.source && (

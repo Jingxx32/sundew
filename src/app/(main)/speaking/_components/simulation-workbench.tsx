@@ -65,7 +65,7 @@ export function SimulationWorkbench({ state }: { state: State }) {
   }
   return <main className="mx-auto max-w-3xl px-5 py-10 sm:px-8">
     <Link href="/speaking/task-2" className="text-sm text-accent hover:underline">← Task 2 practice</Link>
-    <h1 className="mt-7 text-3xl font-semibold">{sim.scenarioSnapshot.title}</h1>
+    <h1 className="mt-7 text-3xl font-semibold tracking-[-0.025em]">{sim.scenarioSnapshot.title}</h1>
     <p className="mt-2 text-sm text-muted-foreground">{sim.phase === "preparing" ? "Preparation" : sim.phase === "conversing" ? "Conversation" : "Conversation saved"} · Practice timer, with provider waiting excluded</p>
     <section className="mt-7 rounded-2xl border border-border bg-surface p-6">
       <p lang="fr" className="leading-7">{sim.scenarioSnapshot.instruction}</p>

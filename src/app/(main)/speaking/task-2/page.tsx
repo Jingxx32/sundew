@@ -15,7 +15,7 @@ export default async function TaskTwoPage() {
   return <main className="mx-auto max-w-3xl px-5 py-10 sm:px-8">
     <Link href="/speaking" className="text-sm text-accent hover:underline">← Speaking</Link>
     <p className="mt-8 text-xs font-semibold uppercase tracking-widest text-accent">TCF Canada · Task 2 practice</p>
-    <h1 className="mt-2 text-3xl font-semibold">Lead an information seeking conversation</h1>
+    <h1 className="mt-2 text-3xl font-semibold tracking-[-0.025em]">Lead an information seeking conversation</h1>
     <p className="mt-3 text-muted-foreground">Prepare for 2 minutes, then ask questions for approximately 3 minutes 30 seconds. The partner responds aloud. This is practice, not an official TCF assessment; provider waiting time is excluded from the practice timer.</p>
     <section className="mt-8 rounded-2xl border border-border bg-surface p-6">
       <h2 className="text-lg font-semibold">{SCENARIO.title}</h2>

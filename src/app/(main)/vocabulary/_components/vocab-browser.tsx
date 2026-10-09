@@ -113,7 +113,7 @@ export function VocabBrowser({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search words…"
-            className="h-9 rounded-lg border border-border bg-surface px-3 text-[15px] text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+            className="h-9 rounded-[var(--radius-field)] border border-border bg-surface px-3 text-[15px] text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
           />
 
           {/* Level filters */}
@@ -279,7 +279,7 @@ function DetailPanel({
       {/* Header */}
       <div className="px-5 py-4 border-b border-border/60">
         <div className="flex items-start justify-between gap-2">
-          <h2 className="text-2xl font-semibold text-foreground">{detail.lemma}</h2>
+          <h2 className="font-display text-2xl font-semibold tracking-[-0.025em] text-foreground">{detail.lemma}</h2>
           <div className="flex items-center gap-1.5 mt-1 shrink-0">
             {detail.cefrLevel && (
               <span

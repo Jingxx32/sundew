@@ -30,7 +30,7 @@ export default async function QuizPage({
       {/* Header */}
       <div className="flex items-end justify-between mb-8">
         <div>
-          <h1 className="text-[38px] font-bold tracking-[-0.035em]">
+          <h1 className="text-[38px] font-bold tracking-[-0.025em]">
             Quiz
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">

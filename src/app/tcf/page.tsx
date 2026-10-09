@@ -40,7 +40,7 @@ export default async function TcfPage({
     <div className="mx-auto max-w-5xl">
       <div className="flex items-end gap-3 mb-2">
         <Icon className="h-8 w-8 text-accent mb-0.5" strokeWidth={1.6} aria-hidden="true" />
-        <h1 className="text-[38px] font-bold tracking-[-0.035em]">TCF Canada</h1>
+        <h1 className="text-[38px] font-bold tracking-[-0.025em]">TCF Canada</h1>
       </div>
       <p className="text-sm text-muted-foreground mb-6">{meta.title} — par niveau CECR</p>
 

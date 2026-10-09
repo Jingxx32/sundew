@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const CLB_OPTIONS = [4, 5, 6, 7, 8, 9, 10];
-const inputClasses = "h-10 rounded-lg border border-border bg-surface px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30";
+const inputClasses = "h-10 rounded-[var(--radius-field)] border border-border bg-surface px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30";
 
 export function StudyGoalEditor({ initial }: { initial: StudyGoal }) {
   const [learningMode, setLearningMode] = useState<StudyGoal["learningMode"]>(initial.learningMode);

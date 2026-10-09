@@ -35,7 +35,7 @@ export default async function TcfReviewPage({
         <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" />
         TCF
       </Link>
-      <h1 className="text-[30px] font-bold tracking-[-0.03em]">Centre de révision</h1>
+      <h1 className="text-[30px] font-bold tracking-[-0.025em]">Centre de révision</h1>
       <p className="mt-1 text-sm text-muted-foreground">
         Répondez d’abord ; les réponses précédentes et les explications n’apparaissent qu’après.
       </p>

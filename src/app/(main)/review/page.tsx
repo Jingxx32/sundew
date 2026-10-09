@@ -32,7 +32,7 @@ export default async function ReviewPage({ searchParams }: { searchParams: Promi
     <div className="mx-auto max-w-4xl px-5 py-8 sm:px-8 sm:py-10">
       <header className="max-w-2xl">
         <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-accent">Return to what matters</p>
-        <h1 className="text-[38px] font-bold tracking-[-0.035em]">Review</h1>
+        <h1 className="text-[38px] font-bold tracking-[-0.025em]">Review</h1>
         <p className="mt-2 text-[15px] leading-6 text-muted-foreground">Revisit due vocabulary, TCF questions, and evidence from your writing. Counts describe real queues, not everything you have saved.</p>
       </header>
       <div className="mt-9 divide-y divide-border rounded-2xl border border-border/80 bg-surface px-5 shadow-card sm:px-7">

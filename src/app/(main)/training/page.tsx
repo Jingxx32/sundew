@@ -53,7 +53,7 @@ export default async function TrainingPage() {
     <div className="mx-auto max-w-5xl px-5 py-8 sm:px-8 sm:py-10">
       <header className="max-w-2xl">
         <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-accent">Practice by skill</p>
-        <h1 className="text-[38px] font-bold tracking-[-0.035em]">Training</h1>
+        <h1 className="text-[38px] font-bold tracking-[-0.025em]">Training</h1>
         <p className="mt-2 text-[15px] leading-6 text-muted-foreground">Choose the kind of French you want to use today. Each entry opens the existing practice flow and keeps one shared history.</p>
       </header>
 

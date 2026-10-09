@@ -29,7 +29,7 @@ export default async function FeedbackPage({
       {/* Page header */}
       <div className="max-w-[1200px] mx-auto space-y-2">
         <div className="flex items-center gap-3 flex-wrap">
-          <h1 className="text-2xl font-semibold">Feedback</h1>
+          <h1 className="text-2xl font-semibold tracking-[-0.025em]">Feedback</h1>
           {submission.estimatedLevel && (
             <Chip className={cn(CEFR_CHIP_CLASSES[level])}>{submission.estimatedLevel}</Chip>
           )}

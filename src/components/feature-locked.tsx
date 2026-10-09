@@ -22,7 +22,7 @@ export function FeatureLocked({ feature }: { feature: FeatureKey }) {
           <LockKeyhole className="h-5 w-5" aria-hidden="true" />
         </span>
         <p className="mt-6 text-xs font-semibold uppercase tracking-[0.16em] text-accent">Invite only</p>
-        <h1 className="mt-2 text-[28px] font-bold tracking-[-0.035em]">{FEATURES[feature].label}</h1>
+        <h1 className="mt-2 text-[28px] font-bold tracking-[-0.025em]">{FEATURES[feature].label}</h1>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">{DESCRIPTIONS[feature]}</p>
         {feature === "tcf" && (
           <Link href="/#try-demo" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:underline">

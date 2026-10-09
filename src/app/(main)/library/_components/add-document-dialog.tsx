@@ -107,7 +107,7 @@ export function AddDocumentDialog() {
               <select
                 id="type"
                 name="type"
-                className="flex h-9 w-full rounded-lg border border-border bg-surface px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
+                className="flex h-9 w-full rounded-[var(--radius-field)] border border-border bg-surface px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
                 defaultValue="other"
               >
                 <option value="literature">Literature</option>
