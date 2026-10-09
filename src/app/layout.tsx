@@ -1,10 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Manrope, Source_Serif_4, Source_Code_Pro } from "next/font/google";
+import { Geist, Plus_Jakarta_Sans, Source_Serif_4, Source_Code_Pro } from "next/font/google";
 import "./globals.css";
 
-const manrope = Manrope({
-  variable: "--font-manrope",
+const geist = Geist({
+  variable: "--font-geist",
   subsets: ["latin"],
+});
+
+// Display face for page titles; only the weight we use.
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
+  subsets: ["latin"],
+  weight: "800",
 });
 
 const sourceSerif = Source_Serif_4({
@@ -30,7 +37,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#faf8f4",
+  themeColor: "#f6f8fd",
 };
 
 export default function RootLayout({
@@ -41,7 +48,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${manrope.variable} ${sourceSerif.variable} ${sourceCodePro.variable} h-full antialiased`}
+      className={`${geist.variable} ${jakarta.variable} ${sourceSerif.variable} ${sourceCodePro.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-background text-foreground">
         {children}

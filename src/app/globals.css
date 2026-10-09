@@ -5,16 +5,16 @@
 /* ------------------------------------------------------------------ */
 
 :root {
-  /* Surfaces — warm, quiet, and deliberately low contrast. */
-  --background: #faf8f4;
+  /* Surfaces — cool, quiet, and deliberately low contrast. */
+  --background: #f6f8fd;
   --surface: #ffffff;
-  --surface-muted: #f6f7f9;
+  --surface-muted: #f1f4fa;
   --surface-blue: #edf5ff;
-  --border: #eeeae3;
+  --border: #e7eaf2;
 
   /* Text */
   --foreground: #0f2747;
-  --muted-foreground: #5d6b85;
+  --muted-foreground: #55617a;
   /* Decorative contrast only (~3:1). Anything under 12px must use
      --muted-foreground instead. */
   --subtle-foreground: #7c899f;
@@ -72,11 +72,15 @@
      only .reading-prose consumes it, so it needs no utility class. */
   --font-reading: var(--font-source-serif), Georgia, "Times New Roman", serif;
 
-  /* Shape and display tokens. These defaults keep the app exactly as it was;
-     .theme-glow overrides them on the landing and login pages. */
-  --radius-button: var(--radius-lg);
-  --radius-field: var(--radius-lg);
-  --display-font: var(--font-sans);
+  /* Shape, display and elevation tokens (soft-glow theme, site-wide since 2026-10-09).
+     Actions are pills; multi-line fields use rounded-xl instead of --radius-field. */
+  --radius-button: 9999px;
+  --radius-field: 9999px;
+  --display-font: var(--font-jakarta), var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --shadow-float: 0 1px 2px rgb(15 39 71 / 5%), 0 30px 60px -20px rgb(15 39 71 / 22%);
+  --drop-brand: 0 24px 32px rgb(31 78 216 / 28%);
+  --glow-blue: rgb(122 156 255 / 45%);
+  --glow-pink: rgb(255 168 176 / 22%);
 }
 
 @theme inline {
@@ -122,7 +126,7 @@
   --color-level-c1-ink: var(--level-c1-ink);
   --color-level-c2-ink: var(--level-c2-ink);
 
-  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-source-code), ui-monospace, "SFMono-Regular", monospace;
   --font-display: var(--display-font);
 }
@@ -146,6 +150,13 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+}
+
+/* Page titles use the display face; smaller headings stay in the body font. */
+@layer base {
+  h1 {
+    font-family: var(--display-font);
+  }
 }
 
 ::selection {
@@ -180,28 +191,6 @@ body {
 .sundew-organic-shape {
   border-radius: 57% 43% 63% 37% / 42% 51% 49% 58%;
   background: var(--surface-blue);
-}
-
-/* Soft-glow theme (landing + login). Scoped so the app keeps its tokens until
-   we roll it out: move these overrides into :root to apply it everywhere. */
-.theme-glow {
-  --background: #f6f8fd;
-  --surface-muted: #f1f4fa;
-  --border: #e7eaf2;
-  --muted-foreground: #55617a;
-  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
-  --display-font: var(--font-jakarta), var(--font-geist), ui-sans-serif, system-ui, sans-serif;
-  --radius-button: 9999px;
-  --radius-field: 9999px;
-  --shadow-float: 0 1px 2px rgb(15 39 71 / 5%), 0 30px 60px -20px rgb(15 39 71 / 22%);
-  --drop-brand: 0 24px 32px rgb(31 78 216 / 28%);
-  --glow-blue: rgb(122 156 255 / 45%);
-  --glow-pink: rgb(255 168 176 / 22%);
-
-  /* body resolved these from its own variables; re-resolve them here. */
-  font-family: var(--font-sans);
-  background: var(--background);
-  color: var(--foreground);
 }
 
 .glow-backdrop {
