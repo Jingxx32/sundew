@@ -36,3 +36,16 @@ export function groupQuestionsByTest<Q extends Pick<TcfQuestionForDrill, "testNu
       entries: entries.sort((a, b) => a.question.orderIndex - b.question.orderIndex),
     }));
 }
+
+export type DrillStep = { kind: "next"; index: number } | { kind: "unanswered"; index: number } | { kind: "summary" };
+
+/**
+ * What the end-of-question action offers once a question is answered: the next
+ * question in the round, the first one still open when the learner is at the
+ * end with gaps behind them, or the round summary when everything is answered.
+ */
+export function nextStep(questionIds: string[], completedIds: ReadonlySet<string>, currentIndex: number): DrillStep {
+  if (questionIds.every((id) => completedIds.has(id))) return { kind: "summary" };
+  if (currentIndex < questionIds.length - 1) return { kind: "next", index: currentIndex + 1 };
+  return { kind: "unanswered", index: questionIds.findIndex((id) => !completedIds.has(id)) };
+}

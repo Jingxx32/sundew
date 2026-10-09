@@ -29,7 +29,7 @@
 |---|---|
 | 1 | The summary is opened, not forced: when every question is answered, the end-of-question action becomes **Voir le bilan**. The summary has **Revenir aux questions**. |
 | 2 | After an answer, an end-of-question action sits **below the explanation**: **Question suivante →**, or **Voir le bilan** when the round is complete, or **Question non répondue →** at the last position while some remain. Top navigation and keyboard stay. |
-| 3 | The side nav lists the round in order, labelled 1…N (status colours unchanged; one strip for every round size). "Test X · n°Y" moves next to the question header. |
+| 3 | Rounds of up to 20 questions (10, 20, à revoir): the side nav lists the round in order, labelled 1…N (status colours unchanged). "Toutes" (200+) keeps the by-test map, where test/number labels are the useful index. "Test X · n°Y" stays next to the question header in both. |
 | 4 | The summary's primary action is **Encore 10 questions** (same skill and level, fresh round); "Revoir maintenant" and "Retour au niveau" become secondary. |
 | 5 | `/tcf` shows **Reprendre : {skill} {level} →** from the user's latest TCF answer (server query, any mode, any skill), linking to a fresh round at that level. The localStorage position restore is removed. |
 | 6 | Review centre: after an answer, **Question suivante →** links to the next queue item; at the end, "Plus rien à revoir avec ces filtres." |

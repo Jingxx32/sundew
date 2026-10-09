@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { deriveTcfLearningSummary, isTcfReviewDue } from "./learning";
+import { deriveTcfLearningSummary, isTcfReviewDue, reviewReason } from "./learning";
 
 const at = (day: number) => new Date(`2026-08-${String(day).padStart(2, "0")}T12:00:00Z`);
 const attempt = (id: string, day: number, correct: boolean, uncertain = false) => ({ id, answeredAt: at(day), correct, uncertain });
@@ -41,4 +41,13 @@ test("confidently correct questions become due after their scheduled interval", 
   assert.equal(summary.needsReview, false);
   assert.equal(isTcfReviewDue(summary, at(3)), false);
   assert.equal(isTcfReviewDue(summary, at(4)), true);
+});
+
+test("a review item says why it is there: the latest answer was wrong or a guess", () => {
+  const base = { attemptCount: 1, correctCount: 0, uncertainCount: 0, lastAnsweredAt: new Date(), consecutiveConfidentCorrect: 0, nextReviewAt: null, status: "needs_review" as const, needsReview: true };
+  assert.equal(reviewReason({ ...base, latestCorrect: false, latestUncertain: false }), "wrong");
+  assert.equal(reviewReason({ ...base, latestCorrect: false, latestUncertain: true }), "wrong");
+  assert.equal(reviewReason({ ...base, latestCorrect: true, latestUncertain: true }), "uncertain");
+  assert.equal(reviewReason({ ...base, latestCorrect: true, latestUncertain: false }), null);
+  assert.equal(reviewReason({ ...base, attemptCount: 0, lastAnsweredAt: null, latestCorrect: null, latestUncertain: null }), null);
 });

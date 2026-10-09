@@ -81,3 +81,10 @@ export function deriveTcfLearningSummary(
     needsReview,
   };
 }
+
+/** Why a question sits in the review queue, from its latest answer: wrong beats a correct guess. */
+export function reviewReason(summary: TcfQuestionLearningSummary): "wrong" | "uncertain" | null {
+  if (summary.latestCorrect === false) return "wrong";
+  if (summary.latestCorrect && summary.latestUncertain) return "uncertain";
+  return null;
+}

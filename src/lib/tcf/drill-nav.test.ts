@@ -50,3 +50,11 @@ test("sorts test numbers numerically, not as strings", () => {
 test("returns nothing for an empty session", () => {
   assert.deepEqual(groupQuestionsByTest([]), []);
 });
+
+test("the end-of-question step moves on, then back to gaps, then to the summary", async () => {
+  const { nextStep } = await import("./drill-nav");
+  const ids = ["a", "b", "c"];
+  assert.deepEqual(nextStep(ids, new Set(["a"]), 0), { kind: "next", index: 1 });
+  assert.deepEqual(nextStep(ids, new Set(["b", "c"]), 2), { kind: "unanswered", index: 0 });
+  assert.deepEqual(nextStep(ids, new Set(["a", "b", "c"]), 1), { kind: "summary" });
+});
