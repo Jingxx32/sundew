@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LockKeyhole, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PreviewBadge } from "@/components/preview-badge";
 import { SundewLogo } from "@/components/sundew-logo";
 import { canUse, type Access } from "@/lib/access/features";
 import {
@@ -36,7 +37,7 @@ function NavigationLink({ item, pathname, locked }: { item: NavigationItem; path
     >
       <Icon className="h-4 w-4" strokeWidth={1.8} aria-hidden="true" />
       <span>{item.label}</span>
-      {locked && <LockKeyhole className="ml-auto h-3.5 w-3.5 text-subtle-foreground" aria-label="Invite only" />}
+      {locked && <PreviewBadge className="ml-auto" />}
     </Link>
   );
 }
@@ -78,7 +79,7 @@ function MobileNavigation({ pathname, access }: { pathname: string; access: Acce
                   <DialogClose key={item.href} asChild>
                     <Link href={item.href} aria-current={active ? "page" : undefined} className={cn("flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40", active ? "bg-accent-soft text-accent" : "text-muted-foreground hover:bg-surface-blue hover:text-foreground")}>
                       <Icon className="h-4 w-4" strokeWidth={1.8} aria-hidden="true" />{item.label}
-                      {isLocked(item, access) && <LockKeyhole className="ml-auto h-3.5 w-3.5 text-subtle-foreground" aria-label="Invite only" />}
+                      {isLocked(item, access) && <PreviewBadge className="ml-auto" />}
                     </Link>
                   </DialogClose>
                 );

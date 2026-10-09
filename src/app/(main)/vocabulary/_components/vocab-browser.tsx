@@ -7,7 +7,7 @@ import { getVocabEntryDetail, enrichEntry } from "@/lib/actions/vocabulary";
 import type { VocabEntrySummary, VocabEntryDetail, OccurrenceLink } from "@/lib/vocabulary/types";
 import { CEFR_CHIP_CLASSES, type CefrLevel } from "@/lib/cefr";
 import { Button } from "@/components/ui/button";
-import { InviteOnlyNote } from "@/components/invite-only-note";
+import { MembersOnlyNote } from "@/components/members-only-note";
 import { useFeatureLocked } from "@/components/access-context";
 import { Chip } from "@/components/ui/chip";
 import { cn } from "@/lib/utils";
@@ -336,7 +336,7 @@ function DetailPanel({
         {/* Rich content */}
         {detail.saved && !detail.enriched && enrichLocked && (
           <section className="rounded-lg border border-dashed border-border px-4 py-3">
-            <InviteOnlyNote />
+            <MembersOnlyNote feature="enrich" />
           </section>
         )}
         {detail.saved && !detail.enriched && !enrichLocked && (

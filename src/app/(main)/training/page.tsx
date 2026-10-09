@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowRight, BookOpenText, Headphones, LockKeyhole, Mic, PenLine, Repeat2, Rows3 } from "lucide-react";
+import { ArrowRight, BookOpenText, Headphones, Mic, PenLine, Repeat2, Rows3 } from "lucide-react";
+import { PreviewBadge } from "@/components/preview-badge";
 import { canUse } from "@/lib/access/features";
 import { requirePageUser } from "@/lib/auth/session";
 
@@ -42,9 +43,6 @@ const SKILLS = [
   },
 ] as const;
 
-function InviteOnly() {
-  return <span className="inline-flex items-center gap-1"><LockKeyhole className="h-3 w-3" aria-hidden="true" />Invite only</span>;
-}
 
 export default async function TrainingPage() {
   const user = await requirePageUser();
@@ -65,7 +63,7 @@ export default async function TrainingPage() {
             <article id={skill.title.toLowerCase()} key={skill.title} className="flex min-h-60 scroll-mt-8 flex-col rounded-2xl border border-border/80 bg-surface p-6 shadow-card">
               <div className="flex items-start justify-between gap-4">
                 <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-surface-blue text-accent"><Icon className="h-5 w-5" aria-hidden="true" /></span>
-                <span className="text-right text-[11px] font-medium text-muted-foreground">{locked ? <InviteOnly /> : skill.note}</span>
+                <span className="text-right text-[11px] font-medium text-muted-foreground">{locked ? <PreviewBadge /> : skill.note}</span>
               </div>
               <h2 className="mt-7 text-xl font-bold tracking-[-0.02em]">{skill.title}</h2>
               <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">{skill.detail}</p>
@@ -82,7 +80,7 @@ export default async function TrainingPage() {
         <h2 id="supporting-practice" className="text-sm font-semibold">Supporting practice</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <Link href="/conjugation" className="flex items-center gap-3 rounded-xl border border-border/80 bg-surface px-4 py-4 text-sm font-medium transition-colors hover:border-accent/30"><Repeat2 className="h-4 w-4 text-accent" />Conjugation drills<ArrowRight className="ml-auto h-4 w-4 text-muted-foreground" /></Link>
-          <Link href="/quiz" className="flex items-center gap-3 rounded-xl border border-border/80 bg-surface px-4 py-4 text-sm font-medium transition-colors hover:border-accent/30"><Rows3 className="h-4 w-4 text-accent" />Quiz and cloze sets{quizLocked && <span className="text-[11px] font-normal text-muted-foreground"><InviteOnly /></span>}<ArrowRight className="ml-auto h-4 w-4 text-muted-foreground" /></Link>
+          <Link href="/quiz" className="flex items-center gap-3 rounded-xl border border-border/80 bg-surface px-4 py-4 text-sm font-medium transition-colors hover:border-accent/30"><Rows3 className="h-4 w-4 text-accent" />Quiz and cloze sets{quizLocked && <span className="text-[11px] font-normal text-muted-foreground"><PreviewBadge /></span>}<ArrowRight className="ml-auto h-4 w-4 text-muted-foreground" /></Link>
         </div>
       </section>
     </div>

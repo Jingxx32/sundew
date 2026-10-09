@@ -5,7 +5,7 @@ import { Loader2, PenLine } from "lucide-react";
 
 import { quickWrite } from "@/lib/actions/tasks";
 import { Button } from "@/components/ui/button";
-import { InviteOnlyNote } from "@/components/invite-only-note";
+import { MembersOnlyNote } from "@/components/members-only-note";
 import { useFeatureLocked } from "@/components/access-context";
 
 /** One-click entry into the writing loop: generates an archive-driven task
@@ -44,7 +44,7 @@ export function QuickWriteButton({ compact = false }: { compact?: boolean }) {
         )}
       </Button>
       {locked ? (
-        <InviteOnlyNote />
+        <MembersOnlyNote feature="writing" />
       ) : (
         !compact && (
           <p className="text-xs text-muted-foreground">

@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/input";
 import { createMicroDrill, getMicroDrillsForError, retryMicroDrillFeedback, type MicroDrillView } from "@/lib/actions/errors";
 import type { MicroDrillFeedback } from "@/lib/ai/micro-drill";
-import { InviteOnlyNote } from "@/components/invite-only-note";
+import { MembersOnlyNote } from "@/components/members-only-note";
 import { useFeatureLocked } from "@/components/access-context";
 
 type Props = {
@@ -222,7 +222,7 @@ export function MicroDrillDialog({ errorId, microDrill, original, correction }: 
         )}
 
         <DialogFooter>
-          {locked && <InviteOnlyNote className="mr-auto" />}
+          {locked && <MembersOnlyNote feature="microDrill" className="mr-auto" />}
           {feedback ? (
             <Button variant="outline" size="sm" onClick={handleNewAttempt}>
               New attempt

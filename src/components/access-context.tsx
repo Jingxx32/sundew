@@ -14,7 +14,7 @@ export function useAccess(): Access {
   return useContext(AccessContext);
 }
 
-/** True when this control should be disabled with an "Invite only" note. */
+/** True when this control should be disabled with a "Members only" note. */
 export function useFeatureLocked(key: FeatureKey): boolean {
   return canUse(useContext(AccessContext), key) !== true;
 }

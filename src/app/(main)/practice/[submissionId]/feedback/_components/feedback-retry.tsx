@@ -6,7 +6,7 @@ import { Loader2, RefreshCw } from "lucide-react";
 
 import { regenerateFeedback } from "@/lib/actions/tasks";
 import { Button } from "@/components/ui/button";
-import { InviteOnlyNote } from "@/components/invite-only-note";
+import { MembersOnlyNote } from "@/components/members-only-note";
 import { useFeatureLocked } from "@/components/access-context";
 
 export function FeedbackRetry({
@@ -58,7 +58,7 @@ export function FeedbackRetry({
           </>
         )}
       </Button>
-      {locked && <InviteOnlyNote className="justify-center" />}
+      {locked && <MembersOnlyNote feature="writing" className="justify-center" />}
       {failed && (
         <p className="text-xs text-danger">
           Still failing. Wait a moment and retry, or check your API key.

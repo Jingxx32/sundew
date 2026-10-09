@@ -13,7 +13,7 @@ import { useTextSelection } from "@/hooks/use-text-selection";
 import { Chip } from "@/components/ui/chip";
 import { Button } from "@/components/ui/button";
 import { CEFR_CHIP_CLASSES, type CefrLevel } from "@/lib/cefr";
-import { InviteOnlyNote } from "@/components/invite-only-note";
+import { MembersOnlyNote } from "@/components/members-only-note";
 import { useFeatureLocked } from "@/components/access-context";
 import { cn } from "@/lib/utils";
 
@@ -110,7 +110,7 @@ export function WordLookupPopover({
             </button>
           </div>
           <p className="text-muted-foreground">Look-ups outside the sample texts need an invite code.</p>
-          <InviteOnlyNote />
+          <MembersOnlyNote feature="lookup" />
         </div>
       ) : (
         <LookupCard

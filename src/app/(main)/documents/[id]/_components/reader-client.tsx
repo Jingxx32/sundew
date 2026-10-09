@@ -16,7 +16,7 @@ import { CEFR_CHIP_CLASSES, type CefrLevel } from "@/lib/cefr";
 import { cn } from "@/lib/utils";
 import type { Document } from "@/lib/db/schema";
 import { WordLookupPopover } from "@/components/word-lookup-popover";
-import { InviteOnlyNote } from "@/components/invite-only-note";
+import { MembersOnlyNote } from "@/components/members-only-note";
 import { useFeatureLocked } from "@/components/access-context";
 import { SessionSidebar } from "./session-sidebar";
 
@@ -151,7 +151,7 @@ export function ReaderShell({ doc, paragraphs, initialSavedWords }: Props) {
           </Button>
         </div>
 
-        {writingLocked && <InviteOnlyNote className="mb-4" />}
+        {writingLocked && <MembersOnlyNote feature="writing" className="mb-4" />}
 
         {generateError && (
           <p className="mb-4 text-sm text-danger bg-danger-soft rounded-lg px-4 py-2">

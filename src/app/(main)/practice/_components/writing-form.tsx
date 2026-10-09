@@ -3,7 +3,7 @@
 import { useTransition, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { InviteOnlyNote } from "@/components/invite-only-note";
+import { MembersOnlyNote } from "@/components/members-only-note";
 import { useFeatureLocked } from "@/components/access-context";
 import { createSubmission } from "@/lib/actions/tasks";
 
@@ -62,7 +62,7 @@ export function WritingForm({ taskId, minWordCount, maxWordCount }: Props) {
           )}
         </p>
 
-        {locked && <InviteOnlyNote className="mr-auto" />}
+        {locked && <MembersOnlyNote feature="writing" className="mr-auto" />}
         <Button type="submit" disabled={isPending || locked || !text.trim()}>
           {isPending ? (
             <>

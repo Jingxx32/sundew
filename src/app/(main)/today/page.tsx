@@ -8,11 +8,11 @@ import {
   ChevronDown,
   Clock3,
   Headphones,
-  LockKeyhole,
   Mic,
   PenLine,
   Sparkles,
 } from "lucide-react";
+import { PreviewBadge } from "@/components/preview-badge";
 import { Button } from "@/components/ui/button";
 import { getTodayPlan, selectTodayActivity, startTodayActivity } from "@/lib/actions/today";
 import { requirePageUser } from "@/lib/auth/session";
@@ -96,7 +96,7 @@ export default async function TodayPage() {
         <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
           {plan.skills.map((skill) => {
             const Icon = SKILL_ICONS[skill.key];
-            return <Link key={skill.key} href={skill.href} className="group rounded-xl border border-border/80 bg-surface p-4 transition-colors hover:border-accent/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"><Icon className="h-4.5 w-4.5 text-accent" /><h3 className="mt-5 text-sm font-semibold group-hover:text-accent">{skill.title}</h3><p className="mt-1 text-[11px] leading-4 text-muted-foreground">{skill.detail}</p>{skill.locked && <span className="mt-2 inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground"><LockKeyhole className="h-3 w-3" aria-hidden="true" />Invite only</span>}</Link>;
+            return <Link key={skill.key} href={skill.href} className="group rounded-xl border border-border/80 bg-surface p-4 transition-colors hover:border-accent/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"><Icon className="h-4.5 w-4.5 text-accent" /><h3 className="mt-5 text-sm font-semibold group-hover:text-accent">{skill.title}</h3><p className="mt-1 text-[11px] leading-4 text-muted-foreground">{skill.detail}</p>{skill.locked && <PreviewBadge className="mt-2 inline-block" />}</Link>;
           })}
         </div>
       </section>

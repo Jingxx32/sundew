@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
+import { InviteDisclosure } from "@/components/invite-disclosure";
 import { SundewLogo } from "@/components/sundew-logo";
 import { SignOutButton } from "@/components/sign-out-button";
 import { GlowBackdrop } from "@/components/theme/glow-backdrop";
@@ -10,7 +11,6 @@ import { safeCallbackPath } from "@/lib/auth/callback-path";
 import { otpEmailConfigured } from "@/lib/auth/email";
 import { getCurrentUser } from "@/lib/auth/session";
 import { signupEnabled } from "@/lib/auth/signup";
-import { InviteDisclosure } from "./_components/invite-disclosure";
 import { LoginForm } from "./_components/login-form";
 
 export const dynamic = "force-dynamic";
