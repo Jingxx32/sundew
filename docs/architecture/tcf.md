@@ -21,7 +21,7 @@ Individual drill and exam answers are persisted for the current user. Progress v
 
 ## Explanations
 
-Explanations are stored in the database. The development-only `POST /api/tcf/explanations` endpoint is the maintenance entry point. It accepts a locator from frontmatter or URL parameters, validates it, stores the raw Markdown, extracts the English Translation section, and parses an optional Verdict section for structured rendering.
+Explanations are stored in the database. `npm run tcf:explain -- <file.md>` is the maintenance entry point; the admin-only development endpoint `POST /api/tcf/explanations` shares its code (`src/lib/tcf/write-explanation.ts`). It accepts a locator from frontmatter or URL parameters, validates it, stores the raw Markdown, extracts the English Translation section, and parses an optional Verdict section for structured rendering.
 
 Older explanation records can use legacy Chinese headings; the parser retains compatibility for them. New explanations should be authored in English.
 

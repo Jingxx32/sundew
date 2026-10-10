@@ -11,6 +11,7 @@ import { MembersOnlyNote } from "@/components/members-only-note";
 import { useFeatureLocked } from "@/components/access-context";
 import { Chip } from "@/components/ui/chip";
 import { cn } from "@/lib/utils";
+import { userErrorMessage } from "@/lib/user-error";
 import { VerbTenses } from "./verb-tenses";
 import { PosDetails } from "./pos-details";
 
@@ -64,6 +65,7 @@ export function VocabBrowser({
   const [detail, setDetail] = useState<VocabEntryDetail | null>(null);
   const [isPending, startTransition] = useTransition();
   const [isRetrying, startRetryTransition] = useTransition();
+  const [retryError, setRetryError] = useState<string | null>(null);
 
   // Filtered entries (client-side)
   const filtered = initialEntries.filter((e) => {
@@ -81,6 +83,7 @@ export function VocabBrowser({
 
   function selectEntry(lemma: string) {
     setSelectedLemma(lemma);
+    setRetryError(null);
     startTransition(async () => {
       const d = await getVocabEntryDetail(lemma);
       setDetail(d);
@@ -89,10 +92,14 @@ export function VocabBrowser({
 
   function handleRetry() {
     if (!selectedLemma) return;
+    setRetryError(null);
     startRetryTransition(async () => {
-      await enrichEntry(selectedLemma);
-      const d = await getVocabEntryDetail(selectedLemma);
-      setDetail(d);
+      try {
+        await enrichEntry(selectedLemma);
+        setDetail(await getVocabEntryDetail(selectedLemma));
+      } catch (err) {
+        setRetryError(userErrorMessage(err, "Couldn't generate the entry. Try again."));
+      }
     });
   }
 
@@ -242,6 +249,7 @@ export function VocabBrowser({
             detail={detail}
             learnerLevel={learnerLevel}
             isRetrying={isRetrying}
+            retryError={retryError}
             onRetry={handleRetry}
           />
         ) : (
@@ -262,11 +270,13 @@ function DetailPanel({
   detail,
   learnerLevel,
   isRetrying,
+  retryError,
   onRetry,
 }: {
   detail: VocabEntryDetail;
   learnerLevel: string;
   isRetrying: boolean;
+  retryError: string | null;
   onRetry: () => void;
 }) {
   const enrichLocked = useFeatureLocked("enrich");
@@ -360,6 +370,7 @@ function DetailPanel({
                 "Retry"
               )}
             </Button>
+            {retryError && <p className="mt-2 text-xs text-danger">{retryError}</p>}
           </section>
         )}
 

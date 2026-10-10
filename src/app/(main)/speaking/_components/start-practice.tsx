@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { startSimulation } from "@/lib/actions/speaking-simulation";
+import { userErrorMessage } from "@/lib/user-error";
 
 export function StartPractice({ enabled }: { enabled: boolean }) {
   const router = useRouter();
@@ -14,7 +15,7 @@ export function StartPractice({ enabled }: { enabled: boolean }) {
     setBusy(true);
     setError("");
     try { router.push(`/speaking/sessions/${await startSimulation(key.current)}`); }
-    catch (e) { setError(e instanceof Error ? e.message : "Could not start practice"); setBusy(false); }
+    catch (e) { setError(userErrorMessage(e, "Could not start practice")); setBusy(false); }
   }
   return <>
     <button type="button" onClick={start} disabled={!enabled || busy} className="rounded-lg bg-accent px-5 py-2.5 font-medium text-white disabled:opacity-50">

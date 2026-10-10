@@ -13,6 +13,7 @@ import {
   type ClozePayload,
 } from "@/lib/ai/cloze-schema";
 import { requireFeature } from "@/lib/access/guard";
+import { assertAiBudget } from "@/lib/access/ai-guard";
 
 /** Seconds of audio padding around a blanked word's loop window. */
 const LOOP_PAD_SEC = 0.5;
@@ -39,6 +40,7 @@ export async function preparePodcastCloze(input: {
   url: string;
 }): Promise<PrepareClozeResult> {
   await requireFeature("quiz");
+  await assertAiBudget("transcribe", "generate");
   let parsedUrl: URL;
   try {
     parsedUrl = new URL(input.url);

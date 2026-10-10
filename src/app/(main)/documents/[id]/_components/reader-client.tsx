@@ -10,6 +10,7 @@ import {
   updateSessionDuration,
 } from "@/lib/actions/reading";
 import { generateWritingTask } from "@/lib/actions/tasks";
+import { userErrorMessage } from "@/lib/user-error";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
 import { CEFR_CHIP_CLASSES, type CefrLevel } from "@/lib/cefr";
@@ -109,8 +110,8 @@ export function ReaderShell({ doc, paragraphs, initialSavedWords }: Props) {
     try {
       const taskId = await generateWritingTask(doc.id, vocabWords);
       router.push(`/practice?taskId=${taskId}`);
-    } catch {
-      setGenerateError("Failed to generate task. Check your API key in Settings.");
+    } catch (err) {
+      setGenerateError(userErrorMessage(err, "Couldn't generate a task. Try again."));
       setIsGenerating(false);
     }
   }

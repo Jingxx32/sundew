@@ -24,6 +24,7 @@ import { extractPdfText } from "@/lib/pdf/extract";
 import { parseQuizFromText } from "@/lib/ai/quiz-parse";
 import { QuizParseSchema, type ParsedQuiz } from "@/lib/ai/quiz-schema";
 import { requireFeature } from "@/lib/access/guard";
+import { assertAiBudget } from "@/lib/access/ai-guard";
 import { gradeQuizAnswers, type QuizAnswer } from "@/lib/quiz/grading";
 
 const QUIZ_SECTIONS = [
@@ -48,6 +49,7 @@ export async function importQuizFromPdf(
   formData: FormData,
 ): Promise<ImportQuizResult> {
   await requireFeature("quiz");
+  await assertAiBudget("generate");
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) {
     return { ok: false, error: "empty" };
@@ -66,6 +68,7 @@ export async function parseQuizFromPastedText(
   rawText: string,
 ): Promise<ImportQuizResult> {
   await requireFeature("quiz");
+  await assertAiBudget("generate");
   if (!rawText.trim()) return { ok: false, error: "empty" };
   return parsePastedOrExtractedText(rawText);
 }

@@ -28,6 +28,7 @@ import { upsertGap, gradeGap } from "@/lib/vocabulary/gaps";
 import { getProductionGapLemmas } from "@/lib/actions/vocab-gaps";
 import { requireUser } from "@/lib/auth/session";
 import { requireFeature } from "@/lib/access/guard";
+import { assertAiBudget } from "@/lib/access/ai-guard";
 import { locateErrorSpan } from "@/lib/feedback/error-span";
 
 const ARCHIVE_PLACEHOLDER_TITLE = "(Targeted practice from your error archive)";
@@ -48,6 +49,7 @@ export async function generateWritingTask(
   opts?: GenerateTaskOptions,
 ): Promise<string> {
   const user = await requireFeature("writing");
+  await assertAiBudget("generate");
   const [doc, profile] = await Promise.all([
     documentId
       ? db
@@ -119,6 +121,7 @@ export async function practiceFromPattern(
   subcategory: string,
 ): Promise<string> {
   await requireFeature("writing");
+  await assertAiBudget("generate");
   const def = ERROR_TAXONOMY[category];
   if (!def) throw new Error("Unknown error category.");
   const hasSub = Object.prototype.hasOwnProperty.call(
@@ -143,6 +146,7 @@ export async function practiceFromPattern(
  */
 export async function quickWrite(): Promise<void> {
   await requireFeature("writing");
+  await assertAiBudget("generate");
   const taskId = await generateWritingTask(null, [], { source: "archive" });
   revalidatePath("/practice");
   redirect(`/practice?taskId=${taskId}`);
@@ -155,6 +159,7 @@ export async function quickWrite(): Promise<void> {
  */
 export async function writeFromTcfPassage(questionId: string): Promise<string> {
   const user = await requireFeature("tcf");
+  await assertAiBudget("generate");
   const row = await db
     .select({
       passage: tcfQuestions.passage,
@@ -353,6 +358,7 @@ async function persistFeedback(
 
 export async function createSubmission(taskId: string, contentFr: string): Promise<void> {
   const user = await requireFeature("writing");
+  await assertAiBudget("generate");
   const taskExists = await db
     .select({ id: writingTasks.id })
     .from(writingTasks)
@@ -420,6 +426,7 @@ export async function regenerateFeedback(
   submissionId: string,
 ): Promise<{ ok: boolean }> {
   const user = await requireFeature("writing");
+  await assertAiBudget("generate");
   const submission = await db
     .select()
     .from(submissions)

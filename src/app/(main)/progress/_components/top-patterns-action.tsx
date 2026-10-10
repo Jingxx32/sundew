@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { practiceFromPattern } from "@/lib/actions/tasks";
+import { userErrorMessage } from "@/lib/user-error";
 import { MembersOnlyNote } from "@/components/members-only-note";
 import { useFeatureLocked } from "@/components/access-context";
 import type { ErrorCategory } from "@/lib/taxonomy";
@@ -26,8 +27,7 @@ export function PracticeFromPatternButton({ category, subcategory }: Props) {
         const taskId = await practiceFromPattern(category, subcategory);
         router.push(`/practice?taskId=${taskId}`);
       } catch (err) {
-        const message = err instanceof Error ? err.message : "Failed to generate task.";
-        setError(message);
+        setError(userErrorMessage(err, "Couldn't generate a task. Try again."));
       }
     });
   }

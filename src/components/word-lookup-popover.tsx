@@ -16,11 +16,13 @@ import { CEFR_CHIP_CLASSES, type CefrLevel } from "@/lib/cefr";
 import { MembersOnlyNote } from "@/components/members-only-note";
 import { useFeatureLocked } from "@/components/access-context";
 import { cn } from "@/lib/utils";
+import { userErrorMessage } from "@/lib/user-error";
 
 type State =
   | { phase: "hidden" }
   | { phase: "loading"; word: string; x: number; y: number }
   | { phase: "locked"; word: string; x: number; y: number }
+  | { phase: "error"; word: string; message: string; x: number; y: number }
   | {
       phase: "ready";
       lemma: string;
@@ -75,10 +77,11 @@ export function WordLookupPopover({
                 }
               : p,
           );
-        } catch {
-          // Only close if this word is still the one on screen.
+        } catch (err) {
+          // Only report it if this word is still the one on screen.
+          const message = userErrorMessage(err, "This look-up failed. Try again.");
           setState((p) =>
-            p.phase !== "hidden" && p.word === requested ? { phase: "hidden" } : p,
+            p.phase !== "hidden" && p.word === requested ? { phase: "error", word: requested, message, x, y } : p,
           );
         }
       });
@@ -111,6 +114,16 @@ export function WordLookupPopover({
           </div>
           <p className="text-muted-foreground">Look-ups outside the sample texts need an invite code.</p>
           <MembersOnlyNote feature="lookup" />
+        </div>
+      ) : state.phase === "error" ? (
+        <div className="space-y-3 p-4 text-sm">
+          <div className="flex items-start justify-between gap-2">
+            <span className="text-base font-semibold">{word}</span>
+            <button type="button" onClick={() => setState({ phase: "hidden" })} aria-label="Close word lookup" className="shrink-0 rounded-md text-subtle-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40">
+              <X className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
+          <p className="text-muted-foreground">{state.message}</p>
         </div>
       ) : (
         <LookupCard
@@ -171,6 +184,7 @@ function LookupCard({
   const isSaved = savedLemmas.includes(lemma);
   const [inContext, setInContext] = useState(result.in_context);
   const [isReexplaining, startReexplain] = useTransition();
+  const [reexplainError, setReexplainError] = useState<string | null>(null);
   const [isSaving, startSave] = useTransition();
   const reexplainLocked = useFeatureLocked("lookup");
 
@@ -182,12 +196,14 @@ function LookupCard({
   }
 
   function handleReexplain() {
+    setReexplainError(null);
     startReexplain(async () => {
       try {
         const ic = await reexplainInContext(lemma, sentence);
         setInContext(ic);
-      } catch {
-        // leave existing text on error
+      } catch (err) {
+        // Keep the existing text; say why nothing changed.
+        setReexplainError(userErrorMessage(err, "Couldn't re-explain this time. Try again."));
       }
     });
   }
@@ -237,6 +253,7 @@ function LookupCard({
           Re-explain in this sentence
         </button>
         )}
+        {reexplainError && <p className="mt-1 text-[11px] text-danger">{reexplainError}</p>}
       </Section>
 
       <Divider />

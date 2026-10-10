@@ -20,6 +20,7 @@ import { useQuestionKeyboardNav } from "@/hooks/use-question-keyboard-nav";
 import { nextStep } from "@/lib/tcf/drill-nav";
 import { submitDrillAttempt } from "@/lib/tcf/pending-sync";
 import { writeFromTcfPassage } from "@/lib/actions/tasks";
+import { userErrorMessage } from "@/lib/user-error";
 import type { TcfDrillSessionKind, TcfQuestionForDrill, TcfQuestionLearning, TcfLevel } from "@/lib/actions/tcf";
 import type { TcfLearningStatus } from "@/lib/tcf/learning";
 
@@ -28,14 +29,14 @@ type RoundResult = { chosen: number; correct: boolean; uncertain: boolean };
 function WritePassageButton({ questionId }: { questionId: string }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const [failed, setFailed] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   function handleClick() {
-    setFailed(false);
+    setError(null);
     startTransition(async () => {
       try {
         router.push(`/practice?taskId=${await writeFromTcfPassage(questionId)}`);
-      } catch {
-        setFailed(true);
+      } catch (err) {
+        setError(userErrorMessage(err, "Échec — réessayez."));
       }
     });
   }
@@ -59,7 +60,7 @@ function WritePassageButton({ questionId }: { questionId: string }) {
           </>
         )}
       </button>
-      {failed && <span className="text-xs text-danger">Échec — réessayez.</span>}
+      {error && <span className="text-xs text-danger">{error}</span>}
     </div>
   );
 }

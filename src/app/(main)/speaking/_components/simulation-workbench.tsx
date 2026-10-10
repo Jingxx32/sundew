@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import type { getSimulation } from "@/lib/actions/speaking-simulation";
 import { beginSimulation, deleteSimulation, finishSimulation, flagSimulationTranscription } from "@/lib/actions/speaking-simulation";
 import { useWavRecorder } from "./use-wav-recorder";
+import { userErrorMessage } from "@/lib/user-error";
 
 type State = NonNullable<Awaited<ReturnType<typeof getSimulation>>>;
 
@@ -28,7 +29,7 @@ export function SimulationWorkbench({ state }: { state: State }) {
   async function act(fn: () => Promise<unknown>) {
     setBusy(true); setError("");
     try { await fn(); router.refresh(); }
-    catch (e) { setError(e instanceof Error ? e.message : "Action failed"); }
+    catch (e) { setError(userErrorMessage(e, "Action failed")); }
     finally { setBusy(false); }
   }
   async function submitTurn() {
@@ -54,14 +55,14 @@ export function SimulationWorkbench({ state }: { state: State }) {
       if (result.status === "failed") setError("This turn failed before any speech was saved. Record a new turn to continue.");
       if (result.status !== "processing") { pendingTurn.current = null; setRetryPending(false); }
       router.refresh();
-    } catch (e) { setError(e instanceof Error ? e.message : "Audio upload failed"); }
+    } catch (e) { setError(userErrorMessage(e, "Audio upload failed")); }
     finally { setBusy(false); }
   }
   async function removeSession() {
     if (!window.confirm("Delete this practice session, transcript, feedback, and recordings?")) return;
     setBusy(true); setError("");
     try { await deleteSimulation(sessionId); router.push("/speaking/task-2"); }
-    catch (e) { setError(e instanceof Error ? e.message : "Could not delete session"); setBusy(false); }
+    catch (e) { setError(userErrorMessage(e, "Could not delete session")); setBusy(false); }
   }
   return <main className="mx-auto max-w-3xl px-5 py-10 sm:px-8">
     <Link href="/speaking/task-2" className="text-sm text-accent hover:underline">← Task 2 practice</Link>

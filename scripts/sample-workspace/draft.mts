@@ -23,7 +23,7 @@ const Draft = z.object({
   essays: z.array(z.object({ aboutText: z.number(), text: z.string() })),
 });
 
-const completion = await (await getOpenAI()).chat.completions.parse({
+const completion = await (await getOpenAI("generate")).chat.completions.parse({
   model: MODELS.task,
   temperature: 0.8,
   response_format: zodResponseFormat(Draft, "draft"),

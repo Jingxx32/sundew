@@ -1,11 +1,13 @@
 "use client";
 
 import { useTransition, useState } from "react";
+import { unstable_rethrow } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MembersOnlyNote } from "@/components/members-only-note";
 import { useFeatureLocked } from "@/components/access-context";
 import { createSubmission } from "@/lib/actions/tasks";
+import { userErrorMessage } from "@/lib/user-error";
 
 type Props = {
   taskId: string;
@@ -20,6 +22,7 @@ function countWords(text: string): number {
 export function WritingForm({ taskId, minWordCount, maxWordCount }: Props) {
   const [text, setText] = useState("");
   const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
   const locked = useFeatureLocked("writing");
 
   const words = text.trim() ? countWords(text) : 0;
@@ -28,8 +31,15 @@ export function WritingForm({ taskId, minWordCount, maxWordCount }: Props) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!text.trim() || isPending || locked) return;
+    setError(null);
     startTransition(async () => {
-      await createSubmission(taskId, text.trim());
+      try {
+        await createSubmission(taskId, text.trim());
+      } catch (err) {
+        unstable_rethrow(err); // the redirect to the feedback page
+        // The text stays in the box, so nothing written is lost.
+        setError(userErrorMessage(err, "Couldn't submit your writing. Try again."));
+      }
     });
   }
 
@@ -74,6 +84,8 @@ export function WritingForm({ taskId, minWordCount, maxWordCount }: Props) {
           )}
         </Button>
       </div>
+
+      {error && <p className="text-xs text-danger">{error}</p>}
 
       {belowMin && (
         <p className="text-xs text-warning">
