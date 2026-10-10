@@ -16,6 +16,7 @@ import {
 import { generateSpeakingScript } from "@/lib/ai/speaking-script";
 import { getSpeakingProfile } from "./settings";
 import { requireFeature } from "@/lib/access/guard";
+import { assertAiBudget } from "@/lib/access/ai-guard";
 
 export type PromptWithStats = SpeakingPrompt & {
   sessionCount: number;
@@ -66,6 +67,7 @@ export async function getPromptWithScript(
 
 export async function generateScript(promptId: string): Promise<SpeakingScript> {
   const user = await requireFeature("speaking");
+  await assertAiBudget("generate");
   const { prompt } = await getPromptWithScript(promptId);
   const profile = await getSpeakingProfile();
   const content = await generateSpeakingScript(prompt, profile);

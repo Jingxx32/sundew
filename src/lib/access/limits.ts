@@ -9,6 +9,17 @@ export const INVITE_COOKIE_MAX_AGE_S = 600;
 export const INVITE_CHECKS_PER_WINDOW = 10;
 export const INVITE_CHECK_WINDOW_S = 600;
 
+/**
+ * Paid OpenAI calls per member per 24 hours (admins are not limited). The window starts at a
+ * member's first call. Rough worst case at gpt-4o / mini prices: about US$1 per member per day.
+ *   generate   — gpt-4o: writing tasks, feedback, micro-drills, speaking, quiz parsing
+ *   lookup     — gpt-4o-mini: word look-ups, entry details, CEFR estimates
+ *   transcribe — Whisper: podcast imports
+ */
+export const AI_DAILY_LIMITS = { generate: 30, lookup: 300, transcribe: 3 } as const;
+export type AiBucket = keyof typeof AI_DAILY_LIMITS;
+export const AI_LIMIT_WINDOW_S = 86_400;
+
 const DAY_MS = 86_400_000;
 
 export function guestExpiresAt(createdAt: Date): Date {

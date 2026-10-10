@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import type { AiBucket } from "@/lib/access/limits";
 
 let client: OpenAI | undefined;
 
@@ -7,13 +8,14 @@ let client: OpenAI | undefined;
  * during `next build` must not require a production-only API key.
  *
  * Inside the Next.js server (NEXT_RUNTIME is set) every call first checks that
- * the requester is not a guest. Scripts run outside Next and skip the check —
- * they cannot load the server-only session module.
+ * the requester is not a guest and counts against the member's daily limit for
+ * `bucket` (null for free calls such as listing models). Scripts run outside Next
+ * and skip the check — they cannot load the server-only session module.
  */
-export async function getOpenAI(): Promise<OpenAI> {
+export async function getOpenAI(bucket: AiBucket | null): Promise<OpenAI> {
   if (process.env.NEXT_RUNTIME) {
     const { assertAiAllowed } = await import("@/lib/access/ai-guard");
-    await assertAiAllowed();
+    await assertAiAllowed(bucket ?? undefined);
   }
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {

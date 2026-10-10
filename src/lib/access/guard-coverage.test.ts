@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import test from "node:test";
 
 /** Bodies of exported async functions, keyed by name (each runs to the next export). */
@@ -72,4 +72,38 @@ const GATED_FILES: Array<[string, string]> = [
 
 test("gated routes and pages call their guard", () => {
   for (const [file, call] of GATED_FILES) assert.ok(readFileSync(file, "utf8").includes(call), `${file} must call ${call}`);
+});
+
+/** [file, exported function] — AI actions that check the member's daily budget before writing anything. */
+const AI_BUDGET_EXPORTS: Array<[string, string]> = [
+  ["src/lib/actions/tasks.ts", "generateWritingTask"],
+  ["src/lib/actions/tasks.ts", "practiceFromPattern"],
+  ["src/lib/actions/tasks.ts", "quickWrite"],
+  ["src/lib/actions/tasks.ts", "writeFromTcfPassage"],
+  ["src/lib/actions/tasks.ts", "createSubmission"],
+  ["src/lib/actions/tasks.ts", "regenerateFeedback"],
+  ["src/lib/actions/errors.ts", "createMicroDrill"],
+  ["src/lib/actions/errors.ts", "retryMicroDrillFeedback"],
+  ["src/lib/actions/quiz.ts", "importQuizFromPdf"],
+  ["src/lib/actions/quiz.ts", "parseQuizFromPastedText"],
+  ["src/lib/actions/cloze.ts", "preparePodcastCloze"],
+  ["src/lib/actions/speaking.ts", "generateScript"],
+  ["src/lib/actions/vocabulary.ts", "enrichEntry"],
+  ["src/lib/actions/vocabulary.ts", "reexplainInContext"],
+];
+
+test("AI actions check the daily budget", () => {
+  for (const [file, name] of AI_BUDGET_EXPORTS) {
+    const body = exportedBodies(file).get(name);
+    assert.ok(body, `${file} has no export ${name}`);
+    assert.ok(body.includes("assertAiBudget("), `${name} must call assertAiBudget`);
+  }
+});
+
+test("every OpenAI call names its budget bucket", () => {
+  const files = readdirSync("src", { recursive: true, encoding: "utf8" })
+    .filter((f) => /\.tsx?$/.test(f) && !f.endsWith(".test.ts"))
+    .map((f) => `src/${f}`);
+  const bare = files.filter((f) => readFileSync(f, "utf8").includes("getOpenAI()"));
+  assert.deepEqual(bare, [], "getOpenAI() needs a bucket");
 });

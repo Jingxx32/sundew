@@ -18,6 +18,7 @@ import { upsertGap } from "@/lib/vocabulary/gaps";
 import type { LookupSource, VocabEntrySummary, VocabEntryDetail } from "@/lib/vocabulary/types";
 import { requireUser } from "@/lib/auth/session";
 import { requireFeature } from "@/lib/access/guard";
+import { assertAiBudget } from "@/lib/access/ai-guard";
 import { canUse } from "@/lib/access/features";
 import sampleLookups from "@/lib/sample-workspace/fixtures/lookups.json";
 import { sampleLookupKey } from "@/lib/sample-workspace/lookups";
@@ -115,6 +116,7 @@ export async function resolveLookup(
 
 export async function reexplainInContext(lemma: string, sentenceContext: string): Promise<string> {
   const user = await requireFeature("lookup");
+  await assertAiBudget("lookup");
   const owned = await db
     .select({ lemma: userVocabulary.lemma })
     .from(userVocabulary)
@@ -157,6 +159,7 @@ export async function saveVocabularyWord(word: string): Promise<void> {
 
 export async function enrichEntry(lemma: string): Promise<void> {
   const user = await requireFeature("enrich");
+  await assertAiBudget("lookup");
   await enrichEntryForUser(user.id, lemma);
 }
 

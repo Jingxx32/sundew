@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { rateLimits } from "@/lib/db/schema";
 
@@ -20,4 +20,14 @@ export async function consumeRateLimit(key: string, windowSeconds: number, max: 
     })
     .returning({ count: rateLimits.count });
   return row.count <= max;
+}
+
+/** Whether `key` has calls left in its current window, without counting one. */
+export async function peekRateLimit(key: string, windowSeconds: number, max: number, now = Date.now()): Promise<boolean> {
+  const [row] = await db
+    .select({ count: rateLimits.count, lastRequest: rateLimits.lastRequest })
+    .from(rateLimits)
+    .where(eq(rateLimits.key, `app:${key}`))
+    .limit(1);
+  return !row || row.lastRequest < now - windowSeconds * 1000 || row.count < max;
 }
