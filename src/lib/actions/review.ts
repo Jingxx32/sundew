@@ -2,9 +2,11 @@
 
 import { and, desc, eq } from "drizzle-orm";
 import { canUse } from "@/lib/access/features";
+import { PERSON_LABELS } from "@/lib/conjugation/source";
 import { requireUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { conjugationAttempts, quizPassages, quizQuestionAttempts, quizQuestions, quizSets } from "@/lib/db/schema";
+import { ALL_SUBCATEGORIES, ERROR_TAXONOMY, type ErrorCategory } from "@/lib/taxonomy";
 import { listErrors } from "./errors";
 import { getTcfReviewQueue } from "./tcf";
 import { listGaps } from "./vocab-gaps";
@@ -61,8 +63,8 @@ export async function getReviewCenterItems(): Promise<{
   if (writing.status === "fulfilled") items.push(...writing.value.map((item) => ({
     id: `writing:${item.id}`,
     source: "writing" as const,
-    title: `${item.category} · ${item.subcategory}`,
-    detail: `From a writing submission on ${item.submittedAt.toLocaleDateString("en-CA")}`,
+    title: errorTypeLabel(item.category, item.subcategory),
+    detail: `From a writing submission on ${item.submittedAt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`,
     href: `/practice/${encodeURIComponent(item.submissionId)}/feedback`,
     observedAt: item.createdAt,
   })));
@@ -84,7 +86,7 @@ export async function getReviewCenterItems(): Promise<{
       seen.add(target);
       if (item.correct) continue;
       items.push({ id: `conjugation:${target}`, source: "conjugation",
-        title: `${item.verb} · ${item.tense}`, detail: `Person ${item.person + 1} · latest answer incorrect`,
+        title: `${item.verb} · ${item.tense}`, detail: `${PERSON_LABELS[item.person] ?? `Person ${item.person + 1}`} · latest answer incorrect`,
         href: "/conjugation", observedAt: item.answeredAt });
     }
   }
@@ -100,4 +102,11 @@ export async function getReviewCenterItems(): Promise<{
     }
   }
   return { items: items.sort((a, b) => (b.observedAt?.getTime() ?? 0) - (a.observedAt?.getTime() ?? 0)), unavailable };
+}
+
+/** "Gender & Agreement · Adjective gender/number agreement", falling back to the stored keys. */
+function errorTypeLabel(category: string, subcategory: string): string {
+  const categoryLabel = ERROR_TAXONOMY[category as ErrorCategory]?.label ?? category;
+  const subcategoryLabel = ALL_SUBCATEGORIES.find((s) => s.category === category && s.subcategory === subcategory)?.label ?? subcategory;
+  return `${categoryLabel} · ${subcategoryLabel}`;
 }
