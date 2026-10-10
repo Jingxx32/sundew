@@ -4,6 +4,11 @@
 >
 > A personal training ground for output-driven French learning.
 
+**Live demo: [sundew.jingxuanxu.com](https://sundew.jingxuanxu.com)** — one click, no sign-up.
+Guests get a sample workspace (an A2 learner's writing feedback, error profile, vocabulary
+and conjugation history) that is deleted after 7 days. TCF exam content, speaking and other
+paid-AI features stay with invited members.
+
 Sundew is built around one belief: **language sticks when you produce it, not when you consume it**. Tools like NotebookLM are great at making French *easier to understand* — but in doing so they remove the very friction that drives real acquisition. Sundew flips that around.
 
 The core loop:
@@ -22,14 +27,17 @@ Every error flows into your persistent learner profile
 Your trends and weak spots feed the next task
 ```
 
-## Status — v0.2 + Speaking Phase 1
+## Status
 
-| Phase | Scope | Status |
-|-------|-------|--------|
-| **MVP S1–S7** | Library + Reader, click-to-define lookup, writing tasks, **structured writing feedback**, errors archive, progress dashboard, learner profile | ✅ |
-| **v0.2 S8–S10** | Generic quiz engine, podcast cloze dictation (Whisper word timestamps), conjugation drills (LEFFF, deterministic), TCF listening/reading practice (drill + exam; private content excluded) | ✅ |
-| **Speaking P1** | TCF Expression orale read-aloud + Azure pronunciation assessment (needs `AZURE_SPEECH_KEY`) | ✅ merged |
-| Next | TCF error loop (per-question attempts → smart re-drill → skill-tag profile), `/today` daily plan | in progress |
+| Area | Scope | Status |
+|------|-------|--------|
+| **Core loop** | Library + Reader, click-to-define lookup, writing tasks, **structured writing feedback**, errors archive, progress dashboard, learner profile | ✅ |
+| **Practice** | Quiz engine, podcast cloze dictation (Whisper word timestamps), conjugation drills (LEFFF, deterministic), vocabulary gaps with Leitner review | ✅ |
+| **TCF Canada** | Listening/reading bank (drill + timed exam; private content excluded), per-question history, scheduled re-checks and a review queue | ✅ |
+| **Learning home** | Today plan, Training by skill, a Review center across TCF, writing, vocabulary, conjugation and quiz | ✅ |
+| **Accounts** | Better Auth (Google, email code), invite-only sign-up, one-click guests with a seeded sample workspace, admin invites | ✅ |
+| **Speaking** | Read-aloud with Azure pronunciation assessment | ✅ |
+| In development | TCF Task 2 speaking simulation; unified review state and resumable review sessions (both behind feature flags) | 🚧 |
 
 ## Quick start
 
@@ -42,7 +50,8 @@ nvm use
 npm ci
 
 # 2. point DATABASE_URL at a PostgreSQL database and apply migrations
-#    .env needs: DATABASE_URL, OPENAI_API_KEY (and AZURE_SPEECH_KEY/REGION for speaking)
+#    copy .env.example: DATABASE_URL, BETTER_AUTH_URL, BETTER_AUTH_SECRET and
+#    OPENAI_API_KEY at minimum (AZURE_SPEECH_KEY/REGION for speaking)
 npm run db:init
 
 # 3. verify the source checkout (no database or API keys required)
@@ -54,35 +63,42 @@ npm test
 npm run dev
 ```
 
-Open <http://localhost:3000> — you'll be redirected to **Library**.
+Open <http://localhost:3000> for the landing page. Start a guest session, or sign in
+with an email code (in development the code is printed to the server console).
 
 The existing seed scripts are development utilities, not public-demo seeds.
-Review their content and target database before use. The public demo is not yet
-released; deployment and production-container validation remain pending.
+Review their content and target database before use. Production runs on Vercel
+(Montréal) with PostgreSQL on Azure and private media on Cloudflare R2; see
+[guest access](docs/operations/guest-access.md) for how guests and the sample
+workspace work.
 
 ## Tech stack
 
 | Layer | Choice |
 |-------|--------|
 | Framework | Next.js 16 (App Router) + React 19 + TypeScript |
-| Styling | Tailwind CSS v4 + custom warm-beige + french-blue design tokens |
+| Styling | Tailwind CSS v4 + semantic design tokens (soft-glow theme) |
 | Database | PostgreSQL (Azure) via `postgres` (postgres.js) + Drizzle ORM |
 | AI | OpenAI API (GPT-4o/4o-mini, Whisper) — structured outputs with Zod; Azure Speech for pronunciation |
+| Auth | Better Auth — Google, email one-time codes, anonymous guests, admin roles |
+| Hosting | Vercel + Azure PostgreSQL + Cloudflare R2 (private media) |
 | UI primitives | Radix UI (Dialog, Popover, Slot) — minimal, owned components |
 | Icons | Lucide |
-| Fonts | Inter (UI) + Source Serif 4 (reading + display) |
+| Fonts | Geist (UI) + Plus Jakarta Sans (display) + Source Serif 4 (reading) |
 
 ## Project layout
 
 ```
 src/
 ├── app/
-│   ├── (main)/                 # Sidebar shell: library, documents, practice,
-│   │                           #   quiz, vocabulary, conjugation, speaking,
-│   │                           #   progress, settings
-│   ├── tcf/                    # Standalone TCF layout: drill + exam
-│   ├── api/speaking/assess/    # Audio upload → Azure pronunciation assessment
-│   └── page.tsx                # → redirects to the default home
+│   ├── (main)/                 # Sidebar shell: today, training, review, library,
+│   │                           #   documents, practice, quiz, vocabulary,
+│   │                           #   conjugation, speaking, progress, settings
+│   ├── tcf/                    # Standalone TCF layout: drill, exam, review
+│   ├── api/                    # Auth, guest cleanup cron, signed media URLs,
+│   │                           #   speaking uploads
+│   ├── login/                  # Sign-in
+│   └── page.tsx                # Public landing page with a sample question
 ├── components/                 # Sidebar, lookup popover, ui/ primitives
 ├── hooks/
 └── lib/
