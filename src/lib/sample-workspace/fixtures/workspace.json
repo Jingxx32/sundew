@@ -1697,8 +1697,8 @@
           "errors": [
             {
               "span": {
-                "end": 54,
-                "start": 48
+                "start": 66,
+                "end": 75
               },
               "rule_id": "auxiliary_choice",
               "category": "Grammar",
@@ -1715,8 +1715,8 @@
             },
             {
               "span": {
-                "end": 86,
-                "start": 73
+                "start": 121,
+                "end": 142
               },
               "rule_id": "adjective_agreement",
               "category": "GenderAgreement",
@@ -1733,44 +1733,44 @@
             },
             {
               "span": {
-                "end": 183,
-                "start": 179
+                "start": 277,
+                "end": 280
               },
-              "rule_id": "negation_de_rule",
+              "rule_id": "partitive",
               "category": "Articles",
-              "original": "des ",
-              "correction": "de ",
+              "original": "des",
+              "correction": "de",
               "fr_examples": [
                 "Il y a beaucoup de monde ici.",
                 "J'ai acheté beaucoup de fruits."
               ],
               "micro_drill": "Use 'beaucoup de' with different nouns.",
-              "subcategory": "negation_de_rule",
+              "subcategory": "partitive",
               "explanation_en": "After expressions of quantity like 'beaucoup', 'de' is used instead of 'des'.",
               "trigger_context": "Il y avait beaucoup des gens"
             },
             {
               "span": {
-                "end": 187,
-                "start": 185
+                "start": 292,
+                "end": 298
               },
-              "rule_id": "awkward_structure",
-              "category": "Syntax",
-              "original": "il",
+              "rule_id": "liaison_elision",
+              "category": "Orthography",
+              "original": "que il",
               "correction": "qu'il",
               "fr_examples": [
                 "Je pense qu'il est là.",
                 "Parce qu'il pleut, je reste à la maison."
               ],
-              "micro_drill": "Practice sentences with 'qu'il' to ensure correct contraction.",
-              "subcategory": "awkward_structure",
-              "explanation_en": "In French, 'que' and 'il' must be contracted to 'qu'il' to avoid vowel conflict.",
+              "micro_drill": "Rewrite sentences where que comes before il, elle, on or à, using qu'.",
+              "subcategory": "liaison_elision",
+              "explanation_en": "Que drops its vowel before a word that starts with a vowel: parce que + il becomes parce qu'il.",
               "trigger_context": "parce que il faisait très beau"
             },
             {
               "span": {
-                "end": 229,
-                "start": 218
+                "start": 336,
+                "end": 352
               },
               "rule_id": "adjective_agreement",
               "category": "GenderAgreement",
@@ -1787,8 +1787,26 @@
             },
             {
               "span": {
-                "end": 292,
-                "start": 282
+                "start": 593,
+                "end": 597
+              },
+              "rule_id": "contraction",
+              "category": "Articles",
+              "original": "à le",
+              "correction": "au",
+              "fr_examples": [
+                "Je vais au cinéma ce soir.",
+                "Elle parle au vendeur."
+              ],
+              "micro_drill": "Contract à + le and de + le (au, du) in short sentences.",
+              "subcategory": "contraction",
+              "explanation_en": "À + le always contracts to au: retourner au marché.",
+              "trigger_context": "Je veux retourner à le marché"
+            },
+            {
+              "span": {
+                "start": 605,
+                "end": 624
               },
               "rule_id": "adjective_agreement",
               "category": "GenderAgreement",
@@ -1809,34 +1827,25 @@
             "The way you describe the friendly vendors adds a personal touch to your narrative.",
             "You have successfully used the passé composé to describe past events, which is great for B1 level."
           ],
-          "summary_en": "The writing effectively uses descriptive language and passé composé, but contains some errors in agreement and auxiliary choice.",
+          "summary_en": "The letter uses descriptive language and the passé composé well, but contains some errors in agreement, articles and auxiliary choice.",
           "improvements": [
             {
               "span": {
-                "end": 5,
-                "start": 0
+                "start": 12,
+                "end": 27
               },
-              "original": "Chère",
-              "suggestion": "Chère amie",
-              "explanation_en": "Adding 'amie' can make the greeting more personal and warm."
+              "original": "Tu dois visiter",
+              "suggestion": "Tu devrais visiter",
+              "explanation_en": "The conditional devrais turns an order into friendly advice, which suits a letter to a friend."
             },
             {
               "span": {
-                "end": 11,
-                "start": 8
+                "start": 500,
+                "end": 525
               },
-              "original": "Léa",
-              "suggestion": "Léa,",
-              "explanation_en": "Adding a comma after the name can improve the flow of the sentence."
-            },
-            {
-              "span": {
-                "end": 299,
-                "start": 295
-              },
-              "original": "Viens",
-              "suggestion": "Viens donc",
-              "explanation_en": "Adding 'donc' can make the invitation sound more inviting and persuasive."
+              "original": "c'est important d'acheter",
+              "suggestion": "il est important d'acheter",
+              "explanation_en": "Il est important de… is the more written form; c'est important de… is more common in speech."
             }
           ],
           "overall_level_estimate": "B1"
@@ -1847,25 +1856,25 @@
           "The way you describe the friendly vendors adds a personal touch to your narrative.",
           "You have successfully used the passé composé to describe past events, which is great for B1 level."
         ],
-        "summaryEn": "The writing effectively uses descriptive language and passé composé, but contains some errors in agreement and auxiliary choice.",
+        "summaryEn": "The letter uses descriptive language and the passé composé well, but contains some errors in agreement, articles and auxiliary choice.",
         "feedbackStatus": "ready"
       },
       {
         "id": "submissions#2",
         "taskId": "writing_tasks#2",
-        "contentFr": "Mardi 14 janvier\n\nCe matin, les températures étaient très basses : moins vingt degrés ! À Paris, ma ville d'origine, il ne fait jamais aussi froid que à Montréal. J'ai couru jusqu'à la station parce que je voulais de reste au chaud le plus vite possible.\n\nSur le quai, il y avait beaucoup de monde. Je suis pris le métro de 8 h, mais j'ai dû attendre dix minutes. Dans la rame, je n'ai pas trouvé une place assise. Les gens était très pressés et personne ne parlait. Tous les Montréalais portaient des gros manteaux et des bottes pleines de neige.\n\nJe dois rester debout pendant trente minutes, mais c'était quand même confortable parce qu'il faisait chaud. Une vieille dame m'a souri et nous avons parlé de la météo. J'ai beaucoup apprendre sur la ville en regardant les gens. Ce soir, je suis fatiguée, mais contente.",
+        "contentFr": "Mardi 14 janvier\n\nCe matin, les températures étaient très basses : moins vingt degrés ! À Paris, ma ville d'origine, il ne fait jamais aussi froid que à Montréal. J'ai couru jusqu'à la station parce que je voulais de reste au chaud le plus vite possible.\n\nSur le quai, il y avait beaucoup de monde. Je suis pris le métro de 8 h, mais j'ai dû attendre dix minutes. Dans la rame, je n'ai pas trouvé une place assise. Les gens étaient très pressé et personne ne parlait. Tous les Montréalais portaient des gros manteaux et des bottes pleines de neige.\n\nJe dois rester debout pendant trente minutes, mais c'était quand même confortable parce qu'il faisait chaud. Une vieille dame m'a souri et nous avons parlé de la météo. J'ai beaucoup apprendre sur la ville en regardant les gens. Ce soir, je suis fatiguée, mais contente.",
         "wordCount": 146,
         "submittedAt": -143125,
         "feedbackJson": {
           "errors": [
             {
               "span": {
-                "end": 82,
-                "start": 81
+                "start": 147,
+                "end": 152
               },
               "rule_id": "liaison_elision",
               "category": "Orthography",
-              "original": "à",
+              "original": "que à",
               "correction": "qu'à",
               "fr_examples": [
                 "Il est plus grand qu'à Paris.",
@@ -1873,87 +1882,123 @@
               ],
               "micro_drill": "Combine 'que' and 'à' to form 'qu'à' in sentences.",
               "subcategory": "liaison_elision",
-              "explanation_en": "In French, when 'que' is followed by 'à', they are combined into 'qu'à' to maintain the flow of the sentence.",
+              "explanation_en": "Que drops its vowel before a vowel sound: que + à becomes qu'à.",
               "trigger_context": "aussi froid que à Montréal"
             },
             {
               "span": {
-                "end": 128,
-                "start": 122
+                "start": 214,
+                "end": 222
               },
-              "rule_id": "wrong_word",
-              "category": "Vocabulary",
+              "rule_id": "verb_preposition",
+              "category": "Prepositions",
               "original": "de reste",
               "correction": "rester",
               "fr_examples": [
                 "Je veux rester ici.",
                 "Elle préfère rester à la maison."
               ],
-              "micro_drill": "Practice using 'rester' without prepositions in sentences.",
-              "subcategory": "wrong_word",
-              "explanation_en": "The verb 'rester' does not require a preposition like 'de' when used in this context.",
+              "micro_drill": "Write sentences with vouloir, pouvoir and devoir followed directly by an infinitive.",
+              "subcategory": "verb_preposition",
+              "explanation_en": "Vouloir is followed directly by an infinitive, with no preposition: je voulais rester au chaud.",
               "trigger_context": "je voulais de reste au chaud"
             },
             {
               "span": {
-                "end": 183,
-                "start": 179
+                "start": 299,
+                "end": 311
               },
-              "rule_id": "pc_vs_imparfait",
+              "rule_id": "auxiliary_choice",
               "category": "Grammar",
-              "original": "pris",
-              "correction": "pris le métro",
+              "original": "Je suis pris",
+              "correction": "J'ai pris",
               "fr_examples": [
                 "J'ai pris le train ce matin.",
                 "Elle a pris son sac."
               ],
               "micro_drill": "Conjugate 'prendre' in passé composé with 'avoir'.",
-              "subcategory": "pc_vs_imparfait",
-              "explanation_en": "The passé composé requires the auxiliary verb 'avoir' for 'prendre', not 'être'.",
+              "subcategory": "auxiliary_choice",
+              "explanation_en": "Prendre forms its passé composé with avoir, not être: j'ai pris.",
               "trigger_context": "Je suis pris le métro de 8 h"
             },
             {
               "span": {
-                "end": 227,
-                "start": 222
+                "start": 397,
+                "end": 400
               },
-              "rule_id": "adjective_agreement",
-              "category": "GenderAgreement",
-              "original": "était",
-              "correction": "étaient",
+              "rule_id": "negation_de_rule",
+              "category": "Articles",
+              "original": "une",
+              "correction": "de",
               "fr_examples": [
-                "Les enfants étaient contents.",
-                "Les fleurs étaient belles."
+                "Je n'ai pas de voiture.",
+                "Il n'y a pas de pain."
               ],
-              "micro_drill": "Conjugate 'être' in the imperfect tense for plural subjects.",
-              "subcategory": "adjective_agreement",
-              "explanation_en": "The verb 'être' must agree in number with its subject 'les gens', which is plural.",
-              "trigger_context": "Les gens était très pressés"
+              "micro_drill": "Turn affirmative sentences with un, une or des into the negative.",
+              "subcategory": "negation_de_rule",
+              "explanation_en": "After a negative verb, un/une/des become de: je n'ai pas trouvé de place.",
+              "trigger_context": "je n'ai pas trouvé une place"
             },
             {
               "span": {
-                "end": 278,
-                "start": 274
+                "start": 437,
+                "end": 443
               },
-              "rule_id": "negation_de_rule",
+              "rule_id": "adjective_agreement",
+              "category": "GenderAgreement",
+              "original": "pressé",
+              "correction": "pressés",
+              "fr_examples": [
+                "Les gens sont pressés le matin.",
+                "Mes amis étaient fatigués."
+              ],
+              "micro_drill": "Make adjectives agree with plural subjects (les gens, mes amis, les enfants).",
+              "subcategory": "adjective_agreement",
+              "explanation_en": "The adjective agrees with its plural subject les gens: ils étaient pressés.",
+              "trigger_context": "Les gens étaient très pressé"
+            },
+            {
+              "span": {
+                "start": 499,
+                "end": 502
+              },
+              "rule_id": "partitive",
               "category": "Articles",
               "original": "des",
               "correction": "de",
               "fr_examples": [
-                "Je n'ai pas de livres.",
-                "Il n'y a pas de problème."
+                "Elle a de beaux yeux.",
+                "Nous avons de bons amis."
               ],
-              "micro_drill": "Practice changing 'des' to 'de' in negative sentences.",
-              "subcategory": "negation_de_rule",
-              "explanation_en": "In French, after a negative expression, 'des' changes to 'de'.",
+              "micro_drill": "Use de before plural adjectives that come before the noun (de grandes villes, de bons amis).",
+              "subcategory": "partitive",
+              "explanation_en": "Before a plural adjective placed in front of the noun, des usually becomes de: de gros manteaux.",
               "trigger_context": "portaient des gros manteaux"
             },
             {
               "span": {
-                "end": 383,
-                "start": 374
+                "start": 550,
+                "end": 564
               },
-              "rule_id": "past_participle_agreement",
+              "rule_id": "tense_choice",
+              "category": "Grammar",
+              "original": "Je dois rester",
+              "correction": "J'ai dû rester",
+              "fr_examples": [
+                "Hier, j'ai dû partir tôt.",
+                "Ce matin, nous avons dû attendre."
+              ],
+              "micro_drill": "Retell a past morning, putting each verb in the passé composé.",
+              "subcategory": "tense_choice",
+              "explanation_en": "The diary tells what happened this morning, so the passé composé fits: j'ai dû rester debout.",
+              "trigger_context": "Je dois rester debout"
+            },
+            {
+              "span": {
+                "start": 733,
+                "end": 742
+              },
+              "rule_id": "conjugation_passe_compose",
               "category": "Grammar",
               "original": "apprendre",
               "correction": "appris",
@@ -1962,8 +2007,8 @@
                 "Elle a appris à conduire."
               ],
               "micro_drill": "Conjugate 'apprendre' in passé composé.",
-              "subcategory": "past_participle_agreement",
-              "explanation_en": "In the passé composé, the past participle 'apprendre' should be 'appris'.",
+              "subcategory": "conjugation_passe_compose",
+              "explanation_en": "The passé composé uses the past participle, not the infinitive: j'ai appris.",
               "trigger_context": "J'ai beaucoup apprendre"
             }
           ],
@@ -1972,34 +2017,25 @@
             "The narrative flow of your diary entry is smooth and keeps the reader interested.",
             "You effectively used past tenses to describe your experiences, which is a key skill at the B1 level."
           ],
-          "summary_en": "The diary entry effectively uses descriptive language and past tenses, though it contains some errors in verb conjugation and agreement.",
+          "summary_en": "The diary entry uses descriptive language and past tenses well, though it contains some errors in verb forms, articles and agreement.",
           "improvements": [
             {
               "span": {
-                "end": 15,
-                "start": 0
+                "start": 256,
+                "end": 297
               },
-              "original": "Mardi 14 janvier",
-              "suggestion": "Mardi 14 janvier,",
-              "explanation_en": "Adding a comma after the date can improve the flow of the sentence."
+              "original": "Sur le quai, il y avait beaucoup de monde",
+              "suggestion": "Le quai était bondé",
+              "explanation_en": "Bondé is a precise word for a crowded place and adds variety to your vocabulary."
             },
             {
               "span": {
-                "end": 80,
-                "start": 66
+                "start": 632,
+                "end": 657
               },
-              "original": "aussi froid que à",
-              "suggestion": "aussi froid qu'à",
-              "explanation_en": "Using 'qu'à' instead of 'que à' is more fluid and correct in French."
-            },
-            {
-              "span": {
-                "end": 235,
-                "start": 228
-              },
-              "original": "pressés et",
-              "suggestion": "pressés, et",
-              "explanation_en": "A comma before 'et' can help clarify the sentence structure."
+              "original": "parce qu'il faisait chaud",
+              "suggestion": "car il faisait chaud",
+              "explanation_en": "You already used parce que earlier; car varies your connectors in written French."
             }
           ],
           "overall_level_estimate": "B1"
@@ -2010,7 +2046,7 @@
           "The narrative flow of your diary entry is smooth and keeps the reader interested.",
           "You effectively used past tenses to describe your experiences, which is a key skill at the B1 level."
         ],
-        "summaryEn": "The diary entry effectively uses descriptive language and past tenses, though it contains some errors in verb conjugation and agreement.",
+        "summaryEn": "The diary entry uses descriptive language and past tenses well, though it contains some errors in verb forms, articles and agreement.",
         "feedbackStatus": "ready"
       }
     ],
@@ -2056,39 +2092,39 @@
       {
         "id": "errors#3",
         "submissionId": "submissions#1",
-        "spanStart": 179,
-        "spanEnd": 183,
-        "original": "des ",
-        "correction": "de ",
+        "spanStart": 277,
+        "spanEnd": 280,
+        "original": "des",
+        "correction": "de",
         "category": "Articles",
-        "subcategory": "negation_de_rule",
+        "subcategory": "partitive",
         "triggerContext": "Il y avait beaucoup des gens",
         "explanationEn": "After expressions of quantity like 'beaucoup', 'de' is used instead of 'des'.",
         "frExamples": [
           "Il y a beaucoup de monde ici.",
           "J'ai acheté beaucoup de fruits."
         ],
-        "ruleId": "negation_de_rule",
+        "ruleId": "partitive",
         "microDrill": "Use 'beaucoup de' with different nouns.",
         "createdAt": -193183
       },
       {
         "id": "errors#4",
         "submissionId": "submissions#1",
-        "spanStart": 185,
-        "spanEnd": 187,
-        "original": "il",
+        "spanStart": 292,
+        "spanEnd": 298,
+        "original": "que il",
         "correction": "qu'il",
-        "category": "Syntax",
-        "subcategory": "awkward_structure",
+        "category": "Orthography",
+        "subcategory": "liaison_elision",
         "triggerContext": "parce que il faisait très beau",
-        "explanationEn": "In French, 'que' and 'il' must be contracted to 'qu'il' to avoid vowel conflict.",
+        "explanationEn": "Que drops its vowel before a word that starts with a vowel: parce que + il becomes parce qu'il.",
         "frExamples": [
           "Je pense qu'il est là.",
           "Parce qu'il pleut, je reste à la maison."
         ],
-        "ruleId": "awkward_structure",
-        "microDrill": "Practice sentences with 'qu'il' to ensure correct contraction.",
+        "ruleId": "liaison_elision",
+        "microDrill": "Rewrite sentences where que comes before il, elle, on or à, using qu'.",
         "createdAt": -193183
       },
       {
@@ -2132,14 +2168,14 @@
       {
         "id": "errors#7",
         "submissionId": "submissions#2",
-        "spanStart": 81,
-        "spanEnd": 82,
-        "original": "à",
+        "spanStart": 147,
+        "spanEnd": 152,
+        "original": "que à",
         "correction": "qu'à",
         "category": "Orthography",
         "subcategory": "liaison_elision",
         "triggerContext": "aussi froid que à Montréal",
-        "explanationEn": "In French, when 'que' is followed by 'à', they are combined into 'qu'à' to maintain the flow of the sentence.",
+        "explanationEn": "Que drops its vowel before a vowel sound: que + à becomes qu'à.",
         "frExamples": [
           "Il est plus grand qu'à Paris.",
           "C'est mieux qu'à la maison."
@@ -2155,92 +2191,149 @@
         "spanEnd": 222,
         "original": "de reste",
         "correction": "rester",
-        "category": "Vocabulary",
-        "subcategory": "wrong_word",
+        "category": "Prepositions",
+        "subcategory": "verb_preposition",
         "triggerContext": "je voulais de reste au chaud",
-        "explanationEn": "The verb 'rester' does not require a preposition like 'de' when used in this context.",
+        "explanationEn": "Vouloir is followed directly by an infinitive, with no preposition: je voulais rester au chaud.",
         "frExamples": [
           "Je veux rester ici.",
           "Elle préfère rester à la maison."
         ],
-        "ruleId": "wrong_word",
-        "microDrill": "Practice using 'rester' without prepositions in sentences.",
+        "ruleId": "verb_preposition",
+        "microDrill": "Write sentences with vouloir, pouvoir and devoir followed directly by an infinitive.",
         "createdAt": -136197
       },
       {
         "id": "errors#9",
         "submissionId": "submissions#2",
-        "spanStart": 307,
+        "spanStart": 299,
         "spanEnd": 311,
-        "original": "pris",
-        "correction": "pris le métro",
+        "original": "Je suis pris",
+        "correction": "J'ai pris",
         "category": "Grammar",
-        "subcategory": "pc_vs_imparfait",
+        "subcategory": "auxiliary_choice",
         "triggerContext": "Je suis pris le métro de 8 h",
-        "explanationEn": "The passé composé requires the auxiliary verb 'avoir' for 'prendre', not 'être'.",
+        "explanationEn": "Prendre forms its passé composé with avoir, not être: j'ai pris.",
         "frExamples": [
           "J'ai pris le train ce matin.",
           "Elle a pris son sac."
         ],
-        "ruleId": "pc_vs_imparfait",
+        "ruleId": "auxiliary_choice",
         "microDrill": "Conjugate 'prendre' in passé composé with 'avoir'.",
         "createdAt": -136197
       },
       {
         "id": "errors#10",
         "submissionId": "submissions#2",
-        "spanStart": 222,
-        "spanEnd": 227,
-        "original": "était",
-        "correction": "étaient",
+        "spanStart": 437,
+        "spanEnd": 443,
+        "original": "pressé",
+        "correction": "pressés",
         "category": "GenderAgreement",
         "subcategory": "adjective_agreement",
-        "triggerContext": "Les gens était très pressés",
-        "explanationEn": "The verb 'être' must agree in number with its subject 'les gens', which is plural.",
+        "triggerContext": "Les gens étaient très pressé",
+        "explanationEn": "The adjective agrees with its plural subject les gens: ils étaient pressés.",
         "frExamples": [
-          "Les enfants étaient contents.",
-          "Les fleurs étaient belles."
+          "Les gens sont pressés le matin.",
+          "Mes amis étaient fatigués."
         ],
         "ruleId": "adjective_agreement",
-        "microDrill": "Conjugate 'être' in the imperfect tense for plural subjects.",
+        "microDrill": "Make adjectives agree with plural subjects (les gens, mes amis, les enfants).",
         "createdAt": -136197
       },
       {
         "id": "errors#11",
         "submissionId": "submissions#2",
-        "spanStart": 274,
-        "spanEnd": 278,
+        "spanStart": 499,
+        "spanEnd": 502,
         "original": "des",
         "correction": "de",
         "category": "Articles",
-        "subcategory": "negation_de_rule",
+        "subcategory": "partitive",
         "triggerContext": "portaient des gros manteaux",
-        "explanationEn": "In French, after a negative expression, 'des' changes to 'de'.",
+        "explanationEn": "Before a plural adjective placed in front of the noun, des usually becomes de: de gros manteaux.",
         "frExamples": [
-          "Je n'ai pas de livres.",
-          "Il n'y a pas de problème."
+          "Elle a de beaux yeux.",
+          "Nous avons de bons amis."
         ],
-        "ruleId": "negation_de_rule",
-        "microDrill": "Practice changing 'des' to 'de' in negative sentences.",
+        "ruleId": "partitive",
+        "microDrill": "Use de before plural adjectives that come before the noun (de grandes villes, de bons amis).",
         "createdAt": -136197
       },
       {
         "id": "errors#12",
         "submissionId": "submissions#2",
-        "spanStart": 732,
-        "spanEnd": 741,
+        "spanStart": 733,
+        "spanEnd": 742,
         "original": "apprendre",
         "correction": "appris",
         "category": "Grammar",
-        "subcategory": "past_participle_agreement",
+        "subcategory": "conjugation_passe_compose",
         "triggerContext": "J'ai beaucoup apprendre",
-        "explanationEn": "In the passé composé, the past participle 'apprendre' should be 'appris'.",
+        "explanationEn": "The passé composé uses the past participle, not the infinitive: j'ai appris.",
         "frExamples": [
           "J'ai appris la nouvelle.",
           "Elle a appris à conduire."
         ],
-        "ruleId": "past_participle_agreement",
+        "ruleId": "conjugation_passe_compose",
         "microDrill": "Conjugate 'apprendre' in passé composé.",
+        "createdAt": -136197
+      },
+      {
+        "id": "errors#13",
+        "submissionId": "submissions#1",
+        "spanStart": 593,
+        "spanEnd": 597,
+        "original": "à le",
+        "correction": "au",
+        "category": "Articles",
+        "subcategory": "contraction",
+        "triggerContext": "Je veux retourner à le marché",
+        "explanationEn": "À + le always contracts to au: retourner au marché.",
+        "frExamples": [
+          "Je vais au cinéma ce soir.",
+          "Elle parle au vendeur."
+        ],
+        "ruleId": "contraction",
+        "microDrill": "Contract à + le and de + le (au, du) in short sentences.",
+        "createdAt": -193183
+      },
+      {
+        "id": "errors#14",
+        "submissionId": "submissions#2",
+        "spanStart": 397,
+        "spanEnd": 400,
+        "original": "une",
+        "correction": "de",
+        "category": "Articles",
+        "subcategory": "negation_de_rule",
+        "triggerContext": "je n'ai pas trouvé une place",
+        "explanationEn": "After a negative verb, un/une/des become de: je n'ai pas trouvé de place.",
+        "frExamples": [
+          "Je n'ai pas de voiture.",
+          "Il n'y a pas de pain."
+        ],
+        "ruleId": "negation_de_rule",
+        "microDrill": "Turn affirmative sentences with un, une or des into the negative.",
+        "createdAt": -136197
+      },
+      {
+        "id": "errors#15",
+        "submissionId": "submissions#2",
+        "spanStart": 550,
+        "spanEnd": 564,
+        "original": "Je dois rester",
+        "correction": "J'ai dû rester",
+        "category": "Grammar",
+        "subcategory": "tense_choice",
+        "triggerContext": "Je dois rester debout",
+        "explanationEn": "The diary tells what happened this morning, so the passé composé fits: j'ai dû rester debout.",
+        "frExamples": [
+          "Hier, j'ai dû partir tôt.",
+          "Ce matin, nous avons dû attendre."
+        ],
+        "ruleId": "tense_choice",
+        "microDrill": "Retell a past morning, putting each verb in the passé composé.",
         "createdAt": -136197
       }
     ],

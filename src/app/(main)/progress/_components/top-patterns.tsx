@@ -1,5 +1,5 @@
 import { CATEGORY_STYLES } from "@/lib/category-styles";
-import type { ErrorCategory } from "@/lib/taxonomy";
+import { ERROR_TAXONOMY, type ErrorCategory } from "@/lib/taxonomy";
 import type { RecurringPattern } from "@/lib/actions/errors";
 import { PracticeFromPatternButton } from "./top-patterns-action";
 
@@ -26,7 +26,7 @@ export function TopPatterns({ patterns }: Props) {
                 <span
                   className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${style.chip}`}
                 >
-                  {p.category}
+                  {ERROR_TAXONOMY[p.category as ErrorCategory]?.label ?? p.category}
                 </span>
                 <span className="text-xs text-muted-foreground">{p.subcategoryLabel}</span>
               </div>

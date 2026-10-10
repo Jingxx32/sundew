@@ -24,7 +24,7 @@ function showcase(feature: FeatureKey, sampleFeedback: string): Showcase | null 
       return {
         does: [
           "3,000+ listening and reading questions by CEFR level",
-          "Drill and timed-exam modes, with an explanation for every question",
+          "Drill and timed-exam modes, with worked explanations on a growing set of questions",
           "Wrong or unsure answers flow into a review center",
         ],
         tryInstead: { label: "Try the original sample question", href: "/#try-demo" },

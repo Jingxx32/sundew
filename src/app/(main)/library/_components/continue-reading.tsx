@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -65,10 +64,6 @@ export function ContinueReadingCard({ document }: { document: Document }) {
         <div className="flex flex-col gap-2.5 lg:items-stretch lg:w-[200px] shrink-0">
           <Button size="lg" asChild>
             <Link href={`/documents/${document.id}`}>Continue Reading</Link>
-          </Button>
-          <Button size="lg" variant="outline" disabled title="Coming in S3">
-            <Sparkles className="h-4 w-4" />
-            Generate Writing Task
           </Button>
         </div>
       </div>
