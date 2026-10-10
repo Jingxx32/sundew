@@ -7,6 +7,7 @@ import type { SessionScores, TcfPerLevel } from "@/lib/db/schema";
 import { getStudyGoal, type StudyGoal } from "./settings";
 import { CEFR_LEVELS, type CefrLevel } from "@/lib/cefr";
 import { requireUser } from "@/lib/auth/session";
+import { canUse } from "@/lib/access/features";
 
 export type SkillReadiness = {
   skill: "listening" | "reading" | "writing" | "speaking";
@@ -139,7 +140,7 @@ export async function getReadinessSummary(): Promise<ReadinessSummary> {
     overalls.length === 0
       ? {
           skill: "speaking", status: "no_data", label: null, samples: 0,
-          detail: "No assessed sessions yet — needs the Azure Speech key configured.",
+          detail: "No assessed sessions yet — record a read-aloud in Speaking for a first score.",
         }
       : {
           skill: "speaking",
@@ -159,6 +160,16 @@ export async function getReadinessSummary(): Promise<ReadinessSummary> {
       daysLeft,
       targetCefr: goalBase.targetClb !== null ? (CLB_TO_CEFR[goalBase.targetClb] ?? null) : null,
     },
-    skills: [listening, reading, writing, speaking],
+    // A guest can't open TCF or Speaking, so their "how to get a signal" hint would point at a locked page.
+    skills: [
+      membersOnly(listening, canUse(user.access, "tcf") !== true),
+      membersOnly(reading, canUse(user.access, "tcf") !== true),
+      writing,
+      membersOnly(speaking, canUse(user.access, "speaking") !== true),
+    ],
   };
+}
+
+function membersOnly(skill: SkillReadiness, locked: boolean): SkillReadiness {
+  return locked && skill.status === "no_data" ? { ...skill, detail: "Members only — not part of the guest tour." } : skill;
 }

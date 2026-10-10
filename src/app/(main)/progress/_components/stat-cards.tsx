@@ -22,17 +22,17 @@ export function StatCards({ stats }: Props) {
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
       <div className="rounded-2xl bg-surface shadow-card p-6">
         <p className="text-[38px] font-bold tracking-[-0.035em] tabular-nums text-foreground">{totalSubmissions}</p>
-        <p className="text-xs text-muted-foreground mt-1">writing attempts</p>
+        <p className="text-xs text-muted-foreground mt-1">{totalSubmissions === 1 ? "writing attempt" : "writing attempts"}</p>
       </div>
 
       <div className="rounded-2xl bg-surface shadow-card p-6">
         <p className="text-[38px] font-bold tracking-[-0.035em] tabular-nums text-foreground">{totalErrors}</p>
-        <p className="text-xs text-muted-foreground mt-1">classified errors</p>
+        <p className="text-xs text-muted-foreground mt-1">{totalErrors === 1 ? "classified error" : "classified errors"}</p>
       </div>
 
       <div className="rounded-2xl bg-surface shadow-card p-6">
         <p className="text-[38px] font-bold tracking-[-0.035em] tabular-nums text-foreground">{activeDays}</p>
-        <p className="text-xs text-muted-foreground mt-1">days with practice</p>
+        <p className="text-xs text-muted-foreground mt-1">{activeDays === 1 ? "day" : "days"} with practice</p>
       </div>
 
       <div className="rounded-2xl bg-surface shadow-card p-6">

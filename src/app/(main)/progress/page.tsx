@@ -13,6 +13,7 @@ import {
 import { getDocument } from "@/lib/actions/documents";
 import { listRecentTcfAttempts } from "@/lib/actions/tcf";
 import { getReadinessSummary } from "@/lib/actions/readiness";
+import { requirePageUser } from "@/lib/auth/session";
 import { ReadinessCard } from "./_components/readiness-card";
 import { ProgressFilters } from "./_components/progress-filters";
 import { TcfAttempts } from "./_components/tcf-attempts";
@@ -54,7 +55,7 @@ export default async function ProgressPage({
     ? (rawWindow as WindowDays)
     : 30;
 
-  const [errorList, errorCounts, dashboardStats, trend, patterns, filterDoc, tcfAttempts, readiness] =
+  const [errorList, errorCounts, dashboardStats, trend, patterns, filterDoc, tcfAttempts, readiness, user] =
     await Promise.all([
       listErrors({ category: activeCategory, subcategory, documentId, limit: shown + 1 }),
       getErrorCounts({ documentId }),
@@ -64,6 +65,7 @@ export default async function ProgressPage({
       documentId ? getDocument(documentId) : Promise.resolve(null),
       listRecentTcfAttempts(10),
       getReadinessSummary(),
+      requirePageUser(),
     ]);
 
   // Fetched one extra row to detect whether more exist beyond `shown`.
@@ -84,7 +86,8 @@ export default async function ProgressPage({
 
   const totalErrors = Object.values(errorCounts).reduce((a, b) => a + b, 0);
   const filterDocTitle = filterDoc?.title ?? (documentId ? "Document removed" : null);
-  const hasEnoughData = dashboardStats.totalSubmissions >= 3;
+  // The guest sample workspace is curated, so its two essays already make a meaningful dashboard.
+  const hasEnoughData = dashboardStats.totalSubmissions >= 3 || user.access === "guest";
 
   return (
     <div className="px-10 py-10 max-w-6xl mx-auto">
