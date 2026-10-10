@@ -23,8 +23,20 @@ the voice pilot; the public demo retains its read-only/precomputed boundary.
 
 ## Review center and study plans
 
+**Frozen on 2026-10-10.** The unbuilt half of this plan is paused: unified review
+state, recoverable review sessions, the backfill and seven-day plans. Its code
+(`src/lib/review/service.ts`, `backfill.ts`, `src/lib/practice/service.ts`) and its seven
+tables (`review_items`, `review_evidence`, `review_item_changes`, `review_backfill_jobs`,
+`practice_runs`, `practice_run_items`, `practice_requests`) stay in place but unused:
+no page calls them, the production tables hold no rows, and `REVIEW_DATA_ENABLED` /
+`REVIEW_CENTER_ENABLED` must stay unset. Do not extend, wire up, backfill or enable it.
+What ships keeps working: server-side grading and per-question attempts
+(0029–0034), the source-linked Review list, the TCF review queue and vocabulary
+Leitner review. To unfreeze, first decide whether to wire it into Review or to
+remove it, then rerun the M2 rehearsal before any flag is turned on.
+
 The [review center and study plan development plan](product/sundew-review-study-plan.md)
-is an explicitly requested addition, now in development but not accepted.
+is an explicitly requested addition; the record below describes it as of the freeze.
 It covers unified errors and review across TCF listening/reading, writing,
 vocabulary, conjugation, and Quiz/cloze; resumable practice; editable seven-day
 plans; and completion linked to saved answers. This is broader than the existing

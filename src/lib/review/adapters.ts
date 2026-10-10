@@ -8,6 +8,7 @@ import type { Evidence, ReviewSource } from "./state";
 
 export type ReviewDb = typeof db | Parameters<Parameters<(typeof db)["transaction"]>[0]>[0];
 export const hash = (input: unknown) => createHash("sha256").update(JSON.stringify(input)).digest("hex");
+// Frozen 2026-10-10 (docs/roadmap.md): keep both flags unset. While they are, nothing reads or writes the review_* / practice_* tables.
 export const reviewDataEnabled = () => process.env.REVIEW_DATA_ENABLED === "true";
 export const reviewUiEnabled = () => reviewDataEnabled() && process.env.REVIEW_CENTER_ENABLED === "true";
 export type Observation = Evidence & { attemptType: string; answer: unknown };

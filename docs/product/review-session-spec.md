@@ -1,6 +1,6 @@
 # Recoverable review sessions — implementation specification
 
-Date: 2026-09-22. Status: specified; fixed practice runs are not implemented.
+Date: 2026-09-22. Status: **frozen 2026-10-10** ([roadmap](../roadmap.md#review-center-and-study-plans)); specified; fixed practice runs are not implemented.
 Parent: [Review center and study plan](sundew-review-study-plan.md).
 Related: [Review state](review-state-spec.md), [Migration rehearsal](../operations/review-migration-rehearsal.md).
 

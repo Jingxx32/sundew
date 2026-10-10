@@ -1,6 +1,6 @@
 # Sundew — Complete Review Center and Study Plan Development Plan
 
-Status: In development. Batch A is partly implemented; Batch B has a source-linked list. The complete review center and seven-day plan are not accepted.
+Status: **Frozen 2026-10-10** — see the [roadmap](../roadmap.md#review-center-and-study-plans). Before the freeze: Batch A partly implemented; Batch B has a source-linked list (shipped). The complete review center and seven-day plan are not accepted.
 Date: 2026-09-18.
 Basis: current working-tree code, [Product vision](vision.md), the [V2 plan](sundew-v2-plan.md), and the current request.
 
