@@ -1,7 +1,7 @@
 "use server";
 
 import { createHash, randomUUID } from "node:crypto";
-import { eq, and, desc, count, inArray, gte, asc, lt, or, type SQL, sql } from "drizzle-orm";
+import { eq, and, desc, count, inArray, isNotNull, gte, asc, lt, or, type SQL, sql } from "drizzle-orm";
 import { format, parseISO, startOfWeek, addWeeks } from "date-fns";
 import { revalidatePath } from "next/cache";
 
@@ -191,6 +191,19 @@ export async function getErrorCounts(opts?: {
     result[row.category as ErrorCategory] = Number(row.count);
   }
   return result;
+}
+
+/** Error totals keyed by the document each writing task came from (Library rows). */
+export async function getErrorCountsByDocument(): Promise<Record<string, number>> {
+  const user = await requireUser();
+  const rows = await db
+    .select({ documentId: writingTasks.documentId, count: count() })
+    .from(errors)
+    .innerJoin(submissions, eq(errors.submissionId, submissions.id))
+    .innerJoin(writingTasks, eq(submissions.taskId, writingTasks.id))
+    .where(and(eq(errors.userId, user.id), isNotNull(writingTasks.documentId)))
+    .groupBy(writingTasks.documentId);
+  return Object.fromEntries(rows.map((row) => [row.documentId!, Number(row.count)]));
 }
 
 /* ------------------------------------------------------------------ */

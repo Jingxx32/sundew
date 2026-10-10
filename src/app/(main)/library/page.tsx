@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { getMostRecentDocument, listDocuments } from "@/lib/actions/documents";
+import { getErrorCountsByDocument } from "@/lib/actions/errors";
 import { AddDocumentDialog } from "./_components/add-document-dialog";
 import { ContinueReadingCard } from "./_components/continue-reading";
 import { DocumentRow } from "./_components/document-row";
@@ -12,9 +13,10 @@ export default async function LibraryPage({
 }) {
   const { type, q } = await searchParams;
 
-  const [docs, recent] = await Promise.all([
+  const [docs, recent, errorCounts] = await Promise.all([
     listDocuments({ type, query: q }),
     getMostRecentDocument(),
+    getErrorCountsByDocument(),
   ]);
 
   // Always fetch unfiltered counts for chip labels
@@ -60,7 +62,7 @@ export default async function LibraryPage({
       ) : (
         <div className="space-y-1">
           {docs.map((doc) => (
-            <DocumentRow key={doc.id} document={doc} />
+            <DocumentRow key={doc.id} document={doc} errorCount={errorCounts[doc.id] ?? 0} />
           ))}
         </div>
       )}
