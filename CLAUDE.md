@@ -62,14 +62,14 @@ npm run sample:check         # Seed + delete the sample workspace in a rolled-ba
 
 ### Write a TCF explanation for one question
 
-For everyday, per-question explanation authoring, use the development-only endpoint (with `npm run dev` running):
+For everyday, per-question explanation authoring, use the script. It writes straight to the database in `DATABASE_URL` (production), with no dev server and no sign-in:
 
 ```bash
-curl -X POST localhost:3000/api/tcf/explanations --data-binary @CE-T1-Q5.md
-curl -X POST "localhost:3000/api/tcf/explanations?test=1&skill=listening&q=3" --data-binary @-
+npm run tcf:explain -- CE-T1-Q5.md CO-T13-Q30.md
+npm run tcf:explain -- --test 1 --skill listening --q 3 -    # body on stdin, no frontmatter
 ```
 
-The body is raw Markdown. Its locator comes from the frontmatter (`test` / `skill` / `question`), or from the URL's `?test=&skill=&q=` when frontmatter is absent; conflicting locators are rejected. An explanation must meet these requirements:
+The body is raw Markdown. Its locator comes from the frontmatter (`test` / `skill` / `question`), or from `--test/--skill/--q` when frontmatter is absent (one file only); conflicting locators are rejected. The admin-only `POST /api/tcf/explanations` (development server, admin session cookie) shares the same code in `src/lib/tcf/write-explanation.ts`. An explanation must meet these requirements:
 
 - `skill` must be exactly `reading` or `listening`.
 - `test` is the test number: 1–42 for listening and 1–39 for reading.
@@ -135,9 +135,9 @@ Listening adds a failure mode beyond reading: the learner may understand the tex
 - **Use `↳` for general listening guidance, not a precise phonetic or liaison judgment.** Explanation authors do not verify the audio, so phoneme-level claims are not reliable. Use guidance independent of an exact pronunciation, such as “at high speed, a number immediately before a noun can sound like one word.” T1 Q1–Q4/Q10 were manually checked and remain unchanged; this rule governs all later explanations.
 - Question variants: `dialogue` uses the full template. For `spoken_options` (the audio is only one question, with the load in the four options) and `image` (no source text to restructure), replace `## Transcript` with `## Propositions`; describe what each option says and how it sounds, and add the corresponding visual meaning for image questions.
 
-Explanations **exist only in the database**. The endpoint is the sole entry point; do not maintain another copy in a directory outside the repository. Reimporting a test deletes and reinserts questions, erasing explanation columns; an incorrect locator can also overwrite an existing explanation. Neither is reversible. Therefore:
+Explanations **exist only in the database**. `npm run tcf:explain` (or the admin endpoint) is the only way in; do not maintain another copy in a directory outside the repository. Reimporting a test deletes and reinserts questions, erasing explanation columns; an incorrect locator can also overwrite an existing explanation. Neither is reversible. Therefore:
 
-- **Before reimporting a test, run `npm run tcf:explain-export`** to export every database explanation as Markdown into `data/tcf-explanations/` (already gitignored). This is a backup, not the source of truth; restore by POSTing the exported files to the endpoint.
+- **Before reimporting a test, run `npm run tcf:explain-export`** to export every database explanation as Markdown into `data/tcf-explanations/` (already gitignored). This is a backup, not the source of truth; restore by passing the exported files to `npm run tcf:explain`.
 
 TCF import/TTS pipeline scripts also live in `scripts/` (tracked; their input
 data and `scripts/.tcf-cache/` stay local — copyrighted exam content).
@@ -159,8 +159,9 @@ Page (async server component)
               └── lib/db/schema.ts  (single source of truth for all tables)
 ```
 
-The one exception to "no API layer": `app/api/speaking/assess/route.ts`, a route
-handler for audio upload + Azure pronunciation assessment.
+Route handlers exist only where a server action can't serve: Better Auth (`api/auth`),
+the guest-cleanup cron, signed media URLs, speaking audio uploads, and the admin-only
+explanation writer.
 
 ### Access levels
 
@@ -170,6 +171,8 @@ Access is guest / full / admin, derived in `src/lib/auth/user.ts`. Guests are on
 - Every new table with a `user_id` column is picked up by `src/lib/account/owned-tables.ts` automatically (account and guest deletion). A test fails if a child table without `user_id` is not registered there.
 - The sample workspace guests start with is seeded from `src/lib/sample-workspace/fixtures/` (drafts in `source/`; `data/` is gitignored). Author account: `sample-author@example.com`.
 - Feedback highlights are re-located with `src/lib/feedback/error-span.ts`; do not trust stored offsets alone.
+- Every OpenAI call goes through `getOpenAI(bucket)`, which counts against a member's daily limit (`AI_DAILY_LIMITS` in `src/lib/access/limits.ts`; admins are not limited). AI actions that save work or swallow AI failures call `assertAiBudget` first; a test lists them.
+- Errors the user should read are thrown as `UserFacingError` (`src/lib/user-error.ts`). Production hides thrown messages but keeps the digest, so client code shows `userErrorMessage(err, fallback)`, never `err.message`. Rethrow redirects with `unstable_rethrow` before handling a caught action error.
 
 ### Database
 
