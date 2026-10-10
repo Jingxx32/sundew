@@ -67,10 +67,13 @@ export default async function FeedbackPage({
           <FeedbackRetry submissionId={submission.id} />
         )
       ) : (
-        /* Three-column layout: source | submission | feedback */
-        <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)_360px] gap-5 items-start">
+        /* Three-column layout: source | submission | feedback. Below xl the sidebar
+           leaves too little width for three, so the source spans the top instead. */
+        <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[260px_minmax(0,1fr)_360px] gap-5 items-start">
           {/* Left — collapsible source excerpt */}
-          <SourceExcerpt doc={doc} />
+          <div className="lg:col-span-2 xl:col-span-1">
+            <SourceExcerpt doc={doc} />
+          </div>
 
           {/* Centre — submission with inline error highlights */}
           <div className="bg-surface rounded-2xl shadow-card p-6 space-y-4">
