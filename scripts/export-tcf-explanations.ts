@@ -11,11 +11,11 @@
  *
  * The default output lives under data/ (gitignored) because explanations embed
  * copyrighted TCF exam passages and this repo has a public GitHub remote.
- * Nothing restores from these files automatically — re-post one through
- * POST /api/tcf/explanations if you ever need it back.
+ * Nothing restores from these files automatically — write one back with
+ * `npm run tcf:explain -- <file>` if you ever need it back.
  *
  * Files are written in the canonical CE-T1-Q5.md / CO-T13-Q30.md shape with
- * frontmatter, so an exported file is a valid endpoint body as-is.
+ * frontmatter, so an exported file can be written back as-is.
  */
 import { config } from "dotenv";
 config({ path: ".env.local" });
