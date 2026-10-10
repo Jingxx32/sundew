@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { unstable_rethrow } from "next/navigation";
 import { Loader2, PenLine } from "lucide-react";
 
 import { quickWrite } from "@/lib/actions/tasks";
+import { userErrorMessage } from "@/lib/user-error";
 import { Button } from "@/components/ui/button";
 import { MembersOnlyNote } from "@/components/members-only-note";
 import { useFeatureLocked } from "@/components/access-context";
@@ -12,18 +14,17 @@ import { useFeatureLocked } from "@/components/access-context";
  *  (no document required) and redirects to the task stage. */
 export function QuickWriteButton({ compact = false }: { compact?: boolean }) {
   const [pending, startTransition] = useTransition();
-  const [failed, setFailed] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const locked = useFeatureLocked("writing");
 
   function handleClick() {
-    setFailed(false);
+    setError(null);
     startTransition(async () => {
       try {
         await quickWrite(); // redirects on success
       } catch (err) {
-        // Next's redirect propagates as a throw — only real errors reach here.
-        if (err && typeof err === "object" && "digest" in err) throw err;
-        setFailed(true);
+        unstable_rethrow(err); // the success redirect
+        setError(userErrorMessage(err, "Task generation failed. Try again."));
       }
     });
   }
@@ -52,11 +53,7 @@ export function QuickWriteButton({ compact = false }: { compact?: boolean }) {
           </p>
         )
       )}
-      {failed && (
-        <p className="text-xs text-danger">
-          Task generation failed. Check your API key in Settings and retry.
-        </p>
-      )}
+      {error && <p className="text-xs text-danger">{error}</p>}
     </div>
   );
 }

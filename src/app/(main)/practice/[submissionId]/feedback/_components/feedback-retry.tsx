@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Loader2, RefreshCw } from "lucide-react";
 
 import { regenerateFeedback } from "@/lib/actions/tasks";
+import { userErrorMessage } from "@/lib/user-error";
 import { Button } from "@/components/ui/button";
 import { MembersOnlyNote } from "@/components/members-only-note";
 import { useFeatureLocked } from "@/components/access-context";
@@ -20,17 +21,18 @@ export function FeedbackRetry({
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const [failed, setFailed] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const locked = useFeatureLocked("writing");
 
   function handleRetry() {
-    setFailed(false);
+    setError(null);
     startTransition(async () => {
-      const res = await regenerateFeedback(submissionId);
-      if (res.ok) {
-        router.refresh();
-      } else {
-        setFailed(true);
+      try {
+        const res = await regenerateFeedback(submissionId);
+        if (res.ok) router.refresh();
+        else setError("Still failing. Wait a moment and retry.");
+      } catch (err) {
+        setError(userErrorMessage(err, "Still failing. Wait a moment and retry."));
       }
     });
   }
@@ -59,11 +61,7 @@ export function FeedbackRetry({
         )}
       </Button>
       {locked && <MembersOnlyNote feature="writing" className="justify-center" />}
-      {failed && (
-        <p className="text-xs text-danger">
-          Still failing. Wait a moment and retry, or check your API key.
-        </p>
-      )}
+      {error && <p className="text-xs text-danger">{error}</p>}
     </div>
   );
 }

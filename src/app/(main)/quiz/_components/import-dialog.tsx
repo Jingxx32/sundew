@@ -27,6 +27,7 @@ import {
 import type { ParsedQuiz } from "@/lib/ai/quiz-schema";
 import type { ClozePayload } from "@/lib/ai/cloze-schema";
 import { FilterChip } from "@/components/ui/filter-chip";
+import { userErrorMessage } from "@/lib/user-error";
 
 type Meta = {
   exam: string;
@@ -120,9 +121,15 @@ export function ImportQuizDialog() {
 
     setError(null);
     startTransition(async () => {
-      const result = needsPaste
-        ? await parseQuizFromPastedText(pastedText)
-        : await importQuizFromPdf(fd);
+      let result: Awaited<ReturnType<typeof importQuizFromPdf>>;
+      try {
+        result = needsPaste
+          ? await parseQuizFromPastedText(pastedText)
+          : await importQuizFromPdf(fd);
+      } catch (err) {
+        setError(userErrorMessage(err, "Import failed. Try again."));
+        return;
+      }
 
       if (result.ok) {
         setMeta(nextMeta);
@@ -176,7 +183,13 @@ export function ImportQuizDialog() {
 
     setError(null);
     startTransition(async () => {
-      const result = await preparePodcastCloze({ url: nextMeta.url });
+      let result: Awaited<ReturnType<typeof preparePodcastCloze>>;
+      try {
+        result = await preparePodcastCloze({ url: nextMeta.url });
+      } catch (err) {
+        setError(userErrorMessage(err, "Import failed. Try again."));
+        return;
+      }
       if (result.ok) {
         setPodcastMeta(nextMeta);
         setClozePayload(result.payload);

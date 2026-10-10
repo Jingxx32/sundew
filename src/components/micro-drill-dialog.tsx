@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/input";
 import { createMicroDrill, getMicroDrillsForError, retryMicroDrillFeedback, type MicroDrillView } from "@/lib/actions/errors";
+import { userErrorMessage } from "@/lib/user-error";
 import type { MicroDrillFeedback } from "@/lib/ai/micro-drill";
 import { MembersOnlyNote } from "@/components/members-only-note";
 import { useFeatureLocked } from "@/components/access-context";
@@ -56,7 +57,7 @@ export function MicroDrillDialog({ errorId, microDrill, original, correction }: 
         setFeedback(result.feedbackJson);
         setPriorAttempts((prev) => [result, ...prev.filter((item) => item.id !== result.id)]);
       } catch (err) {
-        setErrorMsg(err instanceof Error ? err.message : "Something went wrong.");
+        setErrorMsg(userErrorMessage(err, "Something went wrong. Try again."));
       }
     });
   }
@@ -70,7 +71,7 @@ export function MicroDrillDialog({ errorId, microDrill, original, correction }: 
         setFeedback(result.feedbackJson);
         setPriorAttempts((prev) => prev.map((item) => item.id === result.id ? result : item));
       } catch (err) {
-        setErrorMsg(err instanceof Error ? err.message : "Feedback is unavailable.");
+        setErrorMsg(userErrorMessage(err, "Feedback is unavailable right now. Try again."));
       }
     });
   }

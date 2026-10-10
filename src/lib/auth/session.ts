@@ -4,6 +4,7 @@ import { cache } from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/auth";
+import { userErrorDigest } from "@/lib/user-error";
 import { safeCallbackPath } from "./callback-path";
 import { toAuthenticatedUser, type AuthenticatedUser } from "./user";
 
@@ -11,11 +12,14 @@ export type { AuthenticatedUser } from "./user";
 
 export class AuthenticationError extends Error {
   readonly code: "UNAUTHENTICATED" | "FORBIDDEN" | "FEATURE_LOCKED" | "AUTH_MISCONFIGURED";
+  /** Survives Next's production redaction, so the client can still say what went wrong. */
+  readonly digest: string;
 
   constructor(code: AuthenticationError["code"]) {
     super(code);
     this.name = "AuthenticationError";
     this.code = code;
+    this.digest = userErrorDigest(code);
   }
 }
 

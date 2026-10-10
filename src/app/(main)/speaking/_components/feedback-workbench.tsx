@@ -7,6 +7,7 @@ import type { getSimulation } from "@/lib/actions/speaking-simulation";
 import { generateSimulationFeedback, startFollowUp } from "@/lib/actions/speaking-simulation";
 import { DRILLS, type DrillId } from "@/lib/speaking/scenario";
 import { useWavRecorder } from "./use-wav-recorder";
+import { userErrorMessage } from "@/lib/user-error";
 
 type State = NonNullable<Awaited<ReturnType<typeof getSimulation>>>;
 
@@ -20,7 +21,7 @@ export function FeedbackWorkbench({ state }: { state: State }) {
   async function act(fn: () => Promise<unknown>) {
     setBusy(true); setError("");
     try { await fn(); router.refresh(); }
-    catch (e) { setError(e instanceof Error ? e.message : "Action failed"); }
+    catch (e) { setError(userErrorMessage(e, "Action failed")); }
     finally { setBusy(false); }
   }
   async function submitFollowUp(id: string) {
@@ -38,7 +39,7 @@ export function FeedbackWorkbench({ state }: { state: State }) {
       }
       followUpRequest.current = null;
       router.refresh();
-    } catch (e) { setError(e instanceof Error ? e.message : "Follow-up failed"); }
+    } catch (e) { setError(userErrorMessage(e, "Follow-up failed")); }
     finally { setBusy(false); }
   }
   if (state.simulation.phase !== "finished") return <p className="mt-8">Finish the conversation before requesting feedback.</p>;
