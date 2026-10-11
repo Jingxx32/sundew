@@ -31,7 +31,7 @@ export default async function OpengraphImage() {
             Practise the exam. Fix the weakness behind it.
           </div>
           <div style={{ marginTop: 28, fontSize: 30, color: "#55617a" }}>
-            TCF Canada practice · try it without signing up
+            TCF Canada practice · sample workspace
           </div>
           <div style={{ marginTop: 40, fontSize: 24, color: "#55617a" }}>sundew.jingxuanxu.com</div>
         </div>
