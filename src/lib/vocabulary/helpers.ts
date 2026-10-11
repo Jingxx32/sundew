@@ -22,14 +22,19 @@ export type Dbx = typeof db | Parameters<Parameters<(typeof db)["transaction"]>[
 export const norm = (s: string) => s.toLowerCase().normalize("NFC").trim();
 
 /** Ensure the global lemma exists, then upsert only this user's contextual
- * fields. Never overwrites richEntry/savedAt/enrichedAt. */
+ * fields. Never overwrites richEntry/savedAt/enrichedAt.
+ *
+ * The entry stores the lemma's dictionary gloss, not the selection's in-context
+ * rendering, and remembers the sentence `in_context` was written for. */
 export async function upsertEntry(
   userId: string,
   lemma: string,
   surface: string,
   result: LookupResult,
   dbx: Dbx = db,
+  sentenceContext: string | null = null,
 ) {
+  const translation = result.lemma_translation || result.translation;
   await dbx
     .insert(vocabularyLookups)
     .values({
@@ -47,11 +52,11 @@ export async function upsertEntry(
       lemma,
       surface,
       pos: result.pos,
-      translation: result.translation,
+      translation,
       cefrLevel: result.level,
       inContext: result.in_context,
       examples: result.examples,
-      sentenceContext: null,
+      sentenceContext,
       lookedUpAt: new Date(),
     })
     .onConflictDoUpdate({
@@ -60,10 +65,11 @@ export async function upsertEntry(
       // richEntry, savedAt, and enrichedAt are intentionally excluded — they survive re-lookups.
       set: {
         pos: result.pos,
-        translation: result.translation,
+        translation,
         cefrLevel: result.level,
         inContext: result.in_context,
         examples: result.examples,
+        sentenceContext,
         lookedUpAt: new Date(),
       },
     });

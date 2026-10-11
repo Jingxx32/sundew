@@ -187,6 +187,9 @@ function LookupCard({
   const [reexplainError, setReexplainError] = useState<string | null>(null);
   const [isSaving, startSave] = useTransition();
   const reexplainLocked = useFeatureLocked("lookup");
+  const gloss = result.lemma_translation || result.translation;
+  // The selection's own reading ("tasted") when it adds something to the gloss ("to taste").
+  const here = result.translation && result.translation.trim().toLowerCase() !== gloss.trim().toLowerCase() ? result.translation : null;
 
   function handleSave() {
     startSave(async () => {
@@ -233,30 +236,36 @@ function LookupCard({
 
       <Divider />
 
-      {/* Translation */}
+      {/* Translation: the lemma's gloss, plus how this selection reads here */}
       <Section label="Translation">
-        <p className="text-foreground">{result.translation}</p>
+        <p className="text-foreground">{gloss}</p>
+        {here && <p className="mt-0.5 text-xs text-muted-foreground">Here: {here}</p>}
       </Section>
 
       <Divider />
 
-      {/* In this context */}
-      <Section label="In this context">
-        <p className="text-foreground">{inContext}</p>
-        {!reexplainLocked && (
-        <button
-          onClick={handleReexplain}
-          disabled={isReexplaining}
-          className="mt-1 inline-flex items-center gap-1 rounded-md text-[11px] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 disabled:opacity-50"
-        >
-          <RefreshCw className={cn("h-3 w-3", isReexplaining && "animate-spin")} />
-          Re-explain in this sentence
-        </button>
-        )}
-        {reexplainError && <p className="mt-1 text-[11px] text-danger">{reexplainError}</p>}
-      </Section>
+      {/* In this context — a saved explanation fits only its own sentence, so a new
+          sentence starts empty and the learner asks for one. */}
+      {(inContext || !reexplainLocked) && (
+        <>
+          <Section label="In this context">
+            {inContext && <p className="text-foreground">{inContext}</p>}
+            {!reexplainLocked && (
+            <button
+              onClick={handleReexplain}
+              disabled={isReexplaining}
+              className="mt-1 inline-flex items-center gap-1 rounded-md text-[11px] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 disabled:opacity-50"
+            >
+              <RefreshCw className={cn("h-3 w-3", isReexplaining && "animate-spin")} />
+              {inContext ? "Re-explain in this sentence" : "Explain in this sentence"}
+            </button>
+            )}
+            {reexplainError && <p className="mt-1 text-[11px] text-danger">{reexplainError}</p>}
+          </Section>
 
-      <Divider />
+          <Divider />
+        </>
+      )}
 
       {/* Examples */}
       <Section label="Examples">
