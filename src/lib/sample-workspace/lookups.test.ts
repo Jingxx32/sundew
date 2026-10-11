@@ -17,3 +17,11 @@ test("the tokenizer yields distinct keys with the surface and its paragraph", ()
   assert.equal(ecole.surface, "école");
   assert.equal(ecole.context, "L'école est près du marché.");
 });
+
+test("every pre-generated look-up carries the lemma's own gloss", async () => {
+  const { default: lookups } = await import("./fixtures/lookups.json", { with: { type: "json" } });
+  const missing = Object.entries(lookups as Record<string, { lemma_translation?: string }>)
+    .filter(([, entry]) => !entry.lemma_translation?.trim())
+    .map(([key]) => key);
+  assert.deepEqual(missing, []);
+});
