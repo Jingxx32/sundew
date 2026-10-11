@@ -3,6 +3,9 @@ import { ArrowRight, BookMarked, FileWarning, RotateCcw } from "lucide-react";
 import { getDueGapCount } from "@/lib/actions/vocab-gaps";
 import { getTcfReviewCount } from "@/lib/actions/tcf";
 import { getReviewCenterItems, type ReviewSource } from "@/lib/actions/review";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Review" };
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +36,7 @@ export default async function ReviewPage({ searchParams }: { searchParams: Promi
       <header className="max-w-2xl">
         <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-accent">Return to what matters</p>
         <h1 className="text-[38px] font-bold tracking-[-0.025em]">Review</h1>
-        <p className="mt-2 text-[15px] leading-6 text-muted-foreground">Revisit due vocabulary, TCF questions, and evidence from your writing. Counts describe real queues, not everything you have saved.</p>
+        <p className="mt-2 text-[15px] leading-6 text-muted-foreground">Revisit due vocabulary, TCF questions, and evidence from your writing. Each count shows what is due now, not everything you have saved.</p>
       </header>
       <div className="mt-9 divide-y divide-border rounded-2xl border border-border/80 bg-surface px-5 shadow-card sm:px-7">
         {items.map((item) => {

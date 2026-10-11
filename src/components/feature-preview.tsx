@@ -3,10 +3,11 @@ import { ArrowRight, Eye } from "lucide-react";
 import { InviteDisclosure } from "@/components/invite-disclosure";
 import { listRecentSubmissions } from "@/lib/actions/tasks";
 import { FEATURES, type FeatureKey } from "@/lib/access/features";
+import { simulationEnabled } from "@/lib/speaking/operations";
 
 const DESCRIPTIONS: Record<FeatureKey, string> = {
   tcf: "Timed listening and reading questions from the TCF Canada bank, with explanations and a review queue.",
-  speaking: "Read-aloud practice with pronunciation scoring, and a timed Task 2 conversation.",
+  speaking: "Read-aloud practice with pronunciation scoring.",
   quiz: "Import your own quizzes and podcast cloze dictations, then drill them.",
   writing: "Write a response and get structured feedback that feeds your error profile.",
   microDrill: "Short drills generated from your own mistakes.",
@@ -18,7 +19,7 @@ const DESCRIPTIONS: Record<FeatureKey, string> = {
 type Showcase = { does: string[]; tryInstead: { label: string; href: string } };
 
 /** What a guest gets on the three page-gated features; `sampleFeedback` links a guest's own sample submission. */
-function showcase(feature: FeatureKey, sampleFeedback: string): Showcase | null {
+function showcase(feature: FeatureKey, sampleFeedback: string, task2: boolean): Showcase | null {
   switch (feature) {
     case "tcf":
       return {
@@ -31,7 +32,8 @@ function showcase(feature: FeatureKey, sampleFeedback: string): Showcase | null 
       };
     case "speaking":
       return {
-        does: ["Read-aloud practice scored by Azure Speech", "A timed TCF Task 2 simulation"],
+        // The Task 2 simulation is a flagged pilot; only mention it while it is on.
+        does: ["Read-aloud practice scored by Azure Speech", ...(task2 ? ["A timed TCF Task 2 simulation"] : [])],
         tryInstead: { label: "See AI writing feedback", href: sampleFeedback },
       };
     case "quiz":
@@ -51,7 +53,11 @@ function showcase(feature: FeatureKey, sampleFeedback: string): Showcase | null 
 /** Shown to guests instead of a members-only page: what the feature is, why it's held back, what to try now. */
 export async function FeaturePreview({ feature }: { feature: FeatureKey }) {
   const [sample] = feature === "speaking" ? await listRecentSubmissions(1) : [];
-  const extra = showcase(feature, sample ? `/practice/${sample.id}/feedback` : "/practice");
+  const task2 = simulationEnabled();
+  const extra = showcase(feature, sample ? `/practice/${sample.id}/feedback` : "/practice", task2);
+  const description = feature === "speaking" && task2
+    ? "Read-aloud practice with pronunciation scoring, and a timed Task 2 conversation."
+    : DESCRIPTIONS[feature];
 
   return (
     <div className="mx-auto max-w-xl px-5 py-12 sm:px-8 sm:py-16">
@@ -61,7 +67,7 @@ export async function FeaturePreview({ feature }: { feature: FeatureKey }) {
         </span>
         <p className="mt-6 text-xs font-semibold uppercase tracking-[0.16em] text-accent">Preview</p>
         <h1 className="mt-2 text-[28px] font-bold tracking-[-0.025em]">{FEATURES[feature].label}</h1>
-        <p className="mt-3 text-sm leading-6 text-muted-foreground">{DESCRIPTIONS[feature]}</p>
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">{description}</p>
 
         {extra && (
           <>

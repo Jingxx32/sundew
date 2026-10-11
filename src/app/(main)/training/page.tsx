@@ -3,6 +3,10 @@ import { ArrowRight, BookOpenText, Headphones, Mic, PenLine, Repeat2, Rows3 } fr
 import { PreviewBadge } from "@/components/preview-badge";
 import { canUse } from "@/lib/access/features";
 import { requirePageUser } from "@/lib/auth/session";
+import { simulationEnabled } from "@/lib/speaking/operations";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Training" };
 
 const SKILLS = [
   {
@@ -16,11 +20,12 @@ const SKILLS = [
   },
   {
     title: "Speaking",
-    detail: "Practice a Task 2 conversation or rehearse a personal script with pronunciation feedback.",
+    detail: "Rehearse a personal script line by line with pronunciation feedback.",
+    task2Detail: "Practice a Task 2 conversation or rehearse a personal script with pronunciation feedback.",
     href: "/speaking",
     action: "Open speaking lab",
     icon: Mic,
-    note: "Conversation and script practice",
+    note: "Pronunciation practice",
     feature: "speaking",
   },
   {
@@ -47,12 +52,14 @@ const SKILLS = [
 export default async function TrainingPage() {
   const user = await requirePageUser();
   const quizLocked = canUse(user.access, "quiz") !== true;
+  // The Task 2 simulation is a flagged pilot; only mention it while it is on.
+  const task2 = simulationEnabled();
   return (
     <div className="mx-auto max-w-5xl px-5 py-8 sm:px-8 sm:py-10">
       <header className="max-w-2xl">
         <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-accent">Practice by skill</p>
         <h1 className="text-[38px] font-bold tracking-[-0.025em]">Training</h1>
-        <p className="mt-2 text-[15px] leading-6 text-muted-foreground">Choose the kind of French you want to use today. Each entry opens the existing practice flow and keeps one shared history.</p>
+        <p className="mt-2 text-[15px] leading-6 text-muted-foreground">Choose the kind of French you want to use today. Everything you practise feeds the same history and review.</p>
       </header>
 
       <section className="mt-9 grid gap-4 sm:grid-cols-2" aria-label="Four language skills">
@@ -66,7 +73,7 @@ export default async function TrainingPage() {
                 <span className="text-right text-[11px] font-medium text-muted-foreground">{locked ? <PreviewBadge /> : skill.note}</span>
               </div>
               <h2 className="mt-7 text-xl font-bold tracking-[-0.02em]">{skill.title}</h2>
-              <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">{skill.detail}</p>
+              <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">{"task2Detail" in skill && task2 ? skill.task2Detail : skill.detail}</p>
               <div className="mt-6 flex flex-wrap items-center gap-4">
                 <Link href={skill.href} className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40">{skill.action}<ArrowRight className="h-3.5 w-3.5" aria-hidden="true" /></Link>
                 {"secondaryHref" in skill && !locked && <Link href={skill.secondaryHref} className="text-sm text-muted-foreground hover:text-foreground hover:underline">{skill.secondaryAction}</Link>}

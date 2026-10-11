@@ -44,7 +44,7 @@ export function FeedbackRetry({
       </h2>
       <p className="text-sm text-muted-foreground">
         {stalePending
-          ? "The background job seems to have died (this can happen if the server restarted). Your writing is safe — retry now."
+          ? "Feedback stopped before it finished. Your writing is saved — try again."
           : "Your writing is saved. The AI feedback didn't come through — this can happen on a timeout or rate limit. Try again."}
       </p>
       <Button onClick={handleRetry} disabled={pending || locked}>
