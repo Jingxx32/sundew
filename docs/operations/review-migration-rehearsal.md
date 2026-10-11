@@ -1,6 +1,6 @@
 # Review infrastructure — isolated migration and recovery specification
 
-Date: 2026-09-22. Status: isolated M1 rehearsal implemented and executed; 25 focused database checks passed. M2 and browser acceptance remain open.
+Date: 2026-09-22. Status: isolated M1 rehearsal implemented and executed; 25 focused database checks passed. M2 is **frozen 2026-10-10** with the review state work ([roadmap](../roadmap.md#review-center-and-study-plans)); rerun it before any review flag is enabled.
 Parent: [Review center and study plan](../product/sundew-review-study-plan.md).
 Related: [Review state](../product/review-state-spec.md), [Practice sessions](../product/review-session-spec.md).
 

@@ -1,6 +1,6 @@
 # Unified review state — implementation specification
 
-Date: 2026-09-22. Status: specified, not implemented or database-accepted.
+Date: 2026-09-22. Status: **frozen 2026-10-10** ([roadmap](../roadmap.md#review-center-and-study-plans)); specified, its service code and tables exist but are unused, not database-accepted.
 Parent: [Review center and study plan](sundew-review-study-plan.md).
 Related: [Migration rehearsal](../operations/review-migration-rehearsal.md), [Practice sessions](review-session-spec.md).
 

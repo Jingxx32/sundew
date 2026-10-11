@@ -206,7 +206,7 @@ Do not add categories without considering AI labelling accuracy and dashboard co
 
 ### Planned work (don't implement prematurely)
 
-Specs and plans live under `docs/superpowers/{specs,plans}/`; product direction in `docs/audit-*.md`. Current queue: TCF error loop steps 2–4 (AI skill-tagging, smart re-drill queue, weak-points panel + exam review page), lightweight review queue (Leitner), TCF EE writing mode (gated on writing habit recovery).
+Specs and plans live under `docs/superpowers/{specs,plans}/`; product direction in `docs/audit-*.md`. Current direction lives in `docs/roadmap.md`. **Frozen 2026-10-10:** unified review state, review sessions and seven-day plans (`src/lib/review/service.ts`, `src/lib/practice/service.ts`, the `review_*` / `practice_*` tables). Do not extend or wire them up, and keep `REVIEW_DATA_ENABLED` / `REVIEW_CENTER_ENABLED` unset; see the roadmap for what ships and how to unfreeze.
 
 ## Deployment
 
