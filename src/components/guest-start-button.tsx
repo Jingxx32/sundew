@@ -10,7 +10,7 @@ const GUEST_ERRORS: Record<string, string> = {
 };
 
 /** Opens a 7-day guest account with sample data. A signed-in visitor just continues. */
-export function GuestStartButton({ children = "Try without signing up", ...props }: ButtonProps) {
+export function GuestStartButton({ children = "Explore the sample workspace", ...props }: ButtonProps) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

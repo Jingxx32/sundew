@@ -18,7 +18,7 @@ export function GuestCta({ variant = "default", viewer }: { variant?: ButtonProp
   }
   return (
     <div className="grid">
-      <GuestStartButton size="lg" variant={variant} className={SIZE}>Try the full app</GuestStartButton>
+      <GuestStartButton size="lg" variant={variant} className={SIZE}>Explore the sample workspace</GuestStartButton>
       {/* w-0 + min-w-full: wrap to the button's width instead of widening the row. */}
       <p className="mt-2 w-0 min-w-full text-xs leading-5 text-muted-foreground">No sign-up · sample data · deleted after 7 days</p>
     </div>

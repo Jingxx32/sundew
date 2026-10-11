@@ -14,7 +14,7 @@ export function LandingHero({ viewer }: { viewer: LandingViewer }) {
       <div>
         <p className="inline-flex items-center gap-2 rounded-full bg-surface px-3 py-1.5 text-[13px] text-muted-foreground ring-1 ring-border">
           <span className="text-focus-star" aria-hidden="true">✱</span>
-          TCF Canada · no sign-up needed
+          Sample workspace · no sign-up
         </p>
         <h1 className="mt-6 font-display text-[44px] font-extrabold leading-[0.98] tracking-[-0.025em] sm:text-[56px] lg:text-[52px] xl:text-[60px]">
           Practise the exam.

@@ -19,7 +19,7 @@ export type FeatureCard = {
   hint?: string;
 };
 
-// Guest-visible cards first: recruiters click "Try the full app" next.
+// Guest-visible cards first: recruiters click "Explore the sample workspace" next.
 export const FEATURE_CARDS: readonly FeatureCard[] = [
   {
     key: "writing",
