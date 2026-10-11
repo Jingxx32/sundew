@@ -12,6 +12,9 @@ import { otpEmailConfigured } from "@/lib/auth/email";
 import { getCurrentUser } from "@/lib/auth/session";
 import { signupEnabled } from "@/lib/auth/signup";
 import { LoginForm } from "./_components/login-form";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Sign in" };
 
 export const dynamic = "force-dynamic";
 

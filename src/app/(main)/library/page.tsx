@@ -5,6 +5,9 @@ import { AddDocumentDialog } from "./_components/add-document-dialog";
 import { ContinueReadingCard } from "./_components/continue-reading";
 import { DocumentRow } from "./_components/document-row";
 import { LibraryFilters } from "./_components/library-filters";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Library" };
 
 export default async function LibraryPage({
   searchParams,

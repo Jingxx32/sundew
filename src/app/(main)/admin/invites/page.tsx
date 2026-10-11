@@ -3,6 +3,9 @@ import { requirePageUser } from "@/lib/auth/session";
 import { listInviteCodes } from "@/lib/actions/invites";
 import { CreateInviteForm } from "./_components/create-invite-form";
 import { InviteList } from "./_components/invite-list";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Invites" };
 
 export const dynamic = "force-dynamic";
 

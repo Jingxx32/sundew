@@ -1,6 +1,9 @@
 import { getDueGapCards, listGaps } from "@/lib/actions/vocab-gaps";
 import { GapReviewRunner } from "./_components/gap-review-runner";
 import { GapList } from "./_components/gap-list";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Vocabulary review" };
 
 export const dynamic = "force-dynamic";
 

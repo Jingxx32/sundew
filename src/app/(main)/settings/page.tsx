@@ -7,6 +7,9 @@ import { CefrLevelPicker } from "./_components/cefr-level-picker";
 import { SpeakingProfileEditor } from "./_components/speaking-profile-editor";
 import { StudyGoalEditor } from "./_components/study-goal-editor";
 import { requireUser } from "@/lib/auth/session";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Settings" };
 
 export default async function SettingsPage() {
   const user = await requireUser();

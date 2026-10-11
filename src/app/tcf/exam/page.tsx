@@ -3,6 +3,9 @@ import { ChevronLeft } from "lucide-react";
 import { getTcfSetQuestions } from "@/lib/actions/tcf";
 import { ExamRunner } from "../_components/exam-runner";
 import { pageGate } from "@/lib/access/page-gate";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "TCF mock exam" };
 
 export default async function TcfExamPage({
   searchParams,

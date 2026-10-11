@@ -4,6 +4,9 @@ import { notFound } from "next/navigation";
 import { getSimulation } from "@/lib/actions/speaking-simulation";
 import { SimulationWorkbench } from "../../_components/simulation-workbench";
 import { pageGate } from "@/lib/access/page-gate";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Speaking session" };
 
 export default async function SimulationPage({ params }: { params: Promise<{ sessionId: string }> }) {
   const locked = await pageGate("speaking");

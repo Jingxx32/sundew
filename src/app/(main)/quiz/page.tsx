@@ -7,6 +7,9 @@ import { listQuizSets, type QuizSetListItem } from "@/lib/actions/quiz";
 import { ImportQuizDialog } from "./_components/import-dialog";
 import { QuizFilters } from "./_components/quiz-filters";
 import { pageGate } from "@/lib/access/page-gate";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Quiz and cloze" };
 
 export default async function QuizPage({
   searchParams,

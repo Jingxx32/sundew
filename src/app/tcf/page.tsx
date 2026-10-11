@@ -11,6 +11,9 @@ import { Card } from "@/components/ui/card";
 import { LevelBadge } from "./_components/level-badge";
 import { LEVEL_LABELS } from "@/lib/tcf/display";
 import { pageGate } from "@/lib/access/page-gate";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "TCF Canada" };
 
 const SKILLS = {
   listening: { label: "Écoute", title: "Compréhension orale", icon: Headphones, levelVerb: "Écoute" },

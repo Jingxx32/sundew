@@ -14,6 +14,11 @@ test("public prefixes cover the prefix and its children only", () => {
   for (const path of ["/loginx", "/assetsx", "/api/other", "/media/a.mp3"]) assert.equal(isPublicPath(path), false, path);
 });
 
+test("the share image is public so link previews work", () => {
+  assert.equal(isPublicPath("/opengraph-image"), true);
+  assert.equal(isPublicPath("/opengraph-image/x"), false);
+});
+
 test("/demo is no longer public: next.config redirects it before the proxy runs", () => {
   assert.equal(isPublicPath("/demo"), false);
 });

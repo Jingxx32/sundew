@@ -4,10 +4,14 @@ import type { Access } from "@/lib/access/features";
 import { getCurrentUser } from "@/lib/auth/session";
 import { LandingPage } from "./_components/landing/landing-page";
 
+const TITLE = "Sundew — TCF Canada practice that trains your weak spots";
+const DESCRIPTION =
+  "Try one original TCF-style question and see how Sundew turns the result into a focused follow-up drill.";
+
 export const metadata: Metadata = {
-  title: "Sundew — TCF Canada practice that trains your weak spots",
-  description:
-    "Try one original TCF-style question and see how Sundew turns the result into a focused follow-up drill.",
+  title: { absolute: TITLE },
+  description: DESCRIPTION,
+  openGraph: { title: TITLE, description: DESCRIPTION, url: "/" },
 };
 
 export default async function Home() {

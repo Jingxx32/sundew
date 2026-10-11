@@ -5,6 +5,9 @@ import { ArrowLeft } from "lucide-react";
 import { getPromptWithScript } from "@/lib/actions/speaking";
 import { ScriptWorkbench } from "../../_components/script-workbench";
 import { pageGate } from "@/lib/access/page-gate";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Speaking script" };
 
 export default async function ScriptPracticePage({
   params,

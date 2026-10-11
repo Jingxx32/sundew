@@ -7,6 +7,9 @@ import { getQuizSet } from "@/lib/actions/quiz";
 import { QuizRunner } from "./_components/quiz-runner";
 import { ClozeRunner } from "./_components/cloze-runner";
 import { pageGate } from "@/lib/access/page-gate";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Quiz" };
 
 export default async function QuizSetPage({
   params,

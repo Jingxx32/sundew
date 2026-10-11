@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Plus_Jakarta_Sans, Source_Serif_4, Source_Code_Pro } from "next/font/google";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const geist = Geist({
@@ -27,7 +28,10 @@ const sourceCodePro = Source_Code_Pro({
 });
 
 export const metadata: Metadata = {
-  title: "Sundew — French learning, output-first",
+  metadataBase: new URL(SITE_URL),
+  // Pages export a short title ("Today"); the tab reads "Today · Sundew".
+  title: { default: "Sundew — French learning, output-first", template: "%s · Sundew" },
+  openGraph: { siteName: "Sundew", type: "website" },
   description:
     "Read French, write French, see your blind spots fade. A personal training ground for output-driven French learning.",
   icons: {

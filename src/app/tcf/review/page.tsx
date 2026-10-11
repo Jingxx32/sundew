@@ -9,6 +9,9 @@ import { getTcfQuestionHistory, getTcfReviewItem, getTcfReviewQueue, type TcfLev
 import { reviewReason } from "@/lib/tcf/learning";
 import { cn } from "@/lib/utils";
 import { pageGate } from "@/lib/access/page-gate";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "TCF review" };
 
 export default async function TcfReviewPage({
   searchParams,

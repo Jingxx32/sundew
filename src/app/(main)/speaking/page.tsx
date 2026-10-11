@@ -6,6 +6,9 @@ import { listPromptsWithStats } from "@/lib/actions/speaking";
 import { Button } from "@/components/ui/button";
 import { PromptList } from "./_components/prompt-list";
 import { pageGate } from "@/lib/access/page-gate";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Speaking" };
 
 export default async function SpeakingPage() {
   const locked = await pageGate("speaking");

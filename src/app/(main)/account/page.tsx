@@ -5,6 +5,9 @@ import { SignOutButton } from "@/components/sign-out-button";
 import { formatGuestExpiry } from "@/lib/access/limits";
 import { auth } from "@/lib/auth/auth";
 import { requirePageUser } from "@/lib/auth/session";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Account" };
 
 export const dynamic = "force-dynamic";
 

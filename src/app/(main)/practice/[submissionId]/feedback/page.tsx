@@ -10,6 +10,9 @@ import { SubmissionText } from "./_components/submission-text";
 import { FeedbackPanel } from "./_components/feedback-panel";
 import { FeedbackRetry } from "./_components/feedback-retry";
 import { FeedbackPending } from "./_components/feedback-pending";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Writing feedback" };
 
 export default async function FeedbackPage({
   params,

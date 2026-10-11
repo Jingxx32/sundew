@@ -18,6 +18,9 @@ import { getTodayPlan, selectTodayActivity, startTodayActivity } from "@/lib/act
 import { requirePageUser } from "@/lib/auth/session";
 import type { TodayActivity } from "@/lib/actions/today";
 import { GuestStartHere } from "./_components/guest-start-here";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Today" };
 
 const SKILL_ICONS = { listening: Headphones, speaking: Mic, reading: BookOpenText, writing: PenLine } as const;
 

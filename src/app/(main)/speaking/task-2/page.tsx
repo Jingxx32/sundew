@@ -6,6 +6,9 @@ import { simulationEnabled } from "@/lib/speaking/operations";
 import { SCENARIO } from "@/lib/speaking/scenario";
 import { StartPractice } from "../_components/start-practice";
 import { pageGate } from "@/lib/access/page-gate";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Task 2 simulation" };
 
 export default async function TaskTwoPage() {
   const locked = await pageGate("speaking");
