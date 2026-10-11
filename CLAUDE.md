@@ -40,7 +40,7 @@ the user isn't left correcting style in a follow-up commit (`fcecc9e` → `70a6a
 
 Sundew is an output-driven French learning app. The core loop: read French source material → AI generates a writing task anchored to it → user writes → AI gives structured, classified feedback → every error flows into a persistent learner profile that drives future tasks.
 
-This is a personal app that friends can join by invite code or try as one-click guests (guest / full / admin access). Current status: **MVP (S1–S7) and v0.2 (S8–S10) are shipped** — full writing-feedback loop, errors archive, progress dashboard, learner profile, generic quiz engine (podcast cloze dictation), conjugation drills, TCF listening/reading question bank (~3200 questions) with drill + exam modes, lemma-keyed vocabulary memory, and Speaking Phase 1 (read-aloud with Azure pronunciation assessment; needs `AZURE_SPEECH_KEY`). Next up: the TCF error loop — see `docs/superpowers/specs/2026-07-06-tcf-error-loop-design.md`. Audits live in `docs/audit-*.md` / `docs/*-audit-*.md`.
+This is a personal app that friends can join by invite code or try as one-click guests (guest / full / admin access). Current status: **MVP (S1–S7) and v0.2 (S8–S10) are shipped** — full writing-feedback loop, errors archive, progress dashboard, learner profile, generic quiz engine (podcast cloze dictation), conjugation drills, TCF listening/reading question bank (~3200 questions) with drill + exam modes, lemma-keyed vocabulary memory, and Speaking Phase 1 (read-aloud with Azure pronunciation assessment; needs `AZURE_SPEECH_KEY`). Since then: per-question TCF history with a review queue, the Today / Training / Review home, vocabulary gaps with Leitner review, Better Auth with invites and guests, and Vercel hosting. Current direction lives in `docs/roadmap.md`; past audits are in `docs/archive/audits/`.
 
 ## Commands
 
@@ -176,19 +176,22 @@ Access is guest / full / admin, derived in `src/lib/auth/user.ts`. Guests are on
 
 ### Database
 
-**PostgreSQL** (Azure) via the `postgres` package (postgres.js) + Drizzle ORM (migrated from SQLite in S3.5). Connect via `DATABASE_URL` env var. ~23 tables in five groups:
+**PostgreSQL** (Azure) via the `postgres` package (postgres.js) + Drizzle ORM (migrated from SQLite in S3.5). Connect via `DATABASE_URL` env var. 49 tables in these groups:
 
-- Core loop: `documents → reading_sessions`, `writing_tasks → submissions → errors`, `rules`, `micro_drills`
-- Vocabulary memory: `vocabulary_lookups` (lemma-keyed) + `vocabulary_aliases` + `vocabulary_occurrences`
-- Quiz engine (PRD v0.2 D-0): `quiz_sets → quiz_passages → quiz_questions`, `quiz_attempts`, `conjugation_attempts`
-- TCF: `tcf_sets → tcf_questions`, `tcf_attempts` (whole-exam runs)
-- Speaking: `speaking_prompts → speaking_scripts / speaking_sessions → speaking_turns`; plus `user_settings` (KV)
+- Auth and access: `users`, `sessions`, `accounts`, `verifications`, `rate_limits` (Better Auth, also app rate limits and AI budgets), `invite_codes`, `invite_redemptions`
+- Core loop: `documents → reading_sessions`, `writing_tasks → submissions → errors`, `rules`, `grammar_points`, `micro_drills`
+- Vocabulary memory: shared `vocabulary_lookups` + `vocabulary_aliases`; per user `user_vocabulary`, `user_vocabulary_aliases`, `vocabulary_occurrences`, `vocabulary_gaps`, `vocabulary_review_attempts`
+- Quiz engine: `quiz_sets → quiz_passages → quiz_questions`, `quiz_attempts`, `quiz_question_attempts`, `conjugation_attempts`
+- TCF: `tcf_sets → tcf_questions`, `tcf_attempts` (whole-exam runs), `tcf_question_attempts` (per question)
+- Speaking: `speaking_prompts → speaking_scripts / speaking_sessions → speaking_turns`; the Task 2 pilot adds `speaking_simulations`, `speaking_assets`, `speaking_assessments`, `speaking_follow_ups`, `speaking_operations`
+- Frozen, unused (see `docs/roadmap.md`): `review_items`, `review_evidence`, `review_item_changes`, `review_backfill_jobs`, `practice_runs`, `practice_run_items`, `practice_requests`
+- `user_settings` (KV)
 
 Conventions: older tables use `text` PKs + app-side `randomUUID()` and naive `timestamp`; **new tables use `uuid` PK `defaultRandom()` + `timestamp(..., { withTimezone: true })`**. All queries are **async** — use `await db.select()...` etc. Do **not** use `.run()` / `.get()` / `.all()` (SQLite-only).
 
 ### Error taxonomy
 
-`src/lib/taxonomy.ts` is the most important non-schema file. It defines `ERROR_TAXONOMY` — 9 categories × ~4 subcategories = ~33 leaf error types for A2-B1 French learners. This is:
+`src/lib/taxonomy.ts` is the most important non-schema file. It defines `ERROR_TAXONOMY` — 9 categories × ~4 subcategories = 37 leaf error types for A2-B1 French learners. This is:
 - The schema the AI must conform to when emitting structured feedback (enforced via Zod in S4)
 - The index every dashboard and learner-profile decision references
 - The source for `CATEGORY_COLORS` used in feedback highlights
@@ -233,9 +236,13 @@ OPENAI_MODEL_LOOKUP   # defaults to gpt-4o-mini
 OPENAI_MODEL_TASK     # defaults to gpt-4o
 OPENAI_MODEL_FEEDBACK # defaults to gpt-4o
 OPENAI_MODEL_ENRICH   # vocab enrich; defaults to gpt-4o-mini
+OPENAI_MODEL_SPEAKING # speaking scripts and Task 2; defaults to gpt-4o
+OPENAI_MODEL_TRANSCRIBE # podcast transcription; defaults to whisper-1
 DATABASE_URL          # Required — PostgreSQL connection string (e.g. postgres://user:pass@host/db)
 AZURE_SPEECH_KEY      # Speaking only — Azure Cognitive Services Speech key
 AZURE_SPEECH_REGION   # Speaking only — e.g. canadacentral
+SPEAKING_SIMULATION_ENABLED # "true" turns on the Task 2 pilot (also needs its budget env vars; see docs/operations/speaking-pilot.md)
+REVIEW_DATA_ENABLED / REVIEW_CENTER_ENABLED # Frozen review state — keep unset
 BETTER_AUTH_URL       # Required — site origin, e.g. https://sundew.jingxuanxu.com
 BETTER_AUTH_SECRET    # Required — session signing secret
 GOOGLE_CLIENT_ID      # Google sign-in
