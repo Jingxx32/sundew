@@ -43,7 +43,7 @@ export type LookupOutcome =
 async function persistLookup(userId: string, surface: string, sentenceContext: string, source: LookupSource, result: LookupResult): Promise<string> {
   const resolved = norm(result.lemma || surface);
   await db.transaction(async (tx) => {
-    await upsertEntry(userId, resolved, surface, result, tx);
+    await upsertEntry(userId, resolved, surface, result, tx, sentenceContext || null);
     await upsertAlias(userId, norm(surface), resolved, tx);
     await recordOccurrence({
       userId, lemma: resolved, surface, sentenceContext,
@@ -85,12 +85,15 @@ export async function resolveLookup(
         tcfQuestionId: source.type === "tcf" ? source.tcfQuestionId : null,
       });
       await upsertGap({ userId: user.id, lemma, gapType: "recognition", source: "lookup" });
+      // The stored entry holds the lemma's gloss; its explanation fits only the sentence
+      // it was written for, so a different sentence gets none (the popover offers one).
       const result: LookupResult = {
         lemma: row.lemma,
         pos: row.pos ?? "",
         level: (row.cefrLevel ?? "A1") as LookupResult["level"],
-        translation: row.translation ?? "",
-        in_context: row.inContext ?? "",
+        translation: "",
+        lemma_translation: row.translation ?? "",
+        in_context: row.sentenceContext === sentenceContext ? (row.inContext ?? "") : "",
         examples: (row.examples as string[]) ?? [],
       };
       return { status: "ok", lemma, surface, result, cached: true };
