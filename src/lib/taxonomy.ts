@@ -8,7 +8,7 @@
  *
  * Design principles:
  *  - Mutually exclusive leaves (no ambiguity for AI labelling)
- *  - 9 categories x ~4 subcategories ≈ 33 leaves (sweet spot for AI accuracy)
+ *  - 9 categories x ~4 subcategories = 37 leaves (sweet spot for AI accuracy)
  *  - Re-weighted for A2-B1: heavy on tense/gender/articles; light on style
  *  - No `severity` field — keeps AI output stable and treats all errors equally
  */

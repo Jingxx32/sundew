@@ -3,6 +3,9 @@ import {
   getConjugationStats,
 } from "@/lib/actions/conjugation";
 import { DrillCard } from "./_components/drill-card";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Conjugation" };
 
 export default async function ConjugationPage() {
   const [queue, stats] = await Promise.all([

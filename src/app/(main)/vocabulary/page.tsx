@@ -4,6 +4,9 @@ import { getCefrLevel } from "@/lib/actions/settings";
 import { getDueGapCards } from "@/lib/actions/vocab-gaps";
 import { Button } from "@/components/ui/button";
 import { VocabBrowser } from "./_components/vocab-browser";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Vocabulary" };
 
 export const dynamic = "force-dynamic";
 

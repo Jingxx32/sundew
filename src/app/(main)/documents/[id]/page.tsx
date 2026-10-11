@@ -2,6 +2,9 @@ import { notFound } from "next/navigation";
 import { getDocument } from "@/lib/actions/documents";
 import { getSavedWordsByDocument } from "@/lib/actions/vocabulary";
 import { ReaderShell } from "./_components/reader-client";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Reading" };
 
 export default async function DocumentReaderPage({
   params,

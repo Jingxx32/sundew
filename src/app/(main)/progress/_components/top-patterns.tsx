@@ -1,7 +1,7 @@
 import { CATEGORY_STYLES } from "@/lib/category-styles";
 import { ERROR_TAXONOMY, type ErrorCategory } from "@/lib/taxonomy";
 import type { RecurringPattern } from "@/lib/actions/errors";
-import { PracticeFromPatternButton } from "./top-patterns-action";
+import { PatternPracticeLockedNote, PracticeFromPatternButton } from "./top-patterns-action";
 
 type Props = {
   patterns: RecurringPattern[];
@@ -63,6 +63,7 @@ export function TopPatterns({ patterns }: Props) {
           );
         })}
       </div>
+      <PatternPracticeLockedNote />
     </section>
   );
 }

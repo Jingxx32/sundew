@@ -146,7 +146,7 @@
         "lemma": "étal",
         "surface": "étals",
         "pos": "noun · masc.",
-        "translation": "stalls",
+        "translation": "stall",
         "cefrLevel": "A2",
         "inContext": "In this sentence, 'étals' refers to the stalls at the market where various products are displayed for sale. It is in the plural form to indicate that there are multiple stalls filled with different items, which is typical in a market setting.",
         "examples": [
@@ -188,7 +188,7 @@
         "lemma": "citrouille",
         "surface": "citrouilles",
         "pos": "noun · fem.",
-        "translation": "pumpkins",
+        "translation": "pumpkin",
         "cefrLevel": "A2",
         "inContext": "In this sentence, 'citrouilles' is used in the plural form to refer to multiple pumpkins that are available at the market during the autumn season. The sentence describes the variety of products found at the market, and 'citrouilles' is included among other seasonal produce.",
         "examples": [
@@ -230,7 +230,7 @@
         "lemma": "courge",
         "surface": "courges",
         "pos": "noun · fem.",
-        "translation": "squashes",
+        "translation": "squash",
         "cefrLevel": "A2",
         "inContext": "In this sentence, 'courges' is used in the plural form to refer to various types of squashes that are typically available at the market during the autumn season. The feminine singular form 'courge' agrees with the plural ending '-es' in 'courges' to indicate multiple items.",
         "examples": [
@@ -272,7 +272,7 @@
         "lemma": "atelier",
         "surface": "ateliers",
         "pos": "noun · masc.",
-        "translation": "workshops",
+        "translation": "workshop",
         "cefrLevel": "A2",
         "inContext": "In this sentence, 'ateliers' is used in the plural form to refer to multiple workshops focused on cooking. The context indicates that these workshops are part of special activities offered at the market during autumn, highlighting their role in teaching visitors about seasonal recipes.",
         "examples": [
@@ -361,7 +361,7 @@
         "lemma": "horizon",
         "surface": "horizons",
         "pos": "noun · masc.",
-        "translation": "backgrounds",
+        "translation": "horizon",
         "cefrLevel": "B1",
         "inContext": "In this sentence, 'horizons' refers to the diverse backgrounds or experiences of people. The plural form is used here to emphasize the variety of people one might meet, indicating a range of different social, cultural, or personal backgrounds.",
         "examples": [
@@ -403,7 +403,7 @@
         "lemma": "raquette",
         "surface": "raquette",
         "pos": "noun · fem.",
-        "translation": "snowshoeing",
+        "translation": "snowshoe; racket",
         "cefrLevel": "A2",
         "inContext": "In this sentence, 'raquette' refers to the activity of snowshoeing, which is a popular winter sport in snowy areas. The feminine form 'raquette' is used here as it is a feminine noun in French, and it is paired with the verb 'faire' to indicate the action of participating in this sport.",
         "examples": [
@@ -445,7 +445,7 @@
         "lemma": "goûter",
         "surface": "goûté",
         "pos": "verb · trans.",
-        "translation": "tasted",
+        "translation": "to taste",
         "cefrLevel": "A2",
         "inContext": "In this sentence, 'goûté' is the past participle of the verb 'goûter' used in the passé composé tense, which is formed with the auxiliary verb 'avoir' (in this case, 'avons') and the past participle. It indicates that the action of tasting happened in the past.",
         "examples": [
@@ -1145,7 +1145,7 @@
         "lemma": "coucher",
         "surface": "coucher",
         "pos": "noun · masc.",
-        "translation": "sunset",
+        "translation": "setting (of the sun); bedtime",
         "cefrLevel": "A2",
         "inContext": "In this sentence, 'coucher' is used in the phrase 'coucher du soleil', which means 'sunset'. It is a masculine noun that refers specifically to the time of day when the sun sets, and it is often used in the context of describing beautiful landscapes or moments in nature.",
         "examples": [

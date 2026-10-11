@@ -32,7 +32,8 @@ export function PracticeFromPatternButton({ category, subcategory }: Props) {
     });
   }
 
-  if (locked) return <MembersOnlyNote feature="writing" />;
+  // Guests see one note under the list (PatternPracticeLockedNote), not one per pattern.
+  if (locked) return null;
 
   return (
     <div className="flex flex-col items-end gap-1">
@@ -54,4 +55,10 @@ export function PracticeFromPatternButton({ category, subcategory }: Props) {
       {error && <span className="text-xs text-danger">{error}</span>}
     </div>
   );
+}
+
+/** The single members-only note for the pattern list; renders nothing for members. */
+export function PatternPracticeLockedNote() {
+  const locked = useFeatureLocked("writing");
+  return locked ? <MembersOnlyNote feature="writing" className="mt-3" /> : null;
 }

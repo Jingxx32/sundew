@@ -6,6 +6,9 @@ import { requirePageUser } from "@/lib/auth/session";
 import { TaskCard } from "./_components/task-card";
 import { WritingForm } from "./_components/writing-form";
 import { QuickWriteButton } from "./_components/quick-write-button";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Writing" };
 
 export default async function PracticePage({
   searchParams,

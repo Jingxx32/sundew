@@ -10,6 +10,9 @@ import { DrillRunner } from "../_components/drill-runner";
 import { LevelBadge } from "../_components/level-badge";
 import { LEVEL_LABELS, LEVEL_ORDER } from "@/lib/tcf/display";
 import { pageGate } from "@/lib/access/page-gate";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "TCF drill" };
 
 export default async function TcfDrillPage({
   searchParams,

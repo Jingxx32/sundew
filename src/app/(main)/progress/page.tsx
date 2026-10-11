@@ -23,6 +23,9 @@ import { TrendChart } from "./_components/trend-chart";
 import { DistributionChart } from "./_components/distribution-chart";
 import { TopPatterns } from "./_components/top-patterns";
 import { EncouragementBanner } from "./_components/encouragement-banner";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Progress" };
 
 const CATEGORY_ORDER = Object.keys(ERROR_TAXONOMY) as ErrorCategory[];
 const VALID_WINDOWS = [30, 90, 365] as const;
