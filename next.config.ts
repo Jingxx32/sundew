@@ -5,7 +5,9 @@ const nextConfig: NextConfig = {
   // @napi-rs/canvas is its native DOMMatrix polyfill (see src/lib/pdf/extract.ts)
   serverExternalPackages: ["pdf-parse", "@napi-rs/canvas"],
   // …and file tracing can't see that runtime path, so ship the package's dist as-is.
-  outputFileTracingIncludes: { "/**": ["./node_modules/pdf-parse/dist/**"] },
+  // Only the quiz pages load it (PDF import in src/lib/actions/quiz.ts); keys match
+  // as substrings, so "/quiz" covers /quiz and /quiz/[setId].
+  outputFileTracingIncludes: { "/quiz": ["./node_modules/pdf-parse/dist/**"] },
   // Phone access over the LAN (`npm run dev:lan`). Next blocks dev-only assets
   // and endpoints requested from an origin other than the one the server was
   // started with, so the Mac's LAN address has to be listed here or /_next and
