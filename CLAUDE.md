@@ -161,7 +161,8 @@ Page (async server component)
 
 Route handlers exist only where a server action can't serve: Better Auth (`api/auth`),
 the guest-cleanup cron, signed media URLs, speaking audio uploads, the streaming TCF tutor
-(`api/tcf/tutor`), and the admin-only explanation writer.
+(`api/tcf/tutor`), notebook review generation (`api/tcf/notebook-review`, kept off the
+serial server-action queue so word grading isn't blocked), and the admin-only explanation writer.
 
 ### Access levels
 
