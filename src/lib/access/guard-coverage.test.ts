@@ -11,6 +11,7 @@ function exportedBodies(file: string): Map<string, string> {
 
 const WHOLE_FILES: Array<{ file: string; feature: string; summaryReads?: string[] }> = [
   { file: "src/lib/actions/tcf.ts", feature: "tcf", summaryReads: ["getTcfReviewCount", "listRecentTcfAttempts"] },
+  { file: "src/lib/actions/tcf-notebook.ts", feature: "tcf", summaryReads: ["getDueNotebookCount"] },
   { file: "src/lib/actions/speaking.ts", feature: "speaking" },
   { file: "src/lib/actions/speaking-simulation.ts", feature: "speaking" },
   { file: "src/lib/actions/quiz.ts", feature: "quiz" },
@@ -89,6 +90,8 @@ const AI_BUDGET_EXPORTS: Array<[string, string]> = [
   ["src/lib/actions/quiz.ts", "parseQuizFromPastedText"],
   ["src/lib/actions/cloze.ts", "preparePodcastCloze"],
   ["src/lib/actions/speaking.ts", "generateScript"],
+  ["src/lib/actions/tcf-notebook.ts", "proposeTutorCard"],
+  ["src/lib/actions/tcf-notebook.ts", "addTutorCard"],
   ["src/lib/actions/vocabulary.ts", "enrichEntry"],
   ["src/lib/actions/vocabulary.ts", "reexplainInContext"],
 ];
