@@ -327,6 +327,7 @@ export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: E
               revealed={finished}
               audioOnly={audioOnly}
               onChoose={choose}
+              why={finished && explanationOpen ? q.explanationMeta?.options : undefined}
             />
 
             {finished && explanationOpen && q.explanationMeta && (
