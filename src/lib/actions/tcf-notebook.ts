@@ -52,6 +52,14 @@ async function loadOwnedAssistantMessage(userId: string, messageId: string) {
   return message;
 }
 
+/** A vocabulary note is scheduled through its gap; its own status still drives duplicate detection. */
+async function activateNote(userId: string, noteId: string): Promise<void> {
+  await db
+    .update(tcfNotes)
+    .set({ status: "active" })
+    .where(and(eq(tcfNotes.id, noteId), eq(tcfNotes.userId, userId)));
+}
+
 export async function getTutorThread(questionId: string): Promise<TutorThreadMessage[]> {
   const user = await requireFeature("tcf");
   const rows = await db
@@ -121,8 +129,6 @@ export async function proposeTutorCard(messageId: string): Promise<CardProposalR
 export async function addTutorCard(messageId: string, draft: CardDraft): Promise<{ noteId: string; point: string }> {
   const card = CardDraftSchema.parse(draft);
   const user = await requireFeature("tcf");
-  await assertAiBudget("lookup");
-  const message = await loadOwnedAssistantMessage(user.id, messageId);
 
   const bySource = () =>
     db
@@ -131,9 +137,12 @@ export async function addTutorCard(messageId: string, draft: CardDraft): Promise
       .where(and(eq(tcfNotes.userId, user.id), eq(tcfNotes.sourceMessageId, messageId)))
       .limit(1)
       .then((rows) => rows[0] ?? null);
-  // A repeated click on the same message returns the card it already made.
+  // A repeated click on the same message returns the card it already made, even with the budget spent.
   const already = await bySource();
   if (already) return { noteId: already.id, point: already.point };
+
+  await assertAiBudget("lookup");
+  const message = await loadOwnedAssistantMessage(user.id, messageId);
 
   const [question] = await db
     .select({ orderIndex: tcfQuestions.orderIndex, testNumber: tcfSets.testNumber, skill: tcfSets.skill })
@@ -155,7 +164,8 @@ export async function addTutorCard(messageId: string, draft: CardDraft): Promise
     if (!lemmaInput) throw new Error("A vocabulary card needs a lemma");
     const gapType = card.byEar ? "listening" : "recognition";
 
-    const duplicate = findVocabularyDuplicate(await listNoteLines(user.id, 200), lemmaInput);
+    const lines = await listNoteLines(user.id, 200);
+    const duplicate = findVocabularyDuplicate(lines, lemmaInput);
     const duplicateGap = duplicate
       ? (
           await db
@@ -168,6 +178,7 @@ export async function addTutorCard(messageId: string, draft: CardDraft): Promise
       : undefined;
     if (duplicate && duplicateGap) {
       await upsertGap({ userId: user.id, lemma: duplicateGap.lemma, gapType: duplicateGap.gapType, source: "tutor" });
+      await activateNote(user.id, duplicate.id);
       revalidatePath("/today");
       revalidatePath("/review");
       return { noteId: duplicate.id, point: duplicate.point };
@@ -194,6 +205,18 @@ export async function addTutorCard(messageId: string, draft: CardDraft): Promise
       )
       .limit(1);
     vocabularyGapId = gap?.id ?? null;
+
+    // The model's lemma may be an inflected form; the resolved lemma is canonical.
+    const existing = duplicate ?? findVocabularyDuplicate(lines, outcome.lemma);
+    if (existing) {
+      await db
+        .update(tcfNotes)
+        .set({ vocabularyGapId, status: "active" })
+        .where(and(eq(tcfNotes.id, existing.id), eq(tcfNotes.userId, user.id)));
+      revalidatePath("/today");
+      revalidatePath("/review");
+      return { noteId: existing.id, point: existing.point };
+    }
   }
 
   const [inserted] = await db
@@ -243,6 +266,7 @@ export async function reviveNote(noteId: string): Promise<void> {
       : [];
   if (gap) {
     await upsertGap({ userId: user.id, lemma: gap.lemma, gapType: gap.gapType, source: "tutor" });
+    await activateNote(user.id, note.id);
   } else {
     await db
       .update(tcfNotes)
