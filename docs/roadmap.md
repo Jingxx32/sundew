@@ -60,6 +60,8 @@ request deduplication. The [focused execution report](operations/review-migratio
 records 25 passing database checks. Next is shared state/backfill, then session
 implementation. Browser, rollout, and complete feature acceptance remain open.
 
+2026-11 — The TCF notebook (`tcf_notes`) adds a third review queue next to TCF question review and vocabulary Leitner. It was added deliberately during the freeze and is the easiest queue to fold into unified review state if the freeze is lifted.
+
 ## Deferred work
 
 - General multi-user invitations and per-user AI quotas after the ownership and budget model is complete.

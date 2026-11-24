@@ -32,6 +32,8 @@ import {
   zonedStartOfDay,
 } from "@/lib/date/time-zone";
 import { recommendActivity, type TodayActivityKey } from "@/lib/today/recommendation";
+import { reviewActivity } from "@/lib/today/review-activity";
+import { countActiveNotes, countDueNotes } from "@/lib/tcf/notebook/queries";
 
 export type TodayActivity = {
   key: TodayActivityKey;
@@ -66,7 +68,7 @@ export type TodayPlan = {
 
 const DRILL_TARGET = 10;
 const MIN_SAMPLE = 5;
-const ACTIVITY_KEYS: TodayActivityKey[] = ["vocabulary", "tcf-listening", "tcf-reading", "writing", "conjugation"];
+const ACTIVITY_KEYS: TodayActivityKey[] = ["notebook", "tcf-listening", "tcf-reading", "writing", "conjugation"];
 
 function parseFocus(value: string | undefined): { dateKey: string; key: TodayActivityKey } | null {
   if (!value) return null;
@@ -94,8 +96,9 @@ export async function getTodayPlan(): Promise<TodayPlan> {
   const tomorrowStart = zonedStartOfDay(addCalendarDays(dateKey, 1), goal.timeZone);
   const weekStart = startOfLocalWeek(dateKey, goal.timeZone);
   const recentStart = zonedStartOfDay(addCalendarDays(dateKey, -29), goal.timeZone);
+  const canTcf = canUse(user.access, "tcf") === true;
 
-  const [focusSetting, tcfRows, submissionRows, conjugationRows, dueVocabularyRow, errorRows, readingRows, speakingRows, unfinishedWriting] = await Promise.all([
+  const [focusSetting, tcfRows, submissionRows, conjugationRows, dueVocabularyRow, errorRows, readingRows, speakingRows, unfinishedWriting, dueNotebook, activeNotebook] = await Promise.all([
     db.select({ value: userSettings.value }).from(userSettings).where(and(eq(userSettings.userId, user.id), eq(userSettings.key, "today_focus"))).limit(1).then((rows) => rows[0] ?? null),
     db
       .select({ questionId: tcfQuestionAttempts.questionId, skill: tcfSets.skill, level: tcfQuestions.level, correct: tcfQuestionAttempts.correct, mode: tcfQuestionAttempts.mode, answeredAt: tcfQuestionAttempts.answeredAt })
@@ -110,6 +113,9 @@ export async function getTodayPlan(): Promise<TodayPlan> {
     db.select({ startedAt: readingSessions.startedAt }).from(readingSessions).where(and(eq(readingSessions.userId, user.id), gte(readingSessions.startedAt, recentStart), lte(readingSessions.startedAt, now))).orderBy(desc(readingSessions.startedAt)).limit(1),
     db.select({ startedAt: speakingSessions.startedAt }).from(speakingSessions).where(and(eq(speakingSessions.userId, user.id), gte(speakingSessions.startedAt, recentStart), lte(speakingSessions.startedAt, now))).orderBy(desc(speakingSessions.startedAt)).limit(1),
     db.select({ id: writingTasks.id, createdAt: writingTasks.createdAt }).from(writingTasks).leftJoin(submissions, and(eq(submissions.taskId, writingTasks.id), eq(submissions.userId, user.id))).where(and(eq(writingTasks.userId, user.id), isNull(submissions.id))).orderBy(desc(writingTasks.createdAt)).limit(1).then((rows) => rows[0] ?? null),
+    // The notebook is TCF content: guests and other users without TCF access have none.
+    canTcf ? countDueNotes(user.id, now) : 0,
+    canTcf ? countActiveNotes(user.id) : 0,
   ]);
 
   const allowedLevels = new Set<CefrLevel>();
@@ -169,18 +175,18 @@ export async function getTodayPlan(): Promise<TodayPlan> {
     return { key: `tcf-${skill}`, title: `TCF ${skill} · ${level} × ${DRILL_TARGET}`, detail: skill === suggestedSkill ? tcfWhy : `A ${cefr} ${skill} drill using the exam question bank.`, href: `/tcf/drill?skill=${skill}&level=${level}`, cta: done > 0 ? "Continue drill" : "Start drill", estimatedMinutes: 12, done: done >= DRILL_TARGET, progress: { done: Math.min(done, DRILL_TARGET), target: DRILL_TARGET } };
   };
   const activities: TodayActivity[] = [
-    { key: "vocabulary", title: "Review due vocabulary", detail: dueVocabulary > 0 ? `${dueVocabulary} word${dueVocabulary === 1 ? " is" : "s are"} due for review now.` : "The vocabulary cards that were due today are complete.", href: "/vocabulary/review", cta: dueVocabulary > 0 ? "Review words" : "View vocabulary", estimatedMinutes: 8, done: dueVocabulary === 0, progress: dueVocabulary > 0 ? { done: 0, target: dueVocabulary } : undefined },
+    reviewActivity({ canTcf, dueWords: dueVocabulary, dueNotes: dueNotebook, activeNotes: activeNotebook }),
     tcfActivity("listening"),
     tcfActivity("reading"),
     { key: "writing", title: unfinishedWriting && !writingDone ? "Continue your writing task" : "Write one short response", detail: writingDone ? `Submitted today; feedback is ${latestSubmission.feedbackStatus}.` : unfinishedWriting ? "A saved prompt is ready for your response." : focusAreas.length > 0 ? `Use a fresh prompt to revisit ${focusAreas[0].label.toLowerCase()}.` : "A short response will begin building an evidence-backed writing history.", href: unfinishedWriting && !writingDone ? `/practice?taskId=${unfinishedWriting.id}` : "/practice", cta: writingDone ? "View writing" : unfinishedWriting ? "Continue writing" : "Start writing", estimatedMinutes: 15, done: writingDone },
     { key: "conjugation", title: `Conjugation × ${DRILL_TARGET}`, detail: repeatedConjugationIssue ? "Recent writing shows the same verb-form issue in more than one submission." : "A short deterministic drill keeps high-frequency forms active.", href: "/conjugation", cta: todayConjugation > 0 ? "Continue drill" : "Start drill", estimatedMinutes: 7, done: todayConjugation >= DRILL_TARGET, progress: { done: Math.min(todayConjugation, DRILL_TARGET), target: DRILL_TARGET } },
   ];
 
-  const recommendedKey = recommendActivity({ learningMode: goal.learningMode, dueVocabulary, repeatedConjugationIssue, wroteToday: writingDone, suggestedTcfSkill: suggestedSkill });
+  const recommendedKey = recommendActivity({ learningMode: goal.learningMode, dueVocabulary, dueNotebook, repeatedConjugationIssue, wroteToday: writingDone, suggestedTcfSkill: suggestedSkill });
   const savedFocus = parseFocus(focusSetting?.value);
   const activeKey = savedFocus?.dateKey === dateKey ? savedFocus.key : recommendedKey;
   // Guests cannot open TCF drills; never recommend one.
-  const available = canUse(user.access, "tcf") === true ? activities : activities.filter((candidate) => !candidate.key.startsWith("tcf-"));
+  const available = canTcf ? activities : activities.filter((candidate) => !candidate.key.startsWith("tcf-"));
   const activity = available.find((candidate) => candidate.key === activeKey) ?? available.find((candidate) => candidate.key === recommendedKey) ?? available[0];
   const alternatives = available.filter((candidate) => candidate.key !== activity.key && (!candidate.done || candidate.key === "writing"));
 
@@ -199,7 +205,7 @@ export async function getTodayPlan(): Promise<TodayPlan> {
     activity,
     alternatives,
     skills: [
-      { key: "listening", title: "Listening", href: "/tcf?skill=listening", detail: recentForSkill(lastListening, "TCF listening practice"), locked: canUse(user.access, "tcf") !== true },
+      { key: "listening", title: "Listening", href: "/tcf?skill=listening", detail: recentForSkill(lastListening, "TCF listening practice"), locked: !canTcf },
       { key: "speaking", title: "Speaking", href: "/speaking", detail: recentForSkill(speakingRows.map((row) => row.startedAt), "Script and pronunciation"), locked: canUse(user.access, "speaking") !== true },
       { key: "reading", title: "Reading", href: "/training#reading", detail: recentForSkill(lastReading, "Library or TCF reading"), locked: false },
       { key: "writing", title: "Writing", href: "/practice", detail: recentForSkill(lastWriting, "Short writing with feedback"), locked: false },

@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { ArrowRight, BookMarked, FileWarning, RotateCcw } from "lucide-react";
+import { ArrowRight, BookMarked, FileWarning, NotebookPen, RotateCcw } from "lucide-react";
 import { getDueGapCount } from "@/lib/actions/vocab-gaps";
+import { getDueNotebookCount } from "@/lib/actions/tcf-notebook";
 import { getTcfReviewCount } from "@/lib/actions/tcf";
 import { getReviewCenterItems, type ReviewSource } from "@/lib/actions/review";
 import type { Metadata } from "next";
@@ -11,14 +12,21 @@ export const dynamic = "force-dynamic";
 
 export default async function ReviewPage({ searchParams }: { searchParams: Promise<{ source?: string }> }) {
   const params = await searchParams;
-  const [vocabularyDue, listeningDue, readingDue, center] = await Promise.all([
+  const [vocabularyDue, notebookDue, listeningDue, readingDue, center] = await Promise.all([
     getDueGapCount(),
+    // A summary read: 0 without TCF access, never a locked-feature error.
+    getDueNotebookCount(),
     getTcfReviewCount("listening"),
     getTcfReviewCount("reading"),
     getReviewCenterItems(),
   ]);
   const tcfDue = listeningDue + readingDue;
+  const sessionDue = vocabularyDue + notebookDue;
+  const sessionDetail = notebookDue > 0
+    ? `${vocabularyDue} word${vocabularyDue === 1 ? "" : "s"} and ${notebookDue} notebook card${notebookDue === 1 ? "" : "s"} due now, in one session.`
+    : vocabularyDue > 0 ? `${vocabularyDue} word${vocabularyDue === 1 ? "" : "s"} due now, in one session.` : "Nothing is due now.";
   const items = [
+    { title: "Review session", detail: sessionDetail, href: "/review/session", action: sessionDue > 0 ? "Start review" : "Open review session", icon: NotebookPen, count: sessionDue },
     { title: "Vocabulary", detail: vocabularyDue > 0 ? `${vocabularyDue} word${vocabularyDue === 1 ? "" : "s"} due now.` : "No vocabulary cards are due now. You can still browse saved words.", href: vocabularyDue > 0 ? "/vocabulary/review" : "/vocabulary", action: vocabularyDue > 0 ? "Review due words" : "Browse vocabulary", icon: BookMarked, count: vocabularyDue },
     { title: "TCF questions", detail: tcfDue > 0 ? `${tcfDue} question${tcfDue === 1 ? "" : "s"} marked uncertain or due for review.` : "No TCF questions need review now.", href: "/tcf/review", action: "Open TCF review", icon: RotateCcw, count: tcfDue },
     { title: "Writing errors", detail: "Inspect feedback from previous submissions and open a drill where one is available.", href: "/progress", action: "View writing evidence", icon: FileWarning, count: null },
