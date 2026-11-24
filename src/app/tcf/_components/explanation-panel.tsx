@@ -62,6 +62,15 @@ const MARKDOWN_COMPONENTS = {
 } satisfies Components;
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
+/** The shared markdown renderer for explanation prose, also used by the tutor panel. */
+export function TcfMarkdown({ children }: { children: string }) {
+  return (
+    <ReactMarkdown remarkPlugins={[remarkGfm]} components={MARKDOWN_COMPONENTS}>
+      {children}
+    </ReactMarkdown>
+  );
+}
+
 export function ExplanationPanel({ markdown }: { markdown: string }) {
   // The verdict section is rendered as a verdict bar and per-option lines by the
   // runners; printing it again here would duplicate every line.
@@ -74,12 +83,7 @@ export function ExplanationPanel({ markdown }: { markdown: string }) {
         Explication
       </p>
       <div className="text-sm leading-relaxed text-foreground">
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          components={MARKDOWN_COMPONENTS}
-        >
-          {prose}
-        </ReactMarkdown>
+        <TcfMarkdown>{prose}</TcfMarkdown>
       </div>
     </div>
   );

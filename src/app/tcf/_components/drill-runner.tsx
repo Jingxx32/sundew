@@ -7,8 +7,8 @@ import { ArrowRight, ChevronLeft, ChevronRight, Eye, Loader2, PenLine } from "lu
 import { Button } from "@/components/ui/button";
 import { useAccountId } from "@/components/account-session";
 import { cn } from "@/lib/utils";
-import { hasTranscriptSection } from "@/lib/tcf/parse-explanation";
-import { ExplanationPanel } from "./explanation-panel";
+import { hasExplanationDetails } from "@/lib/tcf/reveal";
+import { AnswerDetails, ExplanationToggle } from "./answer-details";
 import { VerdictBar } from "./verdict-bar";
 import { LevelNav } from "./level-nav";
 import { LevelBadge } from "./level-badge";
@@ -140,6 +140,7 @@ export function DrillRunner({
   // must still show that question's explanation.
   const [showSummary, setShowSummary] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
+  const [explanationOpen, setExplanationOpen] = useState(false);
   const [chosen, setChosen] = useState<number>();
   const [uncertain, setUncertain] = useState(false);
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
@@ -172,6 +173,7 @@ export function DrillRunner({
     if (index < 0 || index >= questions.length) return;
     const result = results[questions[index].id];
     setCurrentIndex(index);
+    setExplanationOpen(false);
     setShowAnswer(Boolean(result || completedIds.has(questions[index].id)));
     setChosen(result?.chosen);
     setUncertain(result?.uncertain ?? false);
@@ -267,8 +269,7 @@ export function DrillRunner({
   }
 
   const audioOnly = q.type === "image" || q.type === "spoken_options";
-  const why = showAnswer ? q.explanationMeta?.options : undefined;
-  const rewrittenTranscript = q.explanation !== null && hasTranscriptSection(q.explanation);
+  const why = showAnswer && explanationOpen ? q.explanationMeta?.options : undefined;
 
   return (
     <div className="flex flex-col gap-4 min-h-0 md:flex-row md:gap-6">
@@ -333,7 +334,12 @@ export function DrillRunner({
 
           {q.type === "reading_mcq" && q.passage && <WritePassageButton questionId={q.id} />}
 
-          {showAnswer && q.explanationMeta && <VerdictBar meta={q.explanationMeta} chosen={chosen} answer={q.answer} />}
+          {showAnswer && (
+            <VerdictBar meta={q.explanationMeta} chosen={chosen} answer={q.answer} showKeyPoint={explanationOpen} />
+          )}
+          {showAnswer && hasExplanationDetails(q.explanationMeta, q.explanation) && (
+            <ExplanationToggle open={explanationOpen} onToggle={() => setExplanationOpen((open) => !open)} />
+          )}
           {showAnswer && chosen === undefined && (
             <p className="rounded-lg bg-surface-muted px-3 py-2 text-sm text-muted-foreground">
               Réponse consultée : aucune tentative n’a été enregistrée et les choix sont verrouillés.
@@ -355,22 +361,7 @@ export function DrillRunner({
           A–D pour répondre · ← → pour naviguer{q.type !== "reading_mcq" ? " · Espace lecture · R recule" : ""}
         </p>
 
-        {/* Suppressed when the explanation rewrites the recording itself: the stored
-            column is OCR run-on text, so showing both prints the same dialogue
-            twice, unreadable version first. */}
-        {showAnswer && q.transcript && !rewrittenTranscript && (
-          <MarkGapFloater skill={skill} questionId={q.id}>
-            <div className="mt-4 rounded-lg border border-border/50 bg-surface-muted/60 px-4 py-3">
-              <p className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">Transcription</p>
-              <p className="mt-1 text-sm whitespace-pre-wrap">{q.transcript}</p>
-            </div>
-          </MarkGapFloater>
-        )}
-        {showAnswer && q.explanation && (
-          <div className="mt-4">
-            <ExplanationPanel markdown={q.explanation} />
-          </div>
-        )}
+        {showAnswer && <AnswerDetails question={q} skill={skill} explanationOpen={explanationOpen} markGaps />}
 
         {showAnswer && endOfQuestion()}
 

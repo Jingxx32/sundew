@@ -5,8 +5,8 @@ import { ChevronLeft, ChevronRight, Check, X, Flag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useAccountId } from "@/components/account-session";
-import { hasTranscriptSection } from "@/lib/tcf/parse-explanation";
-import { ExplanationPanel } from "./explanation-panel";
+import { hasExplanationDetails } from "@/lib/tcf/reveal";
+import { AnswerDetails, ExplanationToggle } from "./answer-details";
 import { VerdictBar } from "./verdict-bar";
 import { LevelBadge } from "./level-badge";
 import { QuestionMedia } from "./question-media";
@@ -82,6 +82,7 @@ function ScoreHeader({ testNumber, score }: { testNumber: number; score: ReturnT
 export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: ExamRunnerProps) {
   const owner = useAccountId();
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const [explanationOpen, setExplanationOpen] = useState(false);
   // answers[i] = chosen option index for questions[i]
   const [answers, setAnswers] = useState<ExamAnswers>({});
   const [finished, setFinished] = useState(false);
@@ -125,6 +126,7 @@ export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: E
     setAnswers({});
     setRestoredCount(null);
     setCurrentIndex(0);
+    setExplanationOpen(false);
   }
 
   const byLevel = useMemo(() => {
@@ -157,6 +159,7 @@ export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: E
   function goTo(index: number) {
     if (index < 0 || index >= questions.length) return;
     setCurrentIndex(index);
+    setExplanationOpen(false);
     setConfirmFinish(false);
   }
 
@@ -326,7 +329,12 @@ export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: E
               onChoose={choose}
             />
 
-            {finished && q.explanationMeta && <VerdictBar meta={q.explanationMeta} chosen={chosen} answer={q.answer} />}
+            {finished && explanationOpen && q.explanationMeta && (
+              <VerdictBar meta={q.explanationMeta} chosen={chosen} answer={q.answer} showKeyPoint />
+            )}
+            {finished && hasExplanationDetails(q.explanationMeta, q.explanation) && (
+              <ExplanationToggle open={explanationOpen} onToggle={() => setExplanationOpen((open) => !open)} />
+            )}
           </div>
 
           {/* Prev / Next */}
@@ -357,20 +365,7 @@ export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: E
 
           {/* Transcript + explanation sit below the nav: a long explanation must not
               push Suivant off-screen. */}
-          {finished && q.transcript && !(q.explanation !== null && hasTranscriptSection(q.explanation)) && (
-            <div className="mt-4 rounded-lg border border-border/50 bg-surface-muted/60 px-4 py-3">
-              <p className="mb-1.5 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
-                Transcription
-              </p>
-              <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">{q.transcript}</p>
-            </div>
-          )}
-
-          {finished && q.explanation && (
-            <div className="mt-4">
-              <ExplanationPanel markdown={q.explanation} />
-            </div>
-          )}
+          {finished && <AnswerDetails question={q} skill={skill} explanationOpen={explanationOpen} markGaps={false} />}
         </div>
       </div>
     </div>
