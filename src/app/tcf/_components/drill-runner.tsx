@@ -364,9 +364,9 @@ export function DrillRunner({
 
         {showAnswer && <AnswerDetails question={q} skill={skill} explanationOpen={explanationOpen} markGaps />}
 
-        {showAnswer && <TutorPanel key={q.id} questionId={q.id} chosen={chosen ?? null} />}
-
         {showAnswer && endOfQuestion()}
+
+        {showAnswer && <TutorPanel key={q.id} questionId={q.id} chosen={chosen ?? null} />}
 
         {!single && <RoundNav
           className="fixed inset-x-0 bottom-0 z-20 border-t border-border/60 bg-background/95 px-4 py-2.5 backdrop-blur md:hidden"

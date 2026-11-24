@@ -34,29 +34,47 @@ export function TutorPanel({ questionId, chosen }: { questionId: string; chosen:
   const [streaming, setStreaming] = useState(false);
   const [partial, setPartial] = useState<{ ask: string; text: string } | null>(null);
   const [failure, setFailure] = useState<Failure | null>(null);
-  const [proposal, setProposal] = useState<{ messageId: string; result: CardProposalResult } | null>(null);
+  const [proposals, setProposals] = useState<Record<string, CardProposalResult>>({});
   const controller = useRef<AbortController | null>(null);
-  const busy = useRef(false);
+  const lastAsk = useRef("");
+  const alive = useRef(true);
 
   useEffect(() => {
-    let alive = true;
+    alive.current = true;
     getTutorThread(questionId)
-      .then((thread) => alive && setTurns(thread.map(toTurn)))
+      .then((thread) => alive.current && setTurns(thread.map(toTurn)))
       .catch(() => {});
     return () => {
-      alive = false;
+      alive.current = false;
       controller.current?.abort();
     };
   }, [questionId]);
 
+  function propose(messageId: string) {
+    proposeTutorCard(messageId)
+      .then((result) => {
+        if (alive.current && result.type !== "none") setProposals((p) => ({ ...p, [messageId]: result }));
+      })
+      .catch(() => {});
+  }
+
+  function added(messageId: string, point: string) {
+    setTurns((t) => t.map((m) => (m.id === messageId ? { ...m, point } : m)));
+    setProposals((p) => {
+      const rest = { ...p };
+      delete rest[messageId];
+      return rest;
+    });
+  }
+
   async function send(ask: string) {
-    if (busy.current || !ask.trim()) return;
-    busy.current = true;
+    if (streaming || !ask.trim()) return;
+    controller.current?.abort();
     const ctl = new AbortController();
     controller.current = ctl;
+    lastAsk.current = ask;
     setStreaming(true);
     setFailure(null);
-    setProposal(null);
     setPartial({ ask, text: "" });
     try {
       const res = await fetch("/api/tcf/tutor", {
@@ -105,18 +123,12 @@ export function TutorPanel({ questionId, chosen }: { questionId: string; chosen:
       ]);
       setPartial(null);
       setInput("");
-      setStreaming(false);
-      busy.current = false;
-      const result = await proposeTutorCard(messageId).catch(() => null);
-      if (!ctl.signal.aborted && result && result.type !== "none") setProposal({ messageId, result });
+      propose(messageId);
     } catch (err) {
       if (isAbort(err) || ctl.signal.aborted) return;
       setFailure({ message: "Réponse interrompue — réessayer", retry: true });
     } finally {
-      if (!ctl.signal.aborted) {
-        busy.current = false;
-        setStreaming(false);
-      }
+      if (controller.current === ctl && !ctl.signal.aborted) setStreaming(false);
     }
   }
 
@@ -128,7 +140,9 @@ export function TutorPanel({ questionId, chosen }: { questionId: string; chosen:
             <li key={t.id} className={t.role === "user" ? "text-sm font-semibold text-foreground" : "text-sm"}>
               {t.role === "user" ? t.content : <TcfMarkdown>{t.content}</TcfMarkdown>}
               {t.point && <p className="mt-1 text-xs text-muted-foreground">Ajouté au carnet · {t.point}</p>}
-              {proposal?.messageId === t.id && <CardDraft messageId={t.id} proposal={proposal.result} />}
+              {proposals[t.id] && !t.point && (
+                <CardDraft messageId={t.id} proposal={proposals[t.id]} onAdded={(point) => added(t.id, point)} />
+              )}
             </li>
           ))}
         </ul>
@@ -141,15 +155,14 @@ export function TutorPanel({ questionId, chosen }: { questionId: string; chosen:
       )}
       {failure && (
         <p role="alert" className="mb-3 text-sm text-danger">
-          {failure.retry && partial ? (
+          {failure.retry ? (
             <Button
               variant="link"
               size="sm"
               className="h-auto p-0 text-sm text-danger"
               onClick={() => {
-                const ask = partial.ask;
                 setPartial(null);
-                void send(ask);
+                void send(lastAsk.current);
               }}
             >
               {failure.message}
@@ -161,8 +174,8 @@ export function TutorPanel({ questionId, chosen }: { questionId: string; chosen:
       )}
       <Textarea
         value={input}
+        className="min-h-[72px]"
         disabled={streaming}
-        rows={2}
         maxLength={1000}
         placeholder="Posez votre question…"
         aria-label="Question pour le tuteur"

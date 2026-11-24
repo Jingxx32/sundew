@@ -22,16 +22,26 @@ const BOX = "mt-3 rounded-lg border border-border/60 bg-surface-muted/60 px-4 py
 export function CardDraft({
   messageId,
   proposal,
+  onAdded,
 }: {
   messageId: string;
   proposal: CardProposalResult;
+  onAdded?: (point: string) => void;
 }) {
   if (proposal.type === "none") return null;
   if (proposal.type === "duplicate") return <DuplicateNotice noteId={proposal.noteId} point={proposal.point} />;
-  return <DraftEditor messageId={messageId} initial={proposal.draft} />;
+  return <DraftEditor messageId={messageId} initial={proposal.draft} onAdded={onAdded} />;
 }
 
-function DraftEditor({ messageId, initial }: { messageId: string; initial: CardDraftData }) {
+function DraftEditor({
+  messageId,
+  initial,
+  onAdded,
+}: {
+  messageId: string;
+  initial: CardDraftData;
+  onAdded?: (point: string) => void;
+}) {
   const [draft, setDraft] = useState(initial);
   const [status, setStatus] = useState<Status>("draft");
   const [editing, setEditing] = useState(false);
@@ -51,6 +61,7 @@ function DraftEditor({ messageId, initial }: { messageId: string; initial: CardD
       const { point } = await addTutorCard(messageId, draft);
       setDraft((d) => ({ ...d, point }));
       setStatus("added");
+      onAdded?.(point);
     } catch (err) {
       setError(userErrorMessage(err, "Échec — réessayez."));
     } finally {
