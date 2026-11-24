@@ -77,10 +77,10 @@ export async function POST(request: Request) {
   };
   const messages = buildTutorMessages({ question, chosen, imageUrl, notebook, thread, ask });
 
-  // Budget and guest errors throw here, before any byte is sent.
+  // Budget (UserFacingError) and OpenAI request errors surface here, before any byte is sent.
   let answer: AsyncIterable<string>;
   try {
-    answer = await streamTutorAnswer(messages);
+    answer = await streamTutorAnswer(messages, request.signal);
   } catch (error) {
     if (error instanceof UserFacingError) return Response.json({ code: error.code }, { status: 429 });
     console.error("tutor: could not start the stream", error);
@@ -90,6 +90,7 @@ export async function POST(request: Request) {
   const encoder = new TextEncoder();
   const iterator = answer[Symbol.asyncIterator]();
   let text = "";
+  let cancelled = false;
   const send = (c: ReadableStreamDefaultController<Uint8Array>, e: TutorStreamEvent) => c.enqueue(encoder.encode(encodeEvent(e)));
 
   const stream = new ReadableStream<Uint8Array>({
@@ -97,12 +98,12 @@ export async function POST(request: Request) {
     async pull(controller) {
       try {
         const next = await iterator.next();
+        if (cancelled || request.signal.aborted) return;
         if (!next.done) {
           text += next.value;
           send(controller, { type: "delta", text: next.value });
           return;
         }
-        if (request.signal.aborted) return controller.close();
         if (!text.trim()) throw new Error("empty tutor answer");
         const userAt = new Date();
         const messageId = await db.transaction(async (tx) => {
@@ -116,6 +117,7 @@ export async function POST(request: Request) {
         send(controller, { type: "done", messageId });
         controller.close();
       } catch (error) {
+        if (cancelled || request.signal.aborted) return;
         console.error("tutor: stream failed", error);
         await iterator.return?.().catch(() => undefined);
         send(controller, { type: "error" });
@@ -124,6 +126,7 @@ export async function POST(request: Request) {
     },
     // The client left: close the OpenAI stream (aborts the upstream request) and save nothing.
     async cancel() {
+      cancelled = true;
       await iterator.return?.().catch(() => undefined);
     },
   });

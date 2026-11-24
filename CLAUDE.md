@@ -237,7 +237,7 @@ OPENAI_MODEL_TASK     # defaults to gpt-4o
 OPENAI_MODEL_FEEDBACK # defaults to gpt-4o
 OPENAI_MODEL_ENRICH   # vocab enrich; defaults to gpt-4o-mini
 OPENAI_MODEL_SPEAKING # speaking scripts and Task 2; defaults to gpt-4o
-OPENAI_MODEL_TUTOR   # tutor chat; defaults to gpt-4o
+OPENAI_MODEL_TUTOR    # tutor chat; defaults to gpt-4o
 OPENAI_MODEL_TRANSCRIBE # podcast transcription; defaults to whisper-1
 DATABASE_URL          # Required — PostgreSQL connection string (e.g. postgres://user:pass@host/db)
 AZURE_SPEECH_KEY      # Speaking only — Azure Cognitive Services Speech key

@@ -7,15 +7,18 @@ import { COMPREHENSION_TAGS } from "@/lib/tcf/tags";
 import { ProposalSchema, ReviewBatchSchema, type Proposal } from "@/lib/tcf/tutor/schemas";
 import type { TcfNoteKind } from "@/lib/db/schema";
 
-/** Streams the tutor's answer. Budget and guest errors throw here, before any text is sent. */
-export async function streamTutorAnswer(messages: ChatCompletionMessageParam[]): Promise<AsyncIterable<string>> {
+/**
+ * Streams the tutor's answer. Budget (`UserFacingError`) and OpenAI request errors throw here, before any text is sent.
+ * Aborting `signal` ends the upstream request and the iteration quietly.
+ */
+export async function streamTutorAnswer(messages: ChatCompletionMessageParam[], signal?: AbortSignal): Promise<AsyncIterable<string>> {
   const stream = await (await getOpenAI("tutor")).chat.completions.create({
     model: MODELS.tutor,
     messages,
     stream: true,
     max_tokens: 500,
     temperature: 0.3,
-  });
+  }, { signal });
   return (async function* () {
     for await (const chunk of stream) {
       const delta = chunk.choices[0]?.delta?.content;
