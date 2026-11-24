@@ -11,24 +11,22 @@ import { vocabularyGaps, vocabularyReviewAttempts, type VocabGapType, type Vocab
 import { syncReviewTarget } from "@/lib/review/service";
 import { lockReviewOwner, reviewDataEnabled } from "@/lib/review/adapters";
 import type { Dbx } from "./helpers";
+import { LEITNER_INTERVAL_DAYS, gapUpsertAction, leitnerAfter, type GapSource } from "./leitner";
 
-/** Days until next review for box 1..5. Box 5 answered correctly → mastered. */
-export const LEITNER_INTERVAL_DAYS = [1, 2, 4, 8, 16] as const;
-
-const days = (n: number) => new Date(Date.now() + n * 24 * 60 * 60 * 1000);
+export { LEITNER_INTERVAL_DAYS };
 
 /**
  * Idempotent gap upsert. Rules (spec §2):
  * - no row            → insert active, box 1, due now
- * - active            → refresh source only (repeat signals never reset progress)
+ * - active            → refresh source only (repeat signals never reset progress); a tutor card resets
  * - mastered          → reactivate (forgot it): active, box 1, due now
- * - dismissed         → manual signals revive it; automatic ones respect the dismissal
+ * - dismissed         → manual and tutor signals revive it; automatic ones respect the dismissal
  */
 export async function upsertGap(opts: {
   userId: string;
   lemma: string;
   gapType: VocabGapType;
-  source: "lookup" | "feedback" | "manual";
+  source: GapSource;
   dbx?: Dbx;
 }): Promise<void> {
   const dbx = opts.dbx ?? db;
@@ -46,7 +44,8 @@ export async function upsertGap(opts: {
       .limit(1)
   )[0];
 
-  if (!existing) {
+  const action = gapUpsertAction(existing?.status ?? null, opts.source);
+  if (action === "insert") {
     await dbx.insert(vocabularyGaps).values({
       userId: opts.userId,
       lemma: opts.lemma,
@@ -55,20 +54,15 @@ export async function upsertGap(opts: {
     });
     return;
   }
-  if (existing.status === "active") {
-    await dbx
-      .update(vocabularyGaps)
-      .set({ source: opts.source })
-      .where(and(eq(vocabularyGaps.id, existing.id), eq(vocabularyGaps.userId, opts.userId)));
-    return;
-  }
-  if (existing.status === "mastered" || (existing.status === "dismissed" && opts.source === "manual")) {
-    await dbx
-      .update(vocabularyGaps)
-      .set({ status: "active", box: 1, dueAt: new Date(), source: opts.source })
-      .where(and(eq(vocabularyGaps.id, existing.id), eq(vocabularyGaps.userId, opts.userId)));
-  }
-  // dismissed + automatic source → no-op: the user said no.
+  if (!existing || action === "noop") return; // dismissed + automatic source: the user said no.
+  const set =
+    action === "refresh-source"
+      ? { source: opts.source }
+      : { status: "active" as const, box: 1, dueAt: new Date(), source: opts.source };
+  await dbx
+    .update(vocabularyGaps)
+    .set(set)
+    .where(and(eq(vocabularyGaps.id, existing.id), eq(vocabularyGaps.userId, opts.userId)));
 }
 
 /** Apply one review result. Correct: box+1 & schedule out (box 5 → mastered). Wrong: back to box 1, due tomorrow. */
@@ -113,20 +107,11 @@ export async function gradeGapInTransaction(
   let box: number;
   let status: VocabGapStatus;
   let dueAt: Date;
-  if (details?.practiceOnly) { box=row.box; status=row.status; dueAt=row.dueAt; } else if (correct) {
-    if (row.box >= 5) {
-      box = 5;
-      status = "mastered";
-      dueAt = row.dueAt; // irrelevant once mastered
-    } else {
-      box = row.box + 1;
-      status = "active";
-      dueAt = days(LEITNER_INTERVAL_DAYS[box - 1]);
-    }
-  } else {
-    box = 1;
-    status = "active";
-    dueAt = days(1);
+  if (details?.practiceOnly) { box=row.box; status=row.status; dueAt=row.dueAt; } else {
+    const next = leitnerAfter(row.box, correct, new Date());
+    box = next.box;
+    status = next.status;
+    dueAt = next.dueAt ?? row.dueAt; // mastered: dueAt is irrelevant, keep it
   }
   await tx
     .update(vocabularyGaps)

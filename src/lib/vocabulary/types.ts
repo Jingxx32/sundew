@@ -4,12 +4,17 @@
  */
 
 import type { FrenchVocabEntry } from "@/lib/ai/enrich";
+import type { LookupResult } from "@/lib/ai/lookup";
 
 export type { FrenchVocabEntry };
 
 export type LookupSource =
   | { type: "reading"; documentId: string }
   | { type: "tcf"; tcfQuestionId: string };
+
+export type LookupOutcome =
+  | { status: "ok"; lemma: string; surface: string; result: LookupResult; cached: boolean }
+  | { status: "locked"; feature: "lookup" };
 
 export type OccurrenceLink = {
   sourceType: "reading" | "tcf";
