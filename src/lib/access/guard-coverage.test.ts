@@ -92,6 +92,7 @@ const AI_BUDGET_EXPORTS: Array<[string, string]> = [
   ["src/lib/actions/speaking.ts", "generateScript"],
   ["src/lib/actions/tcf-notebook.ts", "proposeTutorCard"],
   ["src/lib/actions/tcf-notebook.ts", "addTutorCard"],
+  ["src/lib/actions/tcf-notebook.ts", "generateNotebookReview"],
   ["src/lib/actions/vocabulary.ts", "enrichEntry"],
   ["src/lib/actions/vocabulary.ts", "reexplainInContext"],
 ];

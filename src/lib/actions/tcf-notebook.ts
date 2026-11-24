@@ -1,21 +1,34 @@
 "use server";
 
-import { and, asc, desc, eq, lt } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, lt, lte, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { tcfNotes, tcfQuestions, tcfSets, tcfTutorMessages, vocabularyGaps } from "@/lib/db/schema";
+import {
+  tcfNoteReviews,
+  tcfNotes,
+  tcfQuestions,
+  tcfSets,
+  tcfTutorMessages,
+  vocabularyGaps,
+  type TcfGeneratedReviewItem,
+  type TcfNoteKind,
+} from "@/lib/db/schema";
 import { AuthenticationError } from "@/lib/auth/session";
 import { requireFeature } from "@/lib/access/guard";
+import { canUse } from "@/lib/access/features";
+import { requireUser } from "@/lib/auth/session";
 import { assertAiBudget } from "@/lib/access/ai-guard";
-import { proposeCard } from "@/lib/ai/tutor";
+import { generateReviewItems, proposeCard } from "@/lib/ai/tutor";
+import { leitnerAfter } from "@/lib/vocabulary/leitner";
 import { resolveLookupForUser } from "@/lib/vocabulary/resolve-lookup";
 import { upsertGap } from "@/lib/vocabulary/gaps";
 import { explanationLocatorLabel } from "@/lib/tcf/parse-explanation";
 import { findVocabularyDuplicate } from "@/lib/tcf/notebook/rules";
-import { listNoteLines } from "@/lib/tcf/notebook/queries";
+import { countDueNotes, listNoteLines } from "@/lib/tcf/notebook/queries";
 import {
   CardDraftSchema,
   normalizeProposal,
+  validateReviewItem,
   type CardDraft,
   type CardProposalResult,
 } from "@/lib/tcf/tutor/schemas";
@@ -25,6 +38,19 @@ export type TutorThreadMessage = {
   role: "user" | "assistant";
   content: string;
   note: { point: string } | null;
+};
+
+const NOTEBOOK_REVIEW_LIMIT = 15;
+
+export type NotebookReviewCard = {
+  noteId: string;
+  kind: Exclude<TcfNoteKind, "vocabulary">;
+  point: string;
+  front: string;
+  back: string;
+  box: number;
+  sourceQuestionId: string | null;
+  sourceLocator: string | null;
 };
 
 const LETTERS = ["A", "B", "C", "D"];
@@ -275,4 +301,150 @@ export async function reviveNote(noteId: string): Promise<void> {
   }
   revalidatePath("/today");
   revalidatePath("/review");
+}
+
+export async function getDueNotebookCards(): Promise<NotebookReviewCard[]> {
+  const user = await requireFeature("tcf");
+  const rows = await db
+    .select({
+      noteId: tcfNotes.id,
+      kind: tcfNotes.kind,
+      point: tcfNotes.point,
+      front: tcfNotes.front,
+      back: tcfNotes.back,
+      box: tcfNotes.box,
+      sourceQuestionId: tcfNotes.sourceQuestionId,
+      sourceLocator: tcfNotes.sourceLocator,
+    })
+    .from(tcfNotes)
+    .where(
+      and(
+        eq(tcfNotes.userId, user.id),
+        eq(tcfNotes.status, "active"),
+        ne(tcfNotes.kind, "vocabulary"),
+        lte(tcfNotes.dueAt, new Date()),
+      ),
+    )
+    .orderBy(asc(tcfNotes.dueAt))
+    .limit(NOTEBOOK_REVIEW_LIMIT);
+  return rows.flatMap((r) => (r.kind === "vocabulary" ? [] : [{ ...r, kind: r.kind }]));
+}
+
+/** One AI call for a whole session. A card whose item is missing or invalid maps to null (self-grading). */
+export async function generateNotebookReview(
+  noteIds: string[],
+): Promise<Record<string, TcfGeneratedReviewItem | null>> {
+  if (noteIds.length > NOTEBOOK_REVIEW_LIMIT) throw new Error("Too many cards in one review");
+  const user = await requireFeature("tcf");
+  await assertAiBudget("lookup");
+
+  const result: Record<string, TcfGeneratedReviewItem | null> = {};
+  for (const id of noteIds) result[id] = null;
+  if (noteIds.length === 0) return result;
+
+  const notes = await db
+    .select({ id: tcfNotes.id, kind: tcfNotes.kind, point: tcfNotes.point, front: tcfNotes.front, back: tcfNotes.back })
+    .from(tcfNotes)
+    .where(
+      and(
+        eq(tcfNotes.userId, user.id),
+        inArray(tcfNotes.id, noteIds),
+        eq(tcfNotes.status, "active"),
+        ne(tcfNotes.kind, "vocabulary"),
+      ),
+    );
+  if (notes.length === 0) return result;
+
+  try {
+    const { items } = await generateReviewItems(
+      notes.map((n) => ({ kind: n.kind, point: n.point, front: n.front, back: n.back })),
+    );
+    const seen = new Set<number>();
+    for (const item of items) {
+      const note = notes[item.index];
+      if (!note || seen.has(item.index)) continue;
+      seen.add(item.index);
+      result[note.id] = validateReviewItem(item, note.kind);
+    }
+  } catch (err) {
+    console.error("Notebook review generation failed", err);
+    for (const id of noteIds) result[id] = null;
+  }
+  return result;
+}
+
+export async function gradeNotebookCard(input: {
+  noteId: string;
+  item: TcfGeneratedReviewItem | null;
+  chosen: number | null;
+  selfCorrect: boolean | null;
+}): Promise<{ box: number; status: "active" | "mastered"; correct: boolean }> {
+  const user = await requireFeature("tcf");
+  const { noteId, item, chosen, selfCorrect } = input;
+
+  const result = await db.transaction(async (tx) => {
+    const now = new Date();
+    const [note] = await tx
+      .select()
+      .from(tcfNotes)
+      .where(and(eq(tcfNotes.id, noteId), eq(tcfNotes.userId, user.id)))
+      .limit(1)
+      .for("update");
+    if (!note || note.kind === "vocabulary" || note.status !== "active" || note.dueAt.getTime() > now.getTime()) {
+      throw new Error("Review card is no longer due");
+    }
+
+    let correct: boolean;
+    let checked: TcfGeneratedReviewItem | null = null;
+    if (item) {
+      if (!Number.isInteger(chosen) || chosen === null || chosen < 0 || chosen > 3) {
+        throw new Error("Invalid answer");
+      }
+      const valid = validateReviewItem(item, note.kind);
+      if (!valid) throw new Error("Invalid review item");
+      checked = valid;
+      correct = chosen === valid.answer;
+    } else {
+      if (typeof selfCorrect !== "boolean") throw new Error("Invalid self-grade");
+      correct = selfCorrect;
+    }
+
+    const next = leitnerAfter(note.box, correct, now);
+    await tx
+      .update(tcfNotes)
+      .set({ box: next.box, status: next.status, dueAt: next.dueAt ?? note.dueAt, lastReviewedAt: now })
+      .where(and(eq(tcfNotes.id, note.id), eq(tcfNotes.userId, user.id)));
+    await tx.insert(tcfNoteReviews).values({
+      userId: user.id,
+      noteId: note.id,
+      generated: checked,
+      chosen: checked ? chosen : null,
+      correct,
+      boxBefore: note.box,
+      boxAfter: next.box,
+      createdAt: now,
+    });
+    return { box: next.box, status: next.status, correct };
+  });
+
+  revalidatePath("/today");
+  revalidatePath("/review");
+  return result;
+}
+
+export async function dismissNote(noteId: string): Promise<void> {
+  const user = await requireFeature("tcf");
+  await db
+    .update(tcfNotes)
+    .set({ status: "dismissed" })
+    .where(and(eq(tcfNotes.id, noteId), eq(tcfNotes.userId, user.id)));
+  revalidatePath("/today");
+  revalidatePath("/review");
+}
+
+export async function getDueNotebookCount(): Promise<number> {
+  const user = await requireUser();
+  // Today (open to guests) shows this count; guests have no notebook.
+  if (canUse(user.access, "tcf") !== true) return 0;
+  return countDueNotes(user.id, new Date());
 }
