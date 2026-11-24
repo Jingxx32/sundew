@@ -15,8 +15,9 @@ export const INVITE_CHECK_WINDOW_S = 600;
  *   generate   — gpt-4o: writing tasks, feedback, micro-drills, speaking, quiz parsing
  *   lookup     — gpt-4o-mini: word look-ups, entry details, CEFR estimates
  *   transcribe — Whisper: podcast imports
+ *   tutor      — gpt-4o: TCF tutor chat answers (card proposals and review items use lookup)
  */
-export const AI_DAILY_LIMITS = { generate: 30, lookup: 300, transcribe: 3 } as const;
+export const AI_DAILY_LIMITS = { generate: 30, lookup: 300, transcribe: 3, tutor: 40 } as const;
 export type AiBucket = keyof typeof AI_DAILY_LIMITS;
 export const AI_LIMIT_WINDOW_S = 86_400;
 

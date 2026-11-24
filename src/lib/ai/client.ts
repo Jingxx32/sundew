@@ -35,4 +35,5 @@ export const MODELS = {
   enrich: process.env.OPENAI_MODEL_ENRICH ?? "gpt-4o-mini",
   transcribe: process.env.OPENAI_MODEL_TRANSCRIBE ?? "whisper-1",
   speaking: process.env.OPENAI_MODEL_SPEAKING ?? "gpt-4o",
+  tutor: process.env.OPENAI_MODEL_TUTOR ?? "gpt-4o",
 } as const;
