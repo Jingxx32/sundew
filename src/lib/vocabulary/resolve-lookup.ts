@@ -19,7 +19,7 @@ const SAMPLE_LOOKUPS = sampleLookups as Record<string, LookupResult>;
 export type GapSignal = { gapType: VocabGapType; source: GapSource };
 const DEFAULT_GAP: GapSignal = { gapType: "recognition", source: "lookup" };
 
-/** Writes a look-up result for this user: entry, alias, occurrence and recognition gap, atomically. */
+/** Writes a look-up result for this user: entry, alias, occurrence and the chosen gap, atomically. */
 async function persistLookup(userId: string, surface: string, sentenceContext: string, source: LookupSource, result: LookupResult, gap: GapSignal): Promise<string> {
   const resolved = norm(result.lemma || surface);
   await db.transaction(async (tx) => {

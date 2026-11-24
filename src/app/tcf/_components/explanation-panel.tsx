@@ -59,6 +59,8 @@ const MARKDOWN_COMPONENTS = {
   // Links are deliberately flattened to plain text because explanation bodies are prose,
   // not link collections. The link destination is therefore dropped.
   a: ({ children }: any) => <span>{children}</span>,
+  // Model output goes through this renderer; never let markdown make the browser fetch an image URL.
+  img: ({ alt }: any) => (alt ? <span>{alt}</span> : null),
 } satisfies Components;
 /* eslint-enable @typescript-eslint/no-explicit-any */
 

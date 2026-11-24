@@ -52,7 +52,17 @@ test("an image makes the question message a content array", () => {
   const imageUrl = "data:image/png;base64,AAAA";
   const content = buildTutorMessages({ ...base, imageUrl })[1].content;
   assert.ok(Array.isArray(content));
-  assert.ok(content.some((p) => p.type === "image_url" && p.image_url.url === imageUrl && p.image_url.detail === "low"));
+  assert.ok(content.some((p) => p.type === "image_url" && p.image_url.url === imageUrl && p.image_url.detail === "high"));
+});
+
+test("an image adds a quote-only-what-you-can-read instruction", () => {
+  const block = text(buildTutorMessages({ ...base, imageUrl: "data:image/png;base64,AAAA" })[1].content);
+  assert.match(block, /source text is in the attached image/);
+  assert.match(block, /illegible/);
+});
+
+test("the prompt only explains the learner's choice when it differs", () => {
+  assert.match(TUTOR_SYSTEM_PROMPT, /only when the learner's choice differs/);
 });
 
 test("without any source the block says so", () => {
@@ -76,5 +86,6 @@ test("notebook context lists notes, counts and accuracy", () => {
   });
   assert.match(out, /manquer à qqn/);
   assert.match(out, /3\/4/);
+  assert.match(out, /Notebook review accuracy \(30 days\)/);
   assert.match(formatNotebookContext({ notes: [], counts: { byKind: { vocabulary: 0, grammar: 0, hearing: 0, comprehension: 0 }, byTag: {} }, accuracy: null }), /empty/i);
 });

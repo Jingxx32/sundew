@@ -167,7 +167,6 @@ export async function addTutorCard(messageId: string, draft: CardDraft): Promise
   const already = await bySource();
   if (already) return { noteId: already.id, point: already.point };
 
-  await assertAiBudget("lookup");
   const message = await loadOwnedAssistantMessage(user.id, messageId);
 
   const [question] = await db
@@ -189,6 +188,7 @@ export async function addTutorCard(messageId: string, draft: CardDraft): Promise
     const lemmaInput = card.lemma?.trim();
     if (!lemmaInput) throw new Error("A vocabulary card needs a lemma");
     const gapType = card.byEar ? "listening" : "recognition";
+    await assertAiBudget("lookup");
 
     const lines = await listNoteLines(user.id, 200);
     const duplicate = findVocabularyDuplicate(lines, lemmaInput);
@@ -276,7 +276,13 @@ export async function addTutorCard(messageId: string, draft: CardDraft): Promise
 export async function reviveNote(noteId: string): Promise<void> {
   const user = await requireFeature("tcf");
   const [note] = await db
-    .select({ id: tcfNotes.id, kind: tcfNotes.kind, vocabularyGapId: tcfNotes.vocabularyGapId })
+    .select({
+      id: tcfNotes.id,
+      kind: tcfNotes.kind,
+      lemma: tcfNotes.lemma,
+      byEar: tcfNotes.byEar,
+      vocabularyGapId: tcfNotes.vocabularyGapId,
+    })
     .from(tcfNotes)
     .where(and(eq(tcfNotes.id, noteId), eq(tcfNotes.userId, user.id)))
     .limit(1);
@@ -293,6 +299,19 @@ export async function reviveNote(noteId: string): Promise<void> {
   if (gap) {
     await upsertGap({ userId: user.id, lemma: gap.lemma, gapType: gap.gapType, source: "tutor" });
     await activateNote(user.id, note.id);
+  } else if (note.kind === "vocabulary" && note.lemma) {
+    // The gap was deleted or merged: recreate it and relink the note.
+    const gapType = note.byEar ? "listening" : "recognition";
+    await upsertGap({ userId: user.id, lemma: note.lemma, gapType, source: "tutor" });
+    const [fresh] = await db
+      .select({ id: vocabularyGaps.id })
+      .from(vocabularyGaps)
+      .where(and(eq(vocabularyGaps.userId, user.id), eq(vocabularyGaps.lemma, note.lemma), eq(vocabularyGaps.gapType, gapType)))
+      .limit(1);
+    await db
+      .update(tcfNotes)
+      .set({ vocabularyGapId: fresh?.id ?? null, status: "active" })
+      .where(and(eq(tcfNotes.id, note.id), eq(tcfNotes.userId, user.id)));
   } else {
     await db
       .update(tcfNotes)

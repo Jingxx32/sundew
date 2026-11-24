@@ -8,7 +8,7 @@ export const THREAD_RESEND_LIMIT = 12;
 export const TUTOR_SYSTEM_PROMPT = `You are a French tutor helping a learner who is preparing for the TCF exam. They have just answered a listening or reading question and are asking you about it.
 
 Rules:
-- The stored answer is correct. Explain why it is right and why the learner's choice is not. Never re-judge the answer key.
+- The stored answer is correct. Explain why it is right and, only when the learner's choice differs from the answer, why their choice is not. Never re-judge the answer key.
 - Reply in the language the learner wrote in. Keep French quotations in French.
 - Answer only what was asked, in about 200 words or fewer. No preamble, no closing offers.
 - For listening questions, never describe how the recording sounds: make no claim about phonemes, liaison or pronunciation of the audio, because you cannot hear it. General listening advice is fine.
@@ -37,7 +37,7 @@ export function formatNotebookContext(input: {
 }): string {
   const { notes, counts, accuracy } = input;
   const lines = ["Learner notebook (background only):"];
-  if (accuracy && accuracy.total > 0) lines.push(`Recent TCF accuracy: ${accuracy.correct}/${accuracy.total}`);
+  if (accuracy && accuracy.total > 0) lines.push(`Notebook review accuracy (30 days): ${accuracy.correct}/${accuracy.total}`);
   if (notes.length === 0) {
     lines.push("The notebook is empty.");
     return lines.join("\n");
@@ -66,6 +66,12 @@ function questionBlock(q: TutorQuestion, chosen: number | null, hasImage: boolea
   if (!q.passage && !q.transcript && !q.explanation && !hasImage) {
     lines.push("", "No source text is available for this question.");
   }
+  if (hasImage) {
+    lines.push(
+      "",
+      "The source text is in the attached image. Quote only what you can read in it; if the image is illegible, say so instead of guessing.",
+    );
+  }
   return lines.join("\n");
 }
 
@@ -79,7 +85,7 @@ export function buildTutorMessages(input: {
 }): ChatCompletionMessageParam[] {
   const text = questionBlock(input.question, input.chosen, input.imageUrl !== null);
   const parts: ChatCompletionContentPart[] = [{ type: "text", text }];
-  if (input.imageUrl) parts.push({ type: "image_url", image_url: { url: input.imageUrl, detail: "low" } });
+  if (input.imageUrl) parts.push({ type: "image_url", image_url: { url: input.imageUrl, detail: "high" } });
   return [
     { role: "system", content: TUTOR_SYSTEM_PROMPT },
     { role: "user", content: input.imageUrl ? parts : text },

@@ -20,6 +20,7 @@ export async function listNoteLines(userId: string, limit: number): Promise<Note
       comprehensionTag: tcfNotes.comprehensionTag,
       sourceLocator: tcfNotes.sourceLocator,
       createdAt: tcfNotes.createdAt,
+      status: tcfNotes.status,
     })
     .from(tcfNotes)
     .where(and(eq(tcfNotes.userId, userId), inArray(tcfNotes.status, ["active", "mastered"])))
@@ -45,7 +46,7 @@ export async function loadNotebookContext(
   q: { skill: "listening" | "reading"; skillTags: string[] | null },
 ): Promise<string> {
   const [notes, accuracy] = await Promise.all([listNoteLines(userId, OVERVIEW_NOTES), recentAccuracy(userId)]);
-  return formatNotebookContext({ notes: rankNotesForQuestion(notes, q, 8), counts: notebookCounts(notes), accuracy });
+  return formatNotebookContext({ notes: rankNotesForQuestion(notes, q, 8), counts: notebookCounts(notes.filter((n) => n.status === "active")), accuracy });
 }
 
 /** Active non-vocabulary cards whose review is due. */

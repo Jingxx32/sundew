@@ -76,6 +76,12 @@ function DraftEditor({
         <span className="font-semibold text-foreground">Ajouter au carnet ?</span>
         <Chip variant="accent">{KIND_LABELS[draft.kind]}</Chip>
       </div>
+      {draft.kind === "vocabulary" && draft.lemma && (
+        <p className="mt-2 text-muted-foreground">
+          Mot : <span className="font-medium text-foreground">{draft.lemma}</span>
+          {draft.byEar && " · à l'oral"}
+        </p>
+      )}
       <Input
         className="mt-2"
         aria-label="Point"

@@ -11,6 +11,8 @@ export type NoteLine = {
   comprehensionTag: string | null;
   sourceLocator: string | null;
   createdAt: Date;
+  /** Set by listNoteLines; lets callers count only active cards. */
+  status?: "active" | "mastered" | "dismissed";
 };
 
 /** CO- locators are listening, CE- are reading (e.g. "CO-T13-Q30"). */
