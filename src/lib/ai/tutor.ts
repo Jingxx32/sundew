@@ -7,6 +7,9 @@ import { COMPREHENSION_TAGS } from "@/lib/tcf/tags";
 import { ProposalSchema, ReviewBatchSchema, type Proposal } from "@/lib/tcf/tutor/schemas";
 import type { TcfNoteKind } from "@/lib/db/schema";
 
+/** Card proposal and review generation: fail fast instead of the SDK's 10-minute timeout and 2 retries. */
+const AI_BATCH_REQUEST = { timeout: 20_000, maxRetries: 1 };
+
 /**
  * Streams the tutor's answer. Budget (`UserFacingError`) and OpenAI request errors throw here, before any text is sent.
  * Aborting `signal` ends the upstream request and the iteration quietly.
@@ -72,7 +75,7 @@ export async function proposeCard(input: {
     ],
     response_format: zodResponseFormat(ProposalSchema, "tutor_card"),
     temperature: 0.2,
-  });
+  }, AI_BATCH_REQUEST);
   const result = completion.choices[0].message.parsed;
   if (!result) throw new Error("No result from OpenAI card proposal");
   return result;
@@ -101,7 +104,7 @@ export async function generateReviewItems(
     ],
     response_format: zodResponseFormat(ReviewBatchSchema, "notebook_review"),
     temperature: 0.4,
-  });
+  }, AI_BATCH_REQUEST);
   const result = completion.choices[0].message.parsed;
   if (!result) throw new Error("No result from OpenAI review generation");
   return result;

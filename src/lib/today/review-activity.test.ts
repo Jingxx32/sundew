@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { reviewActivity } from "./review-activity";
+import { reviewActivity, reviewDueDetail } from "./review-activity";
 
 test("without TCF access the activity reviews words only", () => {
   const activity = reviewActivity({ canTcf: false, dueWords: 3, dueNotes: 5, activeNotes: 9 });
@@ -34,4 +34,22 @@ test("nothing due is a done activity that points to vocabulary", () => {
   assert.equal(activity.cta, "View vocabulary");
   assert.equal(activity.detail, "Nothing is due right now.");
   assert.equal(activity.progress, undefined);
+});
+
+test("active but not-due notebook cards keep the words-only title, like the session", () => {
+  const activity = reviewActivity({ canTcf: true, dueWords: 3, dueNotes: 0, activeNotes: 6 });
+  assert.equal(activity.title, "Review due vocabulary");
+  assert.equal(activity.detail, "3 words are due for review now.");
+});
+
+test("progress counts only what one session loads", () => {
+  const activity = reviewActivity({ canTcf: true, dueWords: 25, dueNotes: 18, activeNotes: 30 });
+  assert.equal(activity.progress?.target, 35);
+});
+
+test("the due detail names only the queues that have something due", () => {
+  assert.equal(reviewDueDetail(0, 3), "3 notebook cards are due now.");
+  assert.equal(reviewDueDetail(0, 1), "1 notebook card is due now.");
+  assert.equal(reviewDueDetail(1, 1), "1 word and 1 notebook card are due now.");
+  assert.equal(reviewDueDetail(0, 0), "Nothing is due right now.");
 });

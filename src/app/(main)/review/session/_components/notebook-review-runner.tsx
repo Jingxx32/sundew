@@ -214,8 +214,8 @@ export function NotebookReviewRunner({
                     <Volume2 className="h-5 w-5" aria-hidden="true" />
                   </button>
                 )}
-                {/* Without a voice the card can only be answered by reading it. */}
-                {(!ttsSupported || result) && <p className="mt-3 text-lg">{spoken}</p>}
+                {/* Shown once answered (even if the save fails); without a voice, from the start. */}
+                {(!ttsSupported || chosen !== null) && <p className="mt-3 text-lg">{spoken}</p>}
               </div>
             )}
             <p className="text-base font-medium">{item.stem}</p>

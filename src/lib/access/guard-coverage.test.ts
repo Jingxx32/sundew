@@ -59,6 +59,7 @@ const GATED_FILES: Array<[string, string]> = [
   ["src/app/api/speaking/recordings/[assetId]/route.ts", `requireFeature("speaking")`],
   ["src/app/api/speaking/sessions/[sessionId]/turns/route.ts", `requireFeature("speaking")`],
   ["src/app/api/tcf/tutor/route.ts", `requireFeature("tcf")`],
+  ["src/app/api/tcf/notebook-review/route.ts", `requireFeature("tcf")`],
   ["src/app/tcf/page.tsx", `pageGate("tcf")`],
   ["src/app/tcf/drill/page.tsx", `pageGate("tcf")`],
   ["src/app/tcf/exam/page.tsx", `pageGate("tcf")`],
