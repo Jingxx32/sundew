@@ -160,8 +160,8 @@ Page (async server component)
 ```
 
 Route handlers exist only where a server action can't serve: Better Auth (`api/auth`),
-the guest-cleanup cron, signed media URLs, speaking audio uploads, and the admin-only
-explanation writer.
+the guest-cleanup cron, signed media URLs, speaking audio uploads, the streaming TCF tutor
+(`api/tcf/tutor`), and the admin-only explanation writer.
 
 ### Access levels
 
@@ -176,13 +176,13 @@ Access is guest / full / admin, derived in `src/lib/auth/user.ts`. Guests are on
 
 ### Database
 
-**PostgreSQL** (Azure) via the `postgres` package (postgres.js) + Drizzle ORM (migrated from SQLite in S3.5). Connect via `DATABASE_URL` env var. 49 tables in these groups:
+**PostgreSQL** (Azure) via the `postgres` package (postgres.js) + Drizzle ORM (migrated from SQLite in S3.5). Connect via `DATABASE_URL` env var. 52 tables in these groups:
 
 - Auth and access: `users`, `sessions`, `accounts`, `verifications`, `rate_limits` (Better Auth, also app rate limits and AI budgets), `invite_codes`, `invite_redemptions`
 - Core loop: `documents → reading_sessions`, `writing_tasks → submissions → errors`, `rules`, `grammar_points`, `micro_drills`
 - Vocabulary memory: shared `vocabulary_lookups` + `vocabulary_aliases`; per user `user_vocabulary`, `user_vocabulary_aliases`, `vocabulary_occurrences`, `vocabulary_gaps`, `vocabulary_review_attempts`
 - Quiz engine: `quiz_sets → quiz_passages → quiz_questions`, `quiz_attempts`, `quiz_question_attempts`, `conjugation_attempts`
-- TCF: `tcf_sets → tcf_questions`, `tcf_attempts` (whole-exam runs), `tcf_question_attempts` (per question)
+- TCF: `tcf_sets → tcf_questions`, `tcf_attempts` (whole-exam runs), `tcf_question_attempts` (per question), `tcf_tutor_messages`, `tcf_notes`, `tcf_note_reviews`
 - Speaking: `speaking_prompts → speaking_scripts / speaking_sessions → speaking_turns`; the Task 2 pilot adds `speaking_simulations`, `speaking_assets`, `speaking_assessments`, `speaking_follow_ups`, `speaking_operations`
 - Frozen, unused (see `docs/roadmap.md`): `review_items`, `review_evidence`, `review_item_changes`, `review_backfill_jobs`, `practice_runs`, `practice_run_items`, `practice_requests`
 - `user_settings` (KV)
@@ -237,6 +237,7 @@ OPENAI_MODEL_TASK     # defaults to gpt-4o
 OPENAI_MODEL_FEEDBACK # defaults to gpt-4o
 OPENAI_MODEL_ENRICH   # vocab enrich; defaults to gpt-4o-mini
 OPENAI_MODEL_SPEAKING # speaking scripts and Task 2; defaults to gpt-4o
+OPENAI_MODEL_TUTOR   # tutor chat; defaults to gpt-4o
 OPENAI_MODEL_TRANSCRIBE # podcast transcription; defaults to whisper-1
 DATABASE_URL          # Required — PostgreSQL connection string (e.g. postgres://user:pass@host/db)
 AZURE_SPEECH_KEY      # Speaking only — Azure Cognitive Services Speech key
