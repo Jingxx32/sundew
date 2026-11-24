@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useAccountId } from "@/components/account-session";
 import { hasExplanationDetails } from "@/lib/tcf/reveal";
 import { AnswerDetails, ExplanationToggle } from "./answer-details";
+import { TutorPanel } from "./tutor-panel";
 import { VerdictBar } from "./verdict-bar";
 import { LevelBadge } from "./level-badge";
 import { QuestionMedia } from "./question-media";
@@ -367,6 +368,7 @@ export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: E
           {/* Transcript + explanation sit below the nav: a long explanation must not
               push Suivant off-screen. */}
           {finished && <AnswerDetails question={q} skill={skill} explanationOpen={explanationOpen} markGaps={false} />}
+          {finished && <TutorPanel key={q.id} questionId={q.id} chosen={chosen ?? null} />}
         </div>
       </div>
     </div>

@@ -9,6 +9,7 @@ import { useAccountId } from "@/components/account-session";
 import { cn } from "@/lib/utils";
 import { hasExplanationDetails } from "@/lib/tcf/reveal";
 import { AnswerDetails, ExplanationToggle } from "./answer-details";
+import { TutorPanel } from "./tutor-panel";
 import { VerdictBar } from "./verdict-bar";
 import { LevelNav } from "./level-nav";
 import { LevelBadge } from "./level-badge";
@@ -362,6 +363,8 @@ export function DrillRunner({
         </p>
 
         {showAnswer && <AnswerDetails question={q} skill={skill} explanationOpen={explanationOpen} markGaps />}
+
+        {showAnswer && <TutorPanel key={q.id} questionId={q.id} chosen={chosen ?? null} />}
 
         {showAnswer && endOfQuestion()}
 
