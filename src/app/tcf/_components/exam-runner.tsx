@@ -368,7 +368,7 @@ export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: E
           {/* Transcript + explanation sit below the nav: a long explanation must not
               push Suivant off-screen. */}
           {finished && <AnswerDetails question={q} skill={skill} explanationOpen={explanationOpen} markGaps={false} />}
-          {finished && <TutorDock key={q.id} questionId={q.id} chosen={chosen ?? null} aboveNav={false} />}
+          {finished && <TutorDock key={q.id} questionId={q.id} chosen={chosen ?? null} revealed aboveNav={false} />}
         </div>
       </div>
     </div>

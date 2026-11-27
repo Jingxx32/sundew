@@ -17,6 +17,8 @@ export const maxDuration = 60;
 const BodySchema = z.object({
   questionId: z.string().uuid(),
   chosen: z.number().int().min(0).nullable(),
+  /** False while the learner has not answered yet; the model then gets no key. */
+  revealed: z.boolean().default(true),
   ask: z.string().trim().min(1).max(1000),
 });
 
@@ -40,7 +42,7 @@ export async function POST(request: Request) {
   }
   const body = BodySchema.safeParse(json);
   if (!body.success) return Response.json({ error: "Invalid body" }, { status: 400 });
-  const { questionId, chosen, ask } = body.data;
+  const { questionId, chosen, revealed, ask } = body.data;
 
   const [row] = await db
     .select({ q: tcfQuestions, skill: tcfSets.skill })
@@ -75,7 +77,7 @@ export async function POST(request: Request) {
     transcript: q.transcript,
     explanation: q.explanation,
   };
-  const messages = buildTutorMessages({ question, chosen, imageUrl, notebook, thread, ask });
+  const messages = buildTutorMessages({ question, chosen, revealed, imageUrl, notebook, thread, ask });
 
   // Budget (UserFacingError) and model request errors surface here, before any byte is sent.
   let answer: AsyncIterable<string>;

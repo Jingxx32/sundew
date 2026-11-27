@@ -33,10 +33,13 @@ export type TutorStatus = { answers: number; streaming: boolean };
 export function TutorPanel({
   questionId,
   chosen,
+  revealed,
   onStatus,
 }: {
   questionId: string;
   chosen: number | null;
+  /** False before the learner answers: the tutor gets no key and proposes no card. */
+  revealed: boolean;
   /** Called when the number of answers or the streaming state changes. */
   onStatus?: (status: TutorStatus) => void;
 }) {
@@ -103,7 +106,7 @@ export function TutorPanel({
       const res = await fetch("/api/tcf/tutor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ questionId, chosen, ask }),
+        body: JSON.stringify({ questionId, chosen, revealed, ask }),
         signal: ctl.signal,
       });
       if (!res.ok || !res.body) {
@@ -146,7 +149,8 @@ export function TutorPanel({
       ]);
       setPartial(null);
       setInput("");
-      propose(messageId);
+      // A card is drafted with the answer key in view, so it could give the answer away.
+      if (revealed) propose(messageId);
     } catch (err) {
       if (isAbort(err) || ctl.signal.aborted) return;
       setFailure({ message: "Réponse interrompue — réessayer", retry: true });

@@ -27,10 +27,13 @@ function SundewSymbol() {
 export function TutorDock({
   questionId,
   chosen,
+  revealed,
   aboveNav,
 }: {
   questionId: string;
   chosen: number | null;
+  /** False before the learner answers; see TutorPanel. */
+  revealed: boolean;
   /** True when the page has the fixed "Précédent / Suivant" bar at the bottom (mobile). */
   aboveNav: boolean;
 }) {
@@ -133,7 +136,7 @@ export function TutorDock({
           </Button>
         </div>
         <div className="min-h-0 flex-1">
-          <TutorPanel questionId={questionId} chosen={chosen} onStatus={handleStatus} />
+          <TutorPanel questionId={questionId} chosen={chosen} revealed={revealed} onStatus={handleStatus} />
         </div>
       </div>
     </>
