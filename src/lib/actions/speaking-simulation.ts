@@ -8,7 +8,7 @@ import { speakingAssessments, speakingAssets, speakingFollowUps, speakingOperati
 import { requireFeature } from "@/lib/access/guard";
 import { DRILLS, SCENARIO, type DrillId } from "@/lib/speaking/scenario";
 import { reserveOperation, settleOperation, simulationEnabled } from "@/lib/speaking/operations";
-import { getOpenAI, MODELS } from "@/lib/ai/client";
+import { getChatAI, MODELS, REASONING } from "@/lib/ai/client";
 import { validateFeedback } from "@/lib/speaking/feedback";
 import { deleteRecording } from "@/lib/storage/speaking-recordings";
 
@@ -195,8 +195,9 @@ export async function generateSimulationFeedback(sessionId: string) {
   const startedAt = Date.now();
   try {
     const transcript = usableTurns.map((turn) => `${turn.role} [${turn.id}]: ${turn.text.slice(0, 1000)}`).join("\n").slice(0, 12_000);
-    const response = await (await getOpenAI("generate")).chat.completions.create({
+    const response = await (await getChatAI("generate")).chat.completions.create({
       model: MODELS.feedback,
+      ...REASONING,
       response_format: { type: "json_object" },
       max_completion_tokens: 1500,
       messages: [

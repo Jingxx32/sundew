@@ -160,8 +160,9 @@ Page (async server component)
 ```
 
 Route handlers exist only where a server action can't serve: Better Auth (`api/auth`),
-the guest-cleanup cron, signed media URLs, speaking audio uploads, and the admin-only
-explanation writer.
+the guest-cleanup cron, signed media URLs, speaking audio uploads, the streaming TCF tutor
+(`api/tcf/tutor`), notebook review generation (`api/tcf/notebook-review`, kept off the
+serial server-action queue so word grading isn't blocked), and the admin-only explanation writer.
 
 ### Access levels
 
@@ -171,18 +172,18 @@ Access is guest / full / admin, derived in `src/lib/auth/user.ts`. Guests are on
 - Every new table with a `user_id` column is picked up by `src/lib/account/owned-tables.ts` automatically (account and guest deletion). A test fails if a child table without `user_id` is not registered there.
 - The sample workspace guests start with is seeded from `src/lib/sample-workspace/fixtures/` (drafts in `source/`; `data/` is gitignored). Author account: `sample-author@example.com`.
 - Feedback highlights are re-located with `src/lib/feedback/error-span.ts`; do not trust stored offsets alone.
-- Every OpenAI call goes through `getOpenAI(bucket)`, which counts against a member's daily limit (`AI_DAILY_LIMITS` in `src/lib/access/limits.ts`; admins are not limited). AI actions that save work or swallow AI failures call `assertAiBudget` first; a test lists them.
+- Every chat call goes through `getChatAI(bucket)` (Nebius Token Factory, OpenAI-compatible; pass `...REASONING`), and audio calls (Whisper, TTS) through `getOpenAI(bucket)`. Both count against a member's daily limit (`AI_DAILY_LIMITS` in `src/lib/access/limits.ts`; admins are not limited). AI actions that save work or swallow AI failures call `assertAiBudget` first; a test lists them.
 - Errors the user should read are thrown as `UserFacingError` (`src/lib/user-error.ts`). Production hides thrown messages but keeps the digest, so client code shows `userErrorMessage(err, fallback)`, never `err.message`. Rethrow redirects with `unstable_rethrow` before handling a caught action error.
 
 ### Database
 
-**PostgreSQL** (Azure) via the `postgres` package (postgres.js) + Drizzle ORM (migrated from SQLite in S3.5). Connect via `DATABASE_URL` env var. 49 tables in these groups:
+**PostgreSQL** (Azure) via the `postgres` package (postgres.js) + Drizzle ORM (migrated from SQLite in S3.5). Connect via `DATABASE_URL` env var. 52 tables in these groups:
 
 - Auth and access: `users`, `sessions`, `accounts`, `verifications`, `rate_limits` (Better Auth, also app rate limits and AI budgets), `invite_codes`, `invite_redemptions`
 - Core loop: `documents → reading_sessions`, `writing_tasks → submissions → errors`, `rules`, `grammar_points`, `micro_drills`
 - Vocabulary memory: shared `vocabulary_lookups` + `vocabulary_aliases`; per user `user_vocabulary`, `user_vocabulary_aliases`, `vocabulary_occurrences`, `vocabulary_gaps`, `vocabulary_review_attempts`
 - Quiz engine: `quiz_sets → quiz_passages → quiz_questions`, `quiz_attempts`, `quiz_question_attempts`, `conjugation_attempts`
-- TCF: `tcf_sets → tcf_questions`, `tcf_attempts` (whole-exam runs), `tcf_question_attempts` (per question)
+- TCF: `tcf_sets → tcf_questions`, `tcf_attempts` (whole-exam runs), `tcf_question_attempts` (per question), `tcf_tutor_messages`, `tcf_notes`, `tcf_note_reviews`
 - Speaking: `speaking_prompts → speaking_scripts / speaking_sessions → speaking_turns`; the Task 2 pilot adds `speaking_simulations`, `speaking_assets`, `speaking_assessments`, `speaking_follow_ups`, `speaking_operations`
 - Frozen, unused (see `docs/roadmap.md`): `review_items`, `review_evidence`, `review_item_changes`, `review_backfill_jobs`, `practice_runs`, `practice_run_items`, `practice_requests`
 - `user_settings` (KV)
@@ -231,12 +232,11 @@ Postgres in Canada Central.
 ## Environment variables
 
 ```
-OPENAI_API_KEY        # Required — word lookup, task generation, writing feedback
-OPENAI_MODEL_LOOKUP   # defaults to gpt-4o-mini
-OPENAI_MODEL_TASK     # defaults to gpt-4o
-OPENAI_MODEL_FEEDBACK # defaults to gpt-4o
-OPENAI_MODEL_ENRICH   # vocab enrich; defaults to gpt-4o-mini
-OPENAI_MODEL_SPEAKING # speaking scripts and Task 2; defaults to gpt-4o
+NEBIUS_API_KEY        # Required — all chat: lookup, tasks, feedback, enrich, speaking, tutor (Nebius Token Factory)
+AI_MODEL              # Nebius model for every chat use; defaults to deepseek-ai/DeepSeek-V4.1-Flash-1017-fast
+AI_MODEL_LOOKUP / _TASK / _FEEDBACK / _ENRICH / _SPEAKING / _TUTOR  # per-use override of AI_MODEL
+AI_REASONING_EFFORT   # defaults to "none" (thinking off); gpt-oss models need "low"
+OPENAI_API_KEY        # Audio only — podcast transcription (Whisper) and speaking-pilot TTS
 OPENAI_MODEL_TRANSCRIBE # podcast transcription; defaults to whisper-1
 DATABASE_URL          # Required — PostgreSQL connection string (e.g. postgres://user:pass@host/db)
 AZURE_SPEECH_KEY      # Speaking only — Azure Cognitive Services Speech key

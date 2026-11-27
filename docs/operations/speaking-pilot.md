@@ -10,7 +10,7 @@ Configure the following in the **private** environment only:
 
 - `DATABASE_URL` for the explicitly chosen database.
 - `AZURE_SPEECH_KEY` and `AZURE_SPEECH_REGION`.
-- `OPENAI_API_KEY`; existing `OPENAI_MODEL_SPEAKING` and `OPENAI_MODEL_FEEDBACK` may be set after quality checks.
+- `NEBIUS_API_KEY` for the partner and assessment chat, and `OPENAI_API_KEY` for text-to-speech; `AI_MODEL_SPEAKING` and `AI_MODEL_FEEDBACK` may be set after quality checks.
 - In production, `CLOUDFLARE_R2_ACCOUNT_ID`, `CLOUDFLARE_R2_ACCESS_KEY_ID`, `CLOUDFLARE_R2_SECRET_ACCESS_KEY`, and `CLOUDFLARE_R2_BUCKET` for a non-public bucket.
 - `SPEAKING_TURN_RESERVE_CENTS`, `SPEAKING_ASSESSMENT_RESERVE_CENTS`, and `SPEAKING_FOLLOWUP_RESERVE_CENTS`: **integer worst-case reservation amounts** chosen from measured provider usage and current pricing, including retries. They are required to enable the pilot. The code does not infer prices or report provider billing as exact cost.
 - `SPEAKING_SIMULATION_ENABLED=true` only after the migration, private media, reservation settings, access tests, and browser checks pass. Set it to `false` to stop new paid simulation operations while preserving reads and deletion.

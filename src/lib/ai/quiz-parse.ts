@@ -2,7 +2,7 @@
 // server actions in lib/actions, never directly from the client.
 
 import { zodResponseFormat } from "openai/helpers/zod";
-import { getOpenAI, MODELS } from "./client";
+import { getChatAI, MODELS, REASONING } from "./client";
 import { QuizParseSchema, type ParsedQuiz } from "./quiz-schema";
 
 // `section` is intentionally the "reading" literal, not the full quiz_section
@@ -12,8 +12,9 @@ export async function parseQuizFromText(
   rawText: string,
   section: "reading",
 ): Promise<ParsedQuiz> {
-  const completion = await (await getOpenAI("generate")).chat.completions.parse({
+  const completion = await (await getChatAI("generate")).chat.completions.parse({
     model: MODELS.task,
+    ...REASONING,
     messages: [
       {
         role: "system",

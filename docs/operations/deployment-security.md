@@ -31,7 +31,7 @@ Guests, members and the admin share one database. Isolation is by owner:
 
 ## Paid AI and speech
 
-- Guests never reach a paid API: `getOpenAI` and the Azure Speech client refuse guest sessions.
+- Guests never reach a paid API: `getChatAI`, `getOpenAI` and the Azure Speech client refuse guest sessions.
 - Members have daily limits per 24 hours (`AI_DAILY_LIMITS` in `src/lib/access/limits.ts`: generate 30, lookup 300, transcribe 3); admins are not limited. Rough worst case is about US$1 per member per day.
 - The speaking Task 2 pilot has its own budget (`src/lib/speaking/operations.ts`) and is off unless `SPEAKING_SIMULATION_ENABLED=true`.
 - Request bodies stay under Vercel's 4.5 MB limit; long AI calls stay well under the 300 s function limit.
@@ -48,5 +48,5 @@ Guests, members and the admin share one database. Isolation is by owner:
 ## Open items
 
 - Validate database and R2 backups by restoring once.
-- Set a monthly budget on the OpenAI project as a backstop to the in-app limits.
+- Set a monthly budget on the Nebius and OpenAI projects as a backstop to the in-app limits.
 - Confirm the frozen `REVIEW_DATA_ENABLED` / `REVIEW_CENTER_ENABLED` flags are unset in Vercel.

@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Check, Volume2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { speakFrench, useTtsSupported } from "@/hooks/use-speech";
 import { gradeGapReview, setGapStatus, type GapReviewCard } from "@/lib/actions/vocab-gaps";
 
 const TYPE_LABEL: Record<GapReviewCard["gapType"], string> = {
@@ -12,17 +13,6 @@ const TYPE_LABEL: Record<GapReviewCard["gapType"], string> = {
   listening: "Mal entendu",
   production: "À réemployer",
 };
-
-function noopSubscribe() {
-  return () => {};
-}
-const getTtsSnapshot = () => typeof window !== "undefined" && "speechSynthesis" in window;
-const getTtsServerSnapshot = () => false;
-
-/** True once hydrated on a browser that supports SpeechSynthesis; false during SSR. */
-function useTtsSupported(): boolean {
-  return useSyncExternalStore(noopSubscribe, getTtsSnapshot, getTtsServerSnapshot);
-}
 
 /** Replace the first occurrence of the lemma or surface in the sentence with a blank. */
 function blankOut(sentence: string, lemma: string, surface: string): string | null {
@@ -35,7 +25,19 @@ function blankOut(sentence: string, lemma: string, surface: string): string | nu
   return null;
 }
 
-export function GapReviewRunner({ initialCards }: { initialCards: GapReviewCard[] }) {
+export type GapReviewSummary = { right: number; wrong: number; promoted: number };
+
+/**
+ * Without `onDone` it shows its own empty and end states. With `onDone` (inside a longer
+ * session) it calls it once when the last card is done, or at once when there are no cards.
+ */
+export function GapReviewRunner({
+  initialCards,
+  onDone,
+}: {
+  initialCards: GapReviewCard[];
+  onDone?: (summary: GapReviewSummary) => void;
+}) {
   const [cards] = useState(initialCards);
   const [index, setIndex] = useState(0);
   const [chosen, setChosen] = useState<number | null>(null);
@@ -45,18 +47,22 @@ export function GapReviewRunner({ initialCards }: { initialCards: GapReviewCard[
   const requestKey = useRef<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(false);
-  const [summary, setSummary] = useState({ right: 0, wrong: 0, promoted: 0 });
+  const [summary, setSummary] = useState<GapReviewSummary>({ right: 0, wrong: 0, promoted: 0 });
   const [done, setDone] = useState(index >= cards.length);
+  const reportedDone = useRef(false);
   const ttsSupported = useTtsSupported();
 
   const card = cards[index];
+  const finished = cards.length === 0 || done;
+
+  useEffect(() => {
+    if (!onDone || !finished || reportedDone.current) return;
+    reportedDone.current = true;
+    onDone(summary);
+  }, [onDone, finished, summary]);
 
   const speak = useCallback(() => {
-    if (typeof window === "undefined" || !("speechSynthesis" in window) || !card) return;
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(card.lemma);
-    u.lang = "fr-FR";
-    window.speechSynthesis.speak(u);
+    if (card) speakFrench(card.lemma);
   }, [card]);
 
   useEffect(() => {
@@ -143,7 +149,8 @@ export function GapReviewRunner({ initialCards }: { initialCards: GapReviewCard[
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [card, answered, saving, inputValue, done]);
 
-  if (cards.length === 0 || done) {
+  if (finished) {
+    if (onDone) return null;
     return cards.length === 0 ? (
       <div className="rounded-xl bg-surface shadow-card px-6 py-10 text-center">
         <p className="text-lg">Rien à réviser aujourd&rsquo;hui</p>

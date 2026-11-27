@@ -27,7 +27,7 @@ test("every table with user_id is owned or excluded", () => {
 });
 
 test("the registry covers personal data and quiz children, not shared or auth tables", () => {
-  for (const name of ["documents", "submissions", "errors", "user_vocabulary", "quiz_sets", "quiz_passages", "quiz_questions", "invite_redemptions", "tcf_question_attempts", "speaking_turns"]) {
+  for (const name of ["documents", "submissions", "errors", "user_vocabulary", "quiz_sets", "quiz_passages", "quiz_questions", "invite_redemptions", "tcf_question_attempts", "speaking_turns", "tcf_tutor_messages", "tcf_notes", "tcf_note_reviews"]) {
     assert.ok(owned.has(name), name);
   }
   for (const name of ["users", "sessions", "accounts", "invite_codes", "tcf_questions", "vocabulary_lookups", "rules"]) {

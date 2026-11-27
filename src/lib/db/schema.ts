@@ -490,7 +490,7 @@ export const vocabGapTypeEnum = pgEnum("vocab_gap_type", [
   "production",    // Understands it but cannot produce it
 ]);
 
-export const vocabGapSourceEnum = pgEnum("vocab_gap_source", ["lookup", "feedback", "manual"]);
+export const vocabGapSourceEnum = pgEnum("vocab_gap_source", ["lookup", "feedback", "manual", "tutor"]);
 
 export const vocabGapStatusEnum = pgEnum("vocab_gap_status", ["active", "mastered", "dismissed"]);
 
@@ -906,6 +906,75 @@ export const tcfQuestionAttempts = pgTable(
 );
 
 export type TcfQuestionAttempt = typeof tcfQuestionAttempts.$inferSelect;
+
+/* ------------------------------------------------------------------ */
+/*  TCF tutor chat + review notebook                                   */
+/* ------------------------------------------------------------------ */
+
+export const tcfTutorRoleEnum = pgEnum("tcf_tutor_role", ["user", "assistant"]);
+export const tcfNoteKindEnum = pgEnum("tcf_note_kind", ["vocabulary", "grammar", "hearing", "comprehension"]);
+export const tcfNoteStatusEnum = pgEnum("tcf_note_status", ["active", "mastered", "dismissed"]);
+
+export type TcfNoteKind = (typeof tcfNoteKindEnum.enumValues)[number];
+export type TcfNoteStatus = (typeof tcfNoteStatusEnum.enumValues)[number];
+export type TcfGeneratedReviewItem = { stem: string; options: string[]; answer: number; spoken: string | null };
+
+export const tcfTutorMessages = pgTable(
+  "tcf_tutor_messages",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").notNull().references(() => users.id),
+    questionId: uuid("question_id").notNull().references(() => tcfQuestions.id, { onDelete: "cascade" }),
+    role: tcfTutorRoleEnum("role").notNull(),
+    content: text("content").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("tcf_tutor_messages_user_question_time").on(t.userId, t.questionId, t.createdAt)],
+);
+
+export const tcfNotes = pgTable(
+  "tcf_notes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").notNull().references(() => users.id),
+    kind: tcfNoteKindEnum("kind").notNull(),
+    lemma: text("lemma"),
+    byEar: boolean("by_ear").notNull().default(false),
+    vocabularyGapId: uuid("vocabulary_gap_id").references(() => vocabularyGaps.id, { onDelete: "set null" }),
+    comprehensionTag: text("comprehension_tag"),
+    point: text("point").notNull(),
+    front: text("front").notNull(),
+    back: text("back").notNull(),
+    sourceQuestionId: uuid("source_question_id").references(() => tcfQuestions.id, { onDelete: "set null" }),
+    sourceLocator: text("source_locator"),
+    sourceMessageId: uuid("source_message_id").references(() => tcfTutorMessages.id, { onDelete: "set null" }),
+    status: tcfNoteStatusEnum("status").notNull().default("active"),
+    box: integer("box").notNull().default(1),
+    dueAt: timestamp("due_at", { withTimezone: true }).notNull().defaultNow(),
+    lastReviewedAt: timestamp("last_reviewed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index("tcf_notes_user_status_due").on(t.userId, t.status, t.dueAt),
+    uniqueIndex("tcf_notes_user_source_message").on(t.userId, t.sourceMessageId),
+  ],
+);
+
+export const tcfNoteReviews = pgTable(
+  "tcf_note_reviews",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").notNull().references(() => users.id),
+    noteId: uuid("note_id").notNull().references(() => tcfNotes.id, { onDelete: "cascade" }),
+    generated: jsonb("generated").$type<TcfGeneratedReviewItem | null>(),
+    chosen: integer("chosen"),
+    correct: boolean("correct").notNull(),
+    boxBefore: integer("box_before").notNull(),
+    boxAfter: integer("box_after").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("tcf_note_reviews_user_time").on(t.userId, t.createdAt)],
+);
 
 /* ------------------------------------------------------------------ */
 /*  Speaking — TCF Expression orale practice                           */

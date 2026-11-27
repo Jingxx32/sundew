@@ -5,7 +5,7 @@ import { and, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { speakingAssets, speakingOperations, speakingSimulations, speakingTurns } from "@/lib/db/schema";
 import { assessPronunciation } from "@/lib/speech/azure";
-import { getOpenAI, MODELS } from "@/lib/ai/client";
+import { getChatAI, getOpenAI, MODELS, REASONING } from "@/lib/ai/client";
 import { recordingKey, putRecording } from "@/lib/storage/speaking-recordings";
 import { reserveOperation, settleOperation } from "./operations";
 import { SCENARIO } from "./scenario";
@@ -69,8 +69,9 @@ export async function processSimulationTurn(userId: string, sessionId: string, r
     }).returning({ id: speakingTurns.id });
     await db.update(speakingAssets).set({ turnId: userTurn.id }).where(eq(speakingAssets.id, assetId));
 
-    const response = await (await getOpenAI("generate")).chat.completions.create({
+    const response = await (await getChatAI("generate")).chat.completions.create({
       model: MODELS.speaking,
+      ...REASONING,
       max_completion_tokens: 300,
       messages: [
         { role: "system", content: SCENARIO.partnerFacts },

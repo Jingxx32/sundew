@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { getOpenAI, MODELS } from "./client";
+import { getChatAI, MODELS, REASONING } from "./client";
 
 export const MicroDrillFeedbackSchema = z.object({
   ok: z.boolean(),
@@ -15,8 +15,9 @@ export async function evaluateMicroDrill(
   correction: string,
   responseFr: string,
 ): Promise<MicroDrillFeedback> {
-  const completion = await (await getOpenAI("generate")).chat.completions.parse({
+  const completion = await (await getChatAI("generate")).chat.completions.parse({
     model: MODELS.feedback,
+    ...REASONING,
     messages: [
       {
         role: "system",

@@ -2,7 +2,7 @@
  * Pre-generates look-up entries for every word in the sample texts, so guests
  * can look words up without an AI call. Resumable: writes every 25 entries.
  *   npm run sample:lookups            # dry run: counts and cost estimate
- *   npm run sample:lookups -- --yes   # generate with gpt-4o-mini (≈ US$0.00015 per word)
+ *   npm run sample:lookups -- --yes   # generate with the lookup model (≈ US$0.0006 per word)
  */
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";

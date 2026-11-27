@@ -11,6 +11,7 @@ function exportedBodies(file: string): Map<string, string> {
 
 const WHOLE_FILES: Array<{ file: string; feature: string; summaryReads?: string[] }> = [
   { file: "src/lib/actions/tcf.ts", feature: "tcf", summaryReads: ["getTcfReviewCount", "listRecentTcfAttempts"] },
+  { file: "src/lib/actions/tcf-notebook.ts", feature: "tcf", summaryReads: ["getDueNotebookCount"] },
   { file: "src/lib/actions/speaking.ts", feature: "speaking" },
   { file: "src/lib/actions/speaking-simulation.ts", feature: "speaking" },
   { file: "src/lib/actions/quiz.ts", feature: "quiz" },
@@ -57,6 +58,8 @@ const GATED_FILES: Array<[string, string]> = [
   ["src/app/api/speaking/follow-ups/[followUpId]/route.ts", `requireFeature("speaking")`],
   ["src/app/api/speaking/recordings/[assetId]/route.ts", `requireFeature("speaking")`],
   ["src/app/api/speaking/sessions/[sessionId]/turns/route.ts", `requireFeature("speaking")`],
+  ["src/app/api/tcf/tutor/route.ts", `requireFeature("tcf")`],
+  ["src/app/api/tcf/notebook-review/route.ts", `requireFeature("tcf")`],
   ["src/app/tcf/page.tsx", `pageGate("tcf")`],
   ["src/app/tcf/drill/page.tsx", `pageGate("tcf")`],
   ["src/app/tcf/exam/page.tsx", `pageGate("tcf")`],
@@ -88,6 +91,9 @@ const AI_BUDGET_EXPORTS: Array<[string, string]> = [
   ["src/lib/actions/quiz.ts", "parseQuizFromPastedText"],
   ["src/lib/actions/cloze.ts", "preparePodcastCloze"],
   ["src/lib/actions/speaking.ts", "generateScript"],
+  ["src/lib/actions/tcf-notebook.ts", "proposeTutorCard"],
+  ["src/lib/actions/tcf-notebook.ts", "addTutorCard"],
+  ["src/lib/actions/tcf-notebook.ts", "generateNotebookReview"],
   ["src/lib/actions/vocabulary.ts", "enrichEntry"],
   ["src/lib/actions/vocabulary.ts", "reexplainInContext"],
 ];
@@ -100,10 +106,10 @@ test("AI actions check the daily budget", () => {
   }
 });
 
-test("every OpenAI call names its budget bucket", () => {
+test("every AI call names its budget bucket", () => {
   const files = readdirSync("src", { recursive: true, encoding: "utf8" })
     .filter((f) => /\.tsx?$/.test(f) && !f.endsWith(".test.ts"))
     .map((f) => `src/${f}`);
-  const bare = files.filter((f) => readFileSync(f, "utf8").includes("getOpenAI()"));
-  assert.deepEqual(bare, [], "getOpenAI() needs a bucket");
+  const bare = files.filter((f) => /\b(getOpenAI|getChatAI)\(\)/.test(readFileSync(f, "utf8")));
+  assert.deepEqual(bare, [], "getChatAI() and getOpenAI() need a bucket");
 });

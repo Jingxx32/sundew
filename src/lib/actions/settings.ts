@@ -2,7 +2,7 @@
 
 import { and, eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { getOpenAI, MODELS } from "@/lib/ai/client";
+import { getChatAI, MODELS } from "@/lib/ai/client";
 import { db } from "@/lib/db";
 import { userSettings } from "@/lib/db/schema";
 import type { CefrLevel } from "@/lib/cefr";
@@ -15,13 +15,13 @@ export type ApiKeyStatus =
 
 export async function testApiKey(): Promise<ApiKeyStatus> {
   await requireAdmin();
-  const key = process.env.OPENAI_API_KEY;
+  const key = process.env.NEBIUS_API_KEY;
   if (!key) {
-    return { ok: false, error: "OPENAI_API_KEY is not set in your .env file." };
+    return { ok: false, error: "NEBIUS_API_KEY is not set in your .env file." };
   }
 
   try {
-    await (await getOpenAI(null)).models.list();
+    await (await getChatAI(null)).models.list();
     const maskedKey = key.slice(0, 7) + "·".repeat(16) + key.slice(-4);
     return { ok: true, maskedKey, models: MODELS };
   } catch (err) {
