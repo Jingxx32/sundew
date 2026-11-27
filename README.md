@@ -65,12 +65,12 @@ Your weak spots pick the next task, drill or review
 ## Engineering highlights
 
 - **A taxonomy the AI must obey.** [`ERROR_TAXONOMY`](src/lib/taxonomy.ts) defines 37 error
-  types for A2–B1 learners. Feedback is requested as OpenAI structured output validated with
+  types for A2–B1 learners. Feedback is requested as JSON-schema structured output validated with
   Zod, so every error lands in a category the dashboards and drills can index.
 - **Don't trust LLM offsets.** Model-reported character spans drift and short fragments
   (“des”, “à”) repeat. [`locateErrorSpan`](src/lib/feedback/error-span.ts) re-anchors each
   highlight from the quoted sentence before falling back to the nearest match.
-- **Paid AI under a budget.** Every OpenAI call goes through one client that counts against
+- **Paid AI under a budget.** Every AI call goes through one client that counts against
   a per-member daily limit ([`AI_DAILY_LIMITS`](src/lib/access/limits.ts)); a test lists the
   actions that must check the budget before saving work.
 - **Guests that clean up after themselves.** Anonymous accounts get a seeded sample workspace,
@@ -89,7 +89,7 @@ Your weak spots pick the next task, drill or review
 | Framework | Next.js 16 (App Router) + React 19 + TypeScript |
 | Styling | Tailwind CSS v4 + semantic design tokens |
 | Database | PostgreSQL via postgres.js + Drizzle ORM |
-| AI | OpenAI (GPT-4o / 4o-mini, Whisper) with Zod structured outputs; Azure Speech for pronunciation |
+| AI | DeepSeek V4.1 Flash on Nebius Token Factory (OpenAI-compatible) with Zod structured outputs; OpenAI Whisper/TTS for audio; Azure Speech for pronunciation |
 | Auth | Better Auth — Google, email one-time codes, anonymous guests, admin roles |
 | Hosting | Vercel (Montréal) + Azure PostgreSQL (Canada Central) + Cloudflare R2 (private media) |
 | UI | Radix UI primitives, Lucide icons; Geist, Plus Jakarta Sans, Source Serif 4 |
@@ -105,7 +105,7 @@ nvm use
 npm ci
 
 # 2. copy .env.example to .env and set at least DATABASE_URL, BETTER_AUTH_URL,
-#    BETTER_AUTH_SECRET and OPENAI_API_KEY (AZURE_SPEECH_KEY/REGION for speaking),
+#    BETTER_AUTH_SECRET and NEBIUS_API_KEY (OPENAI_API_KEY for audio, AZURE_SPEECH_KEY/REGION for speaking),
 #    then apply migrations
 npm run db:init
 
@@ -135,7 +135,7 @@ src/
 └── lib/
     ├── db/schema.ts     # Database schema, single source of truth
     ├── actions/         # All DB access (server actions)
-    ├── ai/              # OpenAI wrappers: lookup, feedback, tasks, …
+    ├── ai/              # AI wrappers: lookup, feedback, tasks, …
     ├── access/          # Guest / full / admin rules and AI limits
     ├── taxonomy.ts      # Error taxonomy
     └── tcf/, vocabulary/, conjugation/, speech/, …

@@ -1,5 +1,5 @@
 /**
- * Drafts the sample workspace's texts and learner essays with one gpt-4o call (≈ US$0.03).
+ * Drafts the sample workspace's texts and learner essays with one chat call (≈ US$0.01).
  *   npm run sample:draft -- --yes
  * Writes src/lib/sample-workspace/source/text-{1,2,3}.md and essay-{1,2}.md for the owner to edit.
  */
@@ -9,13 +9,13 @@ import nextEnv from "@next/env";
 
 nextEnv.loadEnvConfig(process.cwd(), true);
 if (!process.argv.includes("--yes")) {
-  console.log("Calls gpt-4o once (≈ US$0.03). Re-run with --yes.");
+  console.log("Calls the chat model once (≈ US$0.01). Re-run with --yes.");
   process.exit(0);
 }
 
 const { z } = await import("zod");
 const { zodResponseFormat } = await import("openai/helpers/zod");
-const { getOpenAI, MODELS } = await import("../../src/lib/ai/client");
+const { getChatAI, MODELS, REASONING } = await import("../../src/lib/ai/client");
 
 // No min/max array lengths: structured outputs reject them. Counts are checked below.
 const Draft = z.object({
@@ -23,8 +23,9 @@ const Draft = z.object({
   essays: z.array(z.object({ aboutText: z.number(), text: z.string() })),
 });
 
-const completion = await (await getOpenAI("generate")).chat.completions.parse({
+const completion = await (await getChatAI("generate")).chat.completions.parse({
   model: MODELS.task,
+  ...REASONING,
   temperature: 0.8,
   response_format: zodResponseFormat(Draft, "draft"),
   messages: [

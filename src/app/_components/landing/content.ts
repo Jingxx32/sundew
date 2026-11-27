@@ -57,7 +57,7 @@ export function featureTag(card: Pick<FeatureCard, "inGuestTour">, guestEnabled:
 
 export const STACK = [
   "Next.js 16", "React 19", "TypeScript", "PostgreSQL + Drizzle", "Better Auth",
-  "OpenAI", "Azure Speech", "Cloudflare R2", "Vercel",
+  "Nebius AI", "Azure Speech", "Cloudflare R2", "Vercel",
 ] as const;
 
 export { SOURCE_URL } from "@/lib/site";

@@ -4,7 +4,7 @@
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { CEFR_LEVELS } from "@/lib/cefr";
-import { getOpenAI, MODELS } from "./client";
+import { getChatAI, MODELS, REASONING } from "./client";
 
 const LookupSchema = z.object({
   lemma: z.string(),
@@ -24,8 +24,9 @@ export async function lookupWord(
   word: string,
   sentenceContext: string,
 ): Promise<LookupResult> {
-  const completion = await (await getOpenAI("lookup")).chat.completions.parse({
+  const completion = await (await getChatAI("lookup")).chat.completions.parse({
     model: MODELS.lookup,
+    ...REASONING,
     messages: [
       {
         role: "system",

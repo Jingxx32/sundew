@@ -10,12 +10,13 @@ export const INVITE_CHECKS_PER_WINDOW = 10;
 export const INVITE_CHECK_WINDOW_S = 600;
 
 /**
- * Paid OpenAI calls per member per 24 hours (admins are not limited). The window starts at a
- * member's first call. Rough worst case at gpt-4o / mini prices: about US$1 per member per day.
- *   generate   — gpt-4o: writing tasks, feedback, micro-drills, speaking, quiz parsing
- *   lookup     — gpt-4o-mini: word look-ups, entry details, CEFR estimates
- *   transcribe — Whisper: podcast imports
- *   tutor      — gpt-4o: TCF tutor chat answers (card proposals and review items use lookup)
+ * Paid AI calls per member per 24 hours (admins are not limited). The window starts at a
+ * member's first call. Chat runs on Nebius (DeepSeek V4.1 Flash fast); rough worst case
+ * at its prices: about US$0.5 per member per day.
+ *   generate   — writing tasks, feedback, micro-drills, speaking, quiz parsing
+ *   lookup     — word look-ups, entry details, CEFR estimates
+ *   transcribe — OpenAI Whisper: podcast imports
+ *   tutor      — TCF tutor chat answers (card proposals and review items use lookup)
  */
 export const AI_DAILY_LIMITS = { generate: 30, lookup: 300, transcribe: 3, tutor: 40 } as const;
 export type AiBucket = keyof typeof AI_DAILY_LIMITS;

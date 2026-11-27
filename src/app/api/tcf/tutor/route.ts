@@ -77,7 +77,7 @@ export async function POST(request: Request) {
   };
   const messages = buildTutorMessages({ question, chosen, imageUrl, notebook, thread, ask });
 
-  // Budget (UserFacingError) and OpenAI request errors surface here, before any byte is sent.
+  // Budget (UserFacingError) and model request errors surface here, before any byte is sent.
   let answer: AsyncIterable<string>;
   try {
     answer = await streamTutorAnswer(messages, request.signal);
@@ -124,7 +124,7 @@ export async function POST(request: Request) {
         controller.close();
       }
     },
-    // The client left: close the OpenAI stream (aborts the upstream request) and save nothing.
+    // The client left: close the model stream (aborts the upstream request) and save nothing.
     async cancel() {
       cancelled = true;
       await iterator.return?.().catch(() => undefined);

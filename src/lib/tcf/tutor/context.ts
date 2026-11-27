@@ -9,7 +9,7 @@ export const TUTOR_SYSTEM_PROMPT = `You are a French tutor helping a learner who
 
 Rules:
 - The stored answer is correct. Explain why it is right and, only when the learner's choice differs from the answer, why their choice is not. Never re-judge the answer key.
-- Reply in the language the learner wrote in. Keep French quotations in French.
+- Write your reply in the same language as the learner's latest message, even though the question material is in French: a question in Chinese gets an answer in Chinese, a question in English an answer in English, a question in French an answer in French. Keep French quotations in French.
 - Answer only what was asked, in about 200 words or fewer. No preamble, no closing offers.
 - For listening questions, never describe how the recording sounds: make no claim about phonemes, liaison or pronunciation of the audio, because you cannot hear it. General listening advice is fine.
 - If no source text or image is available for the question, say so instead of guessing what it contained.
@@ -75,6 +75,9 @@ function questionBlock(q: TutorQuestion, chosen: number | null, hasImage: boolea
   return lines.join("\n");
 }
 
+const CJK = /[\u4e00-\u9fff]/;
+export const CHINESE_REPLY = "The learner wrote in Chinese: answer in Simplified Chinese. Keep French quotations in French.";
+
 export function buildTutorMessages(input: {
   question: TutorQuestion;
   chosen: number | null;
@@ -92,5 +95,8 @@ export function buildTutorMessages(input: {
     { role: "system", content: input.notebook },
     ...input.thread.slice(-THREAD_RESEND_LIMIT).map((t) => ({ role: t.role, content: t.content }) as ChatCompletionMessageParam),
     { role: "user", content: input.ask },
+    // The rule above alone lost to the French material on short asks ("为什么不是 C？"
+    // came back in French for gpt-4o and DeepSeek alike); a closing reminder fixed it.
+    ...(CJK.test(input.ask) ? [{ role: "system" as const, content: CHINESE_REPLY }] : []),
   ];
 }

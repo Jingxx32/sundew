@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { getOpenAI, MODELS } from "./client";
+import { getChatAI, MODELS, REASONING } from "./client";
 import type { NoteLine } from "@/lib/tcf/notebook/rules";
 import { COMPREHENSION_TAGS } from "@/lib/tcf/tags";
 import { ProposalSchema, ReviewBatchSchema, type Proposal } from "@/lib/tcf/tutor/schemas";
@@ -15,8 +15,9 @@ const AI_BATCH_REQUEST = { timeout: 20_000, maxRetries: 1 };
  * Aborting `signal` ends the upstream request and the iteration quietly.
  */
 export async function streamTutorAnswer(messages: ChatCompletionMessageParam[], signal?: AbortSignal): Promise<AsyncIterable<string>> {
-  const stream = await (await getOpenAI("tutor")).chat.completions.create({
+  const stream = await (await getChatAI("tutor")).chat.completions.create({
     model: MODELS.tutor,
+    ...REASONING,
     messages,
     stream: true,
     max_tokens: 500,
@@ -64,8 +65,9 @@ export async function proposeCard(input: {
   const list = input.existing.length
     ? input.existing.map((n, i) => `${i}. [${n.kind}] ${n.point}${n.lemma ? ` (${n.lemma})` : ""}`).join("\n")
     : "(none)";
-  const completion = await (await getOpenAI("lookup")).chat.completions.parse({
+  const completion = await (await getChatAI("lookup")).chat.completions.parse({
     model: MODELS.lookup,
+    ...REASONING,
     messages: [
       { role: "system", content: PROPOSAL_SYSTEM_PROMPT },
       {
@@ -96,8 +98,9 @@ export async function generateReviewItems(
   const list = cards
     .map((c, i) => `${i}. [${c.kind}] ${c.point}\nFront: ${c.front}\nBack: ${c.back}`)
     .join("\n\n");
-  const completion = await (await getOpenAI("lookup")).chat.completions.parse({
+  const completion = await (await getChatAI("lookup")).chat.completions.parse({
     model: MODELS.lookup,
+    ...REASONING,
     messages: [
       { role: "system", content: REVIEW_SYSTEM_PROMPT },
       { role: "user", content: `Cards:\n\n${list}` },

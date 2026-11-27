@@ -3,7 +3,7 @@ import { zodResponseFormat } from "openai/helpers/zod";
 import { CEFR_LEVELS } from "@/lib/cefr";
 import { ERROR_TAXONOMY } from "@/lib/taxonomy";
 import type { LearnerProfile } from "@/lib/learner-profile";
-import { getOpenAI, MODELS } from "./client";
+import { getChatAI, MODELS, REASONING } from "./client";
 
 const TaskSchema = z.object({
   prompt_en: z.string(),
@@ -80,8 +80,9 @@ Document excerpt: ${docContent.slice(0, 600)}${docContent.length > 600 ? "…" :
       : ""
   }${useProfile && profile ? buildProfileUserBlock(profile) : ""}`;
 
-  const completion = await (await getOpenAI("generate")).chat.completions.parse({
+  const completion = await (await getChatAI("generate")).chat.completions.parse({
     model: MODELS.task,
+    ...REASONING,
     messages: [
       { role: "system", content: systemContent },
       { role: "user", content: userContent },

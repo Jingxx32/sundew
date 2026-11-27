@@ -106,10 +106,10 @@ test("AI actions check the daily budget", () => {
   }
 });
 
-test("every OpenAI call names its budget bucket", () => {
+test("every AI call names its budget bucket", () => {
   const files = readdirSync("src", { recursive: true, encoding: "utf8" })
     .filter((f) => /\.tsx?$/.test(f) && !f.endsWith(".test.ts"))
     .map((f) => `src/${f}`);
-  const bare = files.filter((f) => readFileSync(f, "utf8").includes("getOpenAI()"));
-  assert.deepEqual(bare, [], "getOpenAI() needs a bucket");
+  const bare = files.filter((f) => /\b(getOpenAI|getChatAI)\(\)/.test(readFileSync(f, "utf8")));
+  assert.deepEqual(bare, [], "getChatAI() and getOpenAI() need a bucket");
 });

@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { buildTutorMessages, formatNotebookContext, THREAD_RESEND_LIMIT, TUTOR_SYSTEM_PROMPT, type TutorQuestion, type TutorTurn } from "./context";
+import { buildTutorMessages, CHINESE_REPLY, formatNotebookContext, THREAD_RESEND_LIMIT, TUTOR_SYSTEM_PROMPT, type TutorQuestion, type TutorTurn } from "./context";
 import type { NoteLine } from "../notebook/rules";
 
 const question: TutorQuestion = {
@@ -59,6 +59,13 @@ test("an image adds a quote-only-what-you-can-read instruction", () => {
   const block = text(buildTutorMessages({ ...base, imageUrl: "data:image/png;base64,AAAA" })[1].content);
   assert.match(block, /source text is in the attached image/);
   assert.match(block, /illegible/);
+});
+
+test("a Chinese ask ends with a reminder to answer in Chinese", () => {
+  const messages = buildTutorMessages({ ...base, ask: "为什么不是 C？" });
+  assert.deepEqual(messages.at(-2), { role: "user", content: "为什么不是 C？" });
+  assert.deepEqual(messages.at(-1), { role: "system", content: CHINESE_REPLY });
+  assert.equal(buildTutorMessages(base).at(-1)?.role, "user");
 });
 
 test("the prompt only explains the learner's choice when it differs", () => {

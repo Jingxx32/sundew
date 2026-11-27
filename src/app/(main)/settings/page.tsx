@@ -32,7 +32,7 @@ export default async function SettingsPage() {
       {status && <section className="rounded-2xl bg-surface shadow-card p-6 space-y-5">
         <div className="flex items-center gap-2">
           <KeyRound className="h-4 w-4 text-muted-foreground" />
-          <h2 className="font-medium text-sm">OpenAI API Key</h2>
+          <h2 className="font-medium text-sm">Nebius API Key</h2>
         </div>
 
         {status.ok ? (
@@ -67,7 +67,7 @@ export default async function SettingsPage() {
             </div>
             <p className="text-xs text-muted-foreground">
               Add your key to <code className="font-mono text-foreground">.env</code> as{" "}
-              <code className="font-mono text-foreground">OPENAI_API_KEY=sk-…</code> and restart the dev server.
+              <code className="font-mono text-foreground">NEBIUS_API_KEY=…</code> and restart the dev server.
             </p>
           </div>
         )}
@@ -75,13 +75,13 @@ export default async function SettingsPage() {
         <div className="flex items-center gap-3">
           <TestApiKeyButton />
           <a
-            href="https://platform.openai.com/usage"
+            href="https://tokenfactory.nebius.com/"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             <ExternalLink className="h-3.5 w-3.5" />
-            View usage on OpenAI
+            View usage on Nebius
           </a>
         </div>
       </section>}

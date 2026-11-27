@@ -3,7 +3,7 @@
 
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { getOpenAI, MODELS } from "./client";
+import { getChatAI, MODELS, REASONING } from "./client";
 
 const FrTextPair = z.object({ fr: z.string(), en: z.string() });
 
@@ -114,8 +114,9 @@ const FrenchVocabEntrySchema = z.object({
 export type FrenchVocabEntry = z.infer<typeof FrenchVocabEntrySchema>;
 
 export async function enrichVocab(lemma: string, posHint: string | null): Promise<FrenchVocabEntry> {
-  const completion = await (await getOpenAI("lookup")).chat.completions.parse({
+  const completion = await (await getChatAI("lookup")).chat.completions.parse({
     model: MODELS.enrich,
+    ...REASONING,
     messages: [
       {
         role: "system",
