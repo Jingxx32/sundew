@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { buildTutorMessages, CHINESE_REPLY, formatNotebookContext, THREAD_RESEND_LIMIT, TUTOR_SYSTEM_PROMPT, type TutorQuestion, type TutorTurn } from "./context";
+import { buildTutorMessages, CHINESE_REPLY, formatNotebookContext, NOT_ANSWERED_REPLY, THREAD_RESEND_LIMIT, TUTOR_SYSTEM_PROMPT, type TutorQuestion, type TutorTurn } from "./context";
 import type { NoteLine } from "../notebook/rules";
 
 const question: TutorQuestion = {
@@ -59,6 +59,25 @@ test("an image adds a quote-only-what-you-can-read instruction", () => {
   const block = text(buildTutorMessages({ ...base, imageUrl: "data:image/png;base64,AAAA" })[1].content);
   assert.match(block, /source text is in the attached image/);
   assert.match(block, /illegible/);
+});
+
+test("before an answer the block hides the key, explanation and transcript", () => {
+  const listening: TutorQuestion = { ...question, skill: "listening", type: "dialogue", passage: null, transcript: "— Tu viens ? — Non, le bus est en panne." };
+  const block = text(buildTutorMessages({ ...base, question: listening, chosen: null, revealed: false })[1].content);
+  assert.match(block, /The learner has not answered yet/);
+  assert.doesNotMatch(block, /Correct answer|Learner chose|Learner revealed/);
+  assert.doesNotMatch(block, /Existing explanation|Verdict/);
+  assert.doesNotMatch(block, /le bus est en panne/);
+  assert.match(block, /transcript is withheld/);
+  assert.doesNotMatch(block, /No source text is available/);
+  assert.match(TUTOR_SYSTEM_PROMPT, /never say or hint which option is right/);
+});
+
+test("before an answer the turn ends with the no-spoiler reminder", () => {
+  const messages = buildTutorMessages({ ...base, chosen: null, revealed: false, ask: "这题选哪个？" });
+  assert.deepEqual(messages.at(-2), { role: "system", content: NOT_ANSWERED_REPLY });
+  assert.deepEqual(messages.at(-1), { role: "system", content: CHINESE_REPLY });
+  assert.ok(!buildTutorMessages(base).some((m) => m.content === NOT_ANSWERED_REPLY));
 });
 
 test("a Chinese ask ends with a reminder to answer in Chinese", () => {
