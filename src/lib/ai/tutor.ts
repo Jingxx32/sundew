@@ -42,10 +42,12 @@ Return result "duplicate" when the point is already in the numbered list of exis
 Otherwise return result "card" and fill in card.
 
 Card kinds:
-- vocabulary: a word or expression to learn
+- vocabulary: the meaning of one word or fixed expression the learner did not know, did not recognise or did not hear — including its meaning in this context. Always use vocabulary, with that word's lemma, when the exchange is about what a word or expression means.
 - grammar: a grammar rule or construction
-- hearing: something the learner failed to catch by ear, or a listening strategy
-- comprehension: a reading or reasoning strategy for a type of question
+- hearing: something the learner failed to catch by ear that is not a single word (a phrase, a number, a name, a contraction), or a listening strategy
+- comprehension: a reasoning strategy that would help on other questions of the same type. Never use comprehension for the meaning of a word.
+
+The point must name the concrete word, rule or trap and its evidence in this question (for example "the right option paraphrases il a raté son train as il est en retard", or "C reuses voyage from the text but applies it to the parents, who never travel"). Never write a generic slogan such as "read the text carefully": when the exchange explains why an option is right or wrong, the card is that specific reason.
 
 comprehension_tag says what the question tested, or null:
 ${tagList}
@@ -86,7 +88,11 @@ export async function proposeCard(input: {
 export const REVIEW_SYSTEM_PROMPT = `You write multiple-choice review items for a French learner's notebook cards.
 
 Write exactly one item per card, and set index to the card's position in the input (starting at 0).
-- Use a NEW French sentence that tests the card's point. Never reuse the sentence from the source question.
+- The item makes the learner APPLY the card's point to new French material. Never ask about the rule or strategy itself (not "Which mood follows bien que?", not "Why is the option that repeats a word often wrong?").
+- Use NEW French material: new sentences, a new situation and new names. Never reuse the source question's situation, people, sentences or options, even if the card mentions them.
+  - grammar: a new French sentence with a blank or a choice; the 4 options are forms of the construction.
+  - comprehension: put a new French text of one to three sentences in the stem, then a TCF-style question about it whose right answer needs the card's strategy; the options are new.
+  - hearing: see spoken below.
 - Give exactly 4 options, all different, with exactly one correct. answer is the 0-based index of the correct option.
 - Distractors must be plausible for a learner but clearly wrong to someone who knows the point.
 - For cards of kind "hearing", spoken is the French sentence that will be read aloud and the stem asks what was heard; the options are candidate transcriptions or meanings. For every other kind set spoken to null.
