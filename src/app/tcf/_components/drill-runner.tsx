@@ -9,7 +9,7 @@ import { useAccountId } from "@/components/account-session";
 import { cn } from "@/lib/utils";
 import { hasExplanationDetails } from "@/lib/tcf/reveal";
 import { AnswerDetails, ExplanationToggle } from "./answer-details";
-import { TutorPanel } from "./tutor-panel";
+import { TutorDock } from "./tutor-dock";
 import { VerdictBar } from "./verdict-bar";
 import { LevelNav } from "./level-nav";
 import { LevelBadge } from "./level-badge";
@@ -284,7 +284,7 @@ export function DrillRunner({
         />
       )}
 
-      <div className={cn("flex-1 min-w-0", !single && "pb-16 md:pb-0")}>
+      <div className={cn("flex-1 min-w-0", !single && "pb-16 md:pb-0", showAnswer && (single ? "pb-20" : "pb-32 md:pb-20"))}>
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2 md:mb-4">
           <div className={cn("flex-wrap items-center gap-2", single ? "flex" : "hidden md:flex")}>
             {!single && (
@@ -366,7 +366,7 @@ export function DrillRunner({
 
         {showAnswer && endOfQuestion()}
 
-        {showAnswer && <TutorPanel key={q.id} questionId={q.id} chosen={chosen ?? null} />}
+        {showAnswer && <TutorDock key={q.id} questionId={q.id} chosen={chosen ?? null} aboveNav={!single} />}
 
         {!single && <RoundNav
           className="fixed inset-x-0 bottom-0 z-20 border-t border-border/60 bg-background/95 px-4 py-2.5 backdrop-blur md:hidden"

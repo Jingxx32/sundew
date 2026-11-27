@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useAccountId } from "@/components/account-session";
 import { hasExplanationDetails } from "@/lib/tcf/reveal";
 import { AnswerDetails, ExplanationToggle } from "./answer-details";
-import { TutorPanel } from "./tutor-panel";
+import { TutorDock } from "./tutor-dock";
 import { VerdictBar } from "./verdict-bar";
 import { LevelBadge } from "./level-badge";
 import { QuestionMedia } from "./question-media";
@@ -211,7 +211,7 @@ export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: E
   const audioOnly = q.type === "image" || q.type === "spoken_options";
 
   return (
-    <div>
+    <div className={cn(finished && "pb-20")}>
       {score && <ScoreHeader testNumber={testNumber} score={score} />}
       {restoredCount !== null && !finished && (
         <p role="status" className="mb-4 flex flex-wrap items-center gap-x-2 rounded-lg bg-accent-soft px-4 py-2 text-sm text-accent">
@@ -368,7 +368,7 @@ export function ExamRunner({ questions, skill, testNumber, initialIndex = 0 }: E
           {/* Transcript + explanation sit below the nav: a long explanation must not
               push Suivant off-screen. */}
           {finished && <AnswerDetails question={q} skill={skill} explanationOpen={explanationOpen} markGaps={false} />}
-          {finished && <TutorPanel key={q.id} questionId={q.id} chosen={chosen ?? null} />}
+          {finished && <TutorDock key={q.id} questionId={q.id} chosen={chosen ?? null} aboveNav={false} />}
         </div>
       </div>
     </div>

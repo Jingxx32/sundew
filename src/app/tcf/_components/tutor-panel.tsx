@@ -28,7 +28,18 @@ async function failureOf(res: Response): Promise<Failure> {
   return { message: "Réponse interrompue — réessayer", retry: true };
 }
 
-export function TutorPanel({ questionId, chosen }: { questionId: string; chosen: number | null }) {
+export type TutorStatus = { answers: number; streaming: boolean };
+
+export function TutorPanel({
+  questionId,
+  chosen,
+  onStatus,
+}: {
+  questionId: string;
+  chosen: number | null;
+  /** Called when the number of answers or the streaming state changes. */
+  onStatus?: (status: TutorStatus) => void;
+}) {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
@@ -38,6 +49,18 @@ export function TutorPanel({ questionId, chosen }: { questionId: string; chosen:
   const controller = useRef<AbortController | null>(null);
   const lastAsk = useRef("");
   const alive = useRef(true);
+  const scroller = useRef<HTMLDivElement>(null);
+  const answers = turns.filter((t) => t.role === "assistant").length;
+
+  useEffect(() => {
+    onStatus?.({ answers, streaming });
+  }, [answers, streaming, onStatus]);
+
+  // Follow the conversation: new turns, streamed text and a fresh draft keep the latest in view.
+  useEffect(() => {
+    const el = scroller.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [turns, partial?.text, proposals, failure]);
 
   useEffect(() => {
     alive.current = true;
@@ -133,60 +156,69 @@ export function TutorPanel({ questionId, chosen }: { questionId: string; chosen:
   }
 
   return (
-    <section className="mt-6" aria-label="Tuteur">
-      {turns.length > 0 && (
-        <ul className="mb-4 space-y-3">
-          {turns.map((t) => (
-            <li key={t.id} className={t.role === "user" ? "text-sm font-semibold text-foreground" : "text-sm"}>
-              {t.role === "user" ? t.content : <TcfMarkdown>{t.content}</TcfMarkdown>}
-              {t.point && <p className="mt-1 text-xs text-muted-foreground">Ajouté au carnet · {t.point}</p>}
-              {proposals[t.id] && !t.point && (
-                <CardDraft messageId={t.id} proposal={proposals[t.id]} onAdded={(point) => added(t.id, point)} />
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
-      {partial && (
-        <div className="mb-4 space-y-3 text-sm">
-          <p className="font-semibold text-foreground">{partial.ask}</p>
-          {partial.text && <TcfMarkdown>{partial.text}</TcfMarkdown>}
-        </div>
-      )}
-      {failure && (
-        <p role="alert" className="mb-3 text-sm text-danger">
-          {failure.retry ? (
-            <Button
-              variant="link"
-              size="sm"
-              className="h-auto p-0 text-sm text-danger"
-              onClick={() => {
-                setPartial(null);
-                void send(lastAsk.current);
-              }}
-            >
-              {failure.message}
-            </Button>
-          ) : (
-            failure.message
-          )}
-        </p>
-      )}
-      <Textarea
-        value={input}
-        className="min-h-[72px]"
-        disabled={streaming}
-        maxLength={1000}
-        placeholder="Posez votre question…"
-        aria-label="Question pour le tuteur"
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
-            e.preventDefault();
-            void send(input.trim());
-          }
-        }}
-      />
+    <section className="flex h-full min-h-0 flex-col" aria-label="Tuteur">
+      <div ref={scroller} data-tutor-scroll className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
+        {turns.length === 0 && !partial && !failure && (
+          <p className="text-sm text-muted-foreground">
+            Posez une question sur un mot, une phrase ou une option de cette question.
+          </p>
+        )}
+        {turns.length > 0 && (
+          <ul className="mb-4 space-y-3">
+            {turns.map((t) => (
+              <li key={t.id} className={t.role === "user" ? "text-sm font-semibold text-foreground" : "text-sm"}>
+                {t.role === "user" ? t.content : <TcfMarkdown>{t.content}</TcfMarkdown>}
+                {t.point && <p className="mt-1 text-xs text-muted-foreground">Ajouté au carnet · {t.point}</p>}
+                {proposals[t.id] && !t.point && (
+                  <CardDraft messageId={t.id} proposal={proposals[t.id]} onAdded={(point) => added(t.id, point)} />
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+        {partial && (
+          <div className="mb-4 space-y-3 text-sm">
+            <p className="font-semibold text-foreground">{partial.ask}</p>
+            {partial.text && <TcfMarkdown>{partial.text}</TcfMarkdown>}
+          </div>
+        )}
+        {failure && (
+          <p role="alert" className="mb-3 text-sm text-danger">
+            {failure.retry ? (
+              <Button
+                variant="link"
+                size="sm"
+                className="h-auto p-0 text-sm text-danger"
+                onClick={() => {
+                  setPartial(null);
+                  void send(lastAsk.current);
+                }}
+              >
+                {failure.message}
+              </Button>
+            ) : (
+              failure.message
+            )}
+          </p>
+        )}
+      </div>
+      <div className="border-t border-border/60 p-3">
+        <Textarea
+          value={input}
+          className="min-h-[72px]"
+          disabled={streaming}
+          maxLength={1000}
+          placeholder="Posez votre question…"
+          aria-label="Question pour le tuteur"
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+              e.preventDefault();
+              void send(input.trim());
+            }
+          }}
+        />
+      </div>
     </section>
   );
 }
